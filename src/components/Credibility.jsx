@@ -1,0 +1,55 @@
+import { motion } from 'framer-motion';
+
+export default function Credibility() {
+  const points = [
+    "Mentored 600+ students in robotics, coding, and design.",
+    "Architected massive MakerFest-style showcases.",
+    "Guided teams to success in national robotics competitions.",
+    "Pioneered AI and hands-on learning curriculums."
+  ];
+
+  return (
+    <section className="py-32 bg-[var(--color-accent)] relative text-white">
+      <div className="max-w-[90rem] mx-auto px-6 md:px-12">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          <div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-mono text-sm uppercase tracking-widest text-black font-bold mb-6"
+            >
+              The Credentials
+            </motion.div>
+            <h2 className="text-5xl md:text-7xl font-display font-bold mb-8 uppercase tracking-tighter leading-[0.9]">
+              Built by <br/>Educators.<br/>
+              <span className="text-black">Proven by Experience.</span>
+            </h2>
+          </div>
+
+          <div className="flex flex-col gap-8 border-t-2 border-black/20 pt-8">
+            {points.map((point, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="flex items-start gap-6 cursor-hover group"
+              >
+                <div className="w-8 h-8 rounded-full bg-black text-[var(--color-accent)] font-mono font-bold flex items-center justify-center shrink-0 mt-1">
+                  {idx + 1}
+                </div>
+                <p className="text-2xl font-display font-bold uppercase tracking-tighter group-hover:pl-4 transition-all duration-300">
+                  {point}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}

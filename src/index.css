@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #111111;
+  --color-primary-dark: #000000;
+  --color-accent: #FF5A00;
+  --color-secondary: #7B2CBF;
+  --color-dark: #111111;
+  --color-light: #FAFAFA;
+  --color-text-dark: #111111;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    cursor: none; /* Hide default cursor for custom cursor */
+  }
+  
+  body {
+    background-color: var(--color-light);
+    color: var(--color-text-dark);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, var(--color-accent), var(--color-secondary));
+  }
+  
+  /* Disable custom cursor on mobile */
+  @media (max-width: 768px) {
+    html {
+      cursor: auto;
+    }
+  }
+}
