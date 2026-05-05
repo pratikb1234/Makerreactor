@@ -575,3 +575,266 @@ export const MechanicsWidget = ({ className = "" }) => {
     </motion.div>
   );
 };
+
+// ─── Oscilloscope Widget ──────────────────────────────────────────────────────
+// Live animated waveform panel — click to cycle wave types
+const WAVE_TYPES = ['sine', 'square', 'sawtooth', 'triangle'];
+const WAVE_LABELS = { sine: 'SIN', square: 'SQR', sawtooth: 'SAW', triangle: 'TRI' };
+const WAVE_FREQ = { sine: 2, square: 2, sawtooth: 2.5, triangle: 2 };
+
+function getWaveY(type, x, W, H, t) {
+  const f = WAVE_FREQ[type];
+  const phase = (x / W) * Math.PI * 2 * f + t;
+  const amp = H * 0.38;
+  const mid = H / 2;
+  if (type === 'sine')     return mid - Math.sin(phase) * amp;
+  if (type === 'square')   return mid - (Math.sin(phase) >= 0 ? 1 : -1) * amp;
+  if (type === 'sawtooth') return mid - (((phase / (Math.PI)) % 2) - 1) * amp;
+  if (type === 'triangle') return mid - (2 / Math.PI) * Math.asin(Math.sin(phase)) * amp;
+  return mid;
+}
+
+export const OscilloscopeWidget = ({ className = "" }) => {
+  const { isPowered } = useCircuit();
+  const [waveIdx, setWaveIdx] = useState(0);
+  const [t, setT] = useState(0);
+  const rafRef = useRef(null);
+  const W = 220, H = 100;
+  const waveType = WAVE_TYPES[waveIdx];
+  const accent = isPowered ? '#FF5A00' : '#22c55e';
+
+  useEffect(() => {
+    const loop = () => {
+      setT(prev => prev + 0.06);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const pts = Array.from({ length: W }, (_, x) =>
+    `${x},${getWaveY(waveType, x, W, H, t).toFixed(2)}`
+  ).join(' ');
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.5 }}
+      className={`${className} rounded-xl overflow-hidden font-mono select-none`}
+      style={{ background: '#050d05', border: '1px solid rgba(34,197,94,0.15)' }}
+    >
+      {/* Chrome */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
+        <div className="w-2 h-2 rounded-full bg-red-500/60"/>
+        <div className="w-2 h-2 rounded-full bg-yellow-500/60"/>
+        <div className="w-2 h-2 rounded-full bg-green-500/60"/>
+        <span className="ml-2 text-green-500/60 text-[10px] tracking-wider">OSCILLOSCOPE</span>
+        <span className="ml-auto text-[10px] text-green-400">{WAVE_LABELS[waveType]} · 440Hz</span>
+      </div>
+
+      {/* Screen */}
+      <div className="relative" style={{ background: '#030a03' }}>
+        {/* Grid lines */}
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+          {/* H grid */}
+          {[0.25,0.5,0.75].map(f => (
+            <line key={f} x1="0" y1={H*f} x2={W} y2={H*f} stroke="rgba(34,197,94,0.08)" strokeWidth="1"/>
+          ))}
+          {/* V grid */}
+          {[0.25,0.5,0.75].map(f => (
+            <line key={f} x1={W*f} y1="0" x2={W*f} y2={H} stroke="rgba(34,197,94,0.08)" strokeWidth="1"/>
+          ))}
+          {/* Center line */}
+          <line x1="0" y1={H/2} x2={W} y2={H/2} stroke="rgba(34,197,94,0.15)" strokeWidth="1" strokeDasharray="4,4"/>
+          {/* Waveform */}
+          <polyline points={pts} fill="none" stroke={accent}
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ filter: `drop-shadow(0 0 4px ${accent})` }}
+          />
+        </svg>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center gap-2 px-3 py-2 border-t border-white/5">
+        {WAVE_TYPES.map((w, i) => (
+          <button key={w} onClick={() => setWaveIdx(i)}
+            className="text-[10px] px-2 py-1 rounded transition-all duration-200 font-mono uppercase"
+            style={{
+              background: i === waveIdx ? (isPowered ? 'rgba(255,90,0,0.2)' : 'rgba(34,197,94,0.2)') : 'transparent',
+              color: i === waveIdx ? accent : 'rgba(255,255,255,0.3)',
+              border: `1px solid ${i === waveIdx ? accent : 'transparent'}`
+            }}>
+            {WAVE_LABELS[w]}
+          </button>
+        ))}
+        <span className="ml-auto text-[9px] text-green-500/40">CH1 · 2V/div</span>
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Multimeter Stat ──────────────────────────────────────────────────────────
+// A single stat styled as a multimeter LCD reading
+export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }) => {
+  const { isPowered } = useCircuit();
+  const [displayed, setDisplayed] = useState(0);
+  const [settled, setSettled] = useState(false);
+
+  useEffect(() => {
+    let start = null;
+    let frame;
+    const duration = 1400;
+    const animate = (ts) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      // Ease out + flicker at start
+      const eased = p < 0.1 ? Math.random() * value : value * (1 - Math.pow(1 - p, 3));
+      setDisplayed(Math.round(eased));
+      if (p < 1) { frame = requestAnimationFrame(animate); }
+      else { setDisplayed(value); setSettled(true); }
+    };
+    const timeout = setTimeout(() => { frame = requestAnimationFrame(animate); }, delay * 1000);
+    return () => { clearTimeout(timeout); cancelAnimationFrame(frame); };
+  }, [value, delay]);
+
+  const accent = isPowered ? '#FF5A00' : '#64748b';
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ delay, duration: 0.5 }}
+      className={`${className} rounded-xl p-5 font-mono`}
+      style={{ background: '#0D1117', border: `1px solid ${settled ? accent + '40' : 'rgba(255,255,255,0.06)'}`, transition: 'border-color 0.5s' }}
+    >
+      {/* LCD number */}
+      <div className="flex items-baseline gap-1 mb-1">
+        <span className="text-4xl font-bold tracking-tighter tabular-nums transition-colors duration-500"
+          style={{ color: accent, fontFamily: 'monospace', textShadow: settled && isPowered ? `0 0 20px ${accent}60` : 'none' }}>
+          {displayed.toLocaleString()}
+        </span>
+        <span className="text-lg font-bold" style={{ color: accent + 'aa' }}>{unit}</span>
+      </div>
+      {/* Segment bar */}
+      <div className="h-1 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <motion.div className="h-full rounded-full" style={{ background: accent }}
+          initial={{ width: 0 }} whileInView={{ width: `${Math.min(100, (displayed / value) * 100)}%` }}
+          viewport={{ once: true }} transition={{ delay: delay + 0.2, duration: 1.2 }}
+        />
+      </div>
+      <div className="text-[11px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.3)' }}>{label}</div>
+    </motion.div>
+  );
+};
+
+// ─── Drag-to-Build CTA ───────────────────────────────────────────────────────
+// Users drag components onto a grid to complete a circuit → CTA illuminates
+const SNAP_COMPONENTS = [
+  { id: 'led',      label: 'LED',      color: '#FF5A00', icon: '💡' },
+  { id: 'resistor', label: '220Ω',     color: '#FFB347', icon: '⬛' },
+  { id: 'wire',     label: 'WIRE',     color: '#60A5FA', icon: '〰' },
+];
+const SLOTS = [
+  { id: 's1', x: '20%',  label: 'LED' },
+  { id: 's2', x: '50%',  label: '220Ω' },
+  { id: 's3', x: '80%',  label: 'WIRE' },
+];
+
+export const DragToBuildCTA = ({ onComplete, className = "" }) => {
+  const { isPowered } = useCircuit();
+  const [filled, setFilled] = useState({});
+  const [dragging, setDragging] = useState(null);
+  const [complete, setComplete] = useState(false);
+  const boardRef = useRef(null);
+
+  const handleDragStart = (comp) => setDragging(comp);
+
+  const handleDrop = (e, slot) => {
+    e.preventDefault();
+    if (!dragging) return;
+    if (dragging.label === slot.label) {
+      const next = { ...filled, [slot.id]: dragging };
+      setFilled(next);
+      if (Object.keys(next).length === SLOTS.length) {
+        setTimeout(() => setComplete(true), 300);
+      }
+    }
+    setDragging(null);
+  };
+
+  const accent = isPowered ? '#FF5A00' : '#6366f1';
+
+  return (
+    <div className={`${className} flex flex-col items-center gap-8`}>
+      {/* Instruction */}
+      <p className="font-mono text-sm uppercase tracking-widest text-white/40 text-center">
+        {complete ? '⚡ Circuit complete — you\'re ready' : 'Drag components to build the circuit'}
+      </p>
+
+      {/* Component palette */}
+      <div className="flex gap-4">
+        {SNAP_COMPONENTS.map(comp => (
+          <motion.div key={comp.id}
+            draggable
+            onDragStart={() => handleDragStart(comp)}
+            onDragEnd={() => setDragging(null)}
+            whileHover={{ scale: 1.1, y: -4 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex flex-col items-center gap-2 cursor-grab select-none"
+          >
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-mono border-2 transition-all duration-300"
+              style={{ background: comp.color + '15', borderColor: comp.color + '60', color: comp.color }}>
+              {comp.icon}
+            </div>
+            <span className="text-[10px] font-mono text-white/40 tracking-wider">{comp.label}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Board / slots */}
+      <div ref={boardRef} className="relative w-full max-w-xs h-20 rounded-xl"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.1)' }}>
+        {/* Wire line connecting slots */}
+        <div className="absolute top-1/2 left-[15%] right-[15%] h-[2px] -translate-y-1/2"
+          style={{ background: complete ? accent : 'rgba(255,255,255,0.08)', transition: 'background 0.5s', boxShadow: complete ? `0 0 10px ${accent}` : 'none' }} />
+
+        {SLOTS.map(slot => (
+          <div key={slot.id}
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => handleDrop(e, slot)}
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-14 h-14 rounded-xl flex flex-col items-center justify-center transition-all duration-300"
+            style={{
+              left: slot.x,
+              background: filled[slot.id] ? filled[slot.id].color + '20' : 'rgba(255,255,255,0.04)',
+              border: `2px ${filled[slot.id] ? 'solid' : 'dashed'} ${filled[slot.id] ? filled[slot.id].color : 'rgba(255,255,255,0.15)'}`,
+            }}
+          >
+            {filled[slot.id]
+              ? <span className="text-xl">{filled[slot.id].icon}</span>
+              : <span className="text-[9px] font-mono text-white/20 tracking-wider">{slot.label}</span>
+            }
+          </div>
+        ))}
+      </div>
+
+      {/* CTA button — illuminates on complete */}
+      <motion.a href="#experience"
+        animate={{
+          boxShadow: complete ? `0 0 60px ${accent}60, 0 0 20px ${accent}40` : '0 0 0px transparent',
+          borderColor: complete ? accent : 'rgba(255,255,255,0.2)',
+          color: complete ? accent : 'white',
+        }}
+        transition={{ duration: 0.5 }}
+        className="px-12 py-5 rounded-full border-2 font-bold text-lg uppercase tracking-widest transition-colors duration-300 cursor-hover"
+        style={{ background: complete ? accent + '15' : 'transparent' }}
+      >
+        {complete ? '⚡ Apply For 2026' : 'Apply For 2026'}
+      </motion.a>
+
+      {complete && (
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="font-mono text-xs text-white/30 tracking-widest">
+          circuit verified · ready to build
+        </motion.p>
+      )}
+    </div>
+  );
+};
+
