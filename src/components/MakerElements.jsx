@@ -390,53 +390,40 @@ export const BlueprintGrid = () => (
     style={{ backgroundImage: 'radial-gradient(var(--color-primary) 1px, transparent 1px)', backgroundSize: '40px 40px' }}/>
 );
 
-// ─── Mechanics Widget ─────────────────────────────────────────────────────────
-// A standalone engineering panel: two meshing gears + crank-slider
-// Drag the large gear to drive the whole mechanism
-function buildGearPath(teeth, R, r) {
-  const pts = [];
-  for (let i = 0; i < teeth * 2; i++) {
-    const a = (i * Math.PI) / teeth;
-    const rad = i % 2 === 0 ? R : r;
-    pts.push(`${(rad * Math.cos(a)).toFixed(2)},${(rad * Math.sin(a)).toFixed(2)}`);
-  }
-  return pts.join(' ');
-}
-
-export const MechanicsWidget = ({ className = "" }) => {
+// ─── Background Mechanics ──────────────────────────────────────────────────
+// A large, semi-transparent background SVG with gears and linkage instead of a boxed widget
+export const BackgroundMechanics = ({ className = "" }) => {
   const { isPowered } = useCircuit();
-  const angleA = useRef(0);   // large gear angle (degrees)
-  const velA   = useRef(0);   // angular velocity for inertia
-  const rafRef  = useRef(null);
+  const angleA = useRef(0);
+  const velA = useRef(0);
+  const rafRef = useRef(null);
   const [displayAngle, setDisplayAngle] = useState(0);
-  const [rpm, setRpm] = useState(0);
 
-  // Drag state
   const dragging = useRef(false);
-  const lastDragX = useRef(0);
-  const lastDragTime = useRef(0);
-  const lastDragAngle = useRef(0);
+  const lastX = useRef(0);
+  const lastTime = useRef(0);
 
-  // Gear ratios — large:12 teeth R50, small:7 teeth R30
-  const TEETH_L = 12, RL = 46, rL = 38;
-  const TEETH_S = 7,  RS = 28, rS = 22;
-  const RATIO = TEETH_L / TEETH_S; // small rotates faster
+  // Helper for gear teeth
+  const buildGearPath = (teeth, R, r) => {
+    const pts = [];
+    for (let i = 0; i < teeth * 2; i++) {
+      const a = (i * Math.PI) / teeth;
+      const rad = i % 2 === 0 ? R : r;
+      pts.push(`${(rad * Math.cos(a)).toFixed(2)},${(rad * Math.sin(a)).toFixed(2)}`);
+    }
+    return pts.join(' ');
+  };
 
-  // Crank-slider params
-  const CRANK_R = 22; // crank arm length
-  const ROD_L   = 55; // connecting rod length
+  const RATIO = 3.5;
 
-  // Inertia loop — auto-decelerate
   useEffect(() => {
     const loop = () => {
       if (!dragging.current) {
-        velA.current *= 0.96; // friction
-        if (Math.abs(velA.current) < 0.05) velA.current = 0;
+        velA.current *= 0.98; 
+        if (Math.abs(velA.current) < 0.02) velA.current = 0;
         angleA.current += velA.current;
       }
       setDisplayAngle(angleA.current);
-      const absRpm = Math.round(Math.abs(velA.current) * 60 / 6);
-      setRpm(absRpm);
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
@@ -445,230 +432,101 @@ export const MechanicsWidget = ({ className = "" }) => {
 
   const handleMouseDown = (e) => {
     dragging.current = true;
-    lastDragX.current = e.clientX;
-    lastDragTime.current = Date.now();
-    lastDragAngle.current = angleA.current;
-
+    lastX.current = e.clientX;
+    lastTime.current = Date.now();
     const move = (ev) => {
-      const dx = ev.clientX - lastDragX.current;
-      const now = Date.now();
-      const dt = Math.max(1, now - lastDragTime.current);
-      velA.current = (dx * 2.5) / dt * 16; // px → deg/frame
-      angleA.current += dx * 2.5;
-      lastDragX.current = ev.clientX;
-      lastDragTime.current = now;
+      const dx = ev.clientX - lastX.current;
+      const dt = Math.max(1, Date.now() - lastTime.current);
+      velA.current = (dx * 1.5) / dt * 10;
+      angleA.current += dx * 0.8;
+      lastX.current = ev.clientX;
+      lastTime.current = Date.now();
     };
-    const up = () => { dragging.current = false; };
+    const up = () => { dragging.current = false; window.removeEventListener('mousemove', move); };
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', up, { once: true });
-    return () => window.removeEventListener('mousemove', move);
   };
 
   const aRad = (displayAngle * Math.PI) / 180;
-  const angleB = -displayAngle * RATIO; // small gear counter-rotates
-  // Crank pivot is at large gear center (cx=70, cy=70 in widget space)
-  // Crank pin position
-  const crankX = 70 + CRANK_R * Math.cos(aRad);
-  const crankY = 70 + CRANK_R * Math.sin(aRad);
-  // Slider X (horizontal slider)
-  const sliderX = crankX + Math.sqrt(Math.max(0, ROD_L * ROD_L - (crankY - 130) ** 2));
+  const angleB = -displayAngle * RATIO;
 
-  const accent = isPowered ? '#FF5A00' : '#888';
-  const glow   = isPowered ? 'drop-shadow(0 0 8px rgba(255,90,0,0.7))' : 'none';
+  const CRANK_R = 120;
+  const ROD_L = 400;
+  const crankX = 300 + CRANK_R * Math.cos(aRad);
+  const crankY = 300 + CRANK_R * Math.sin(aRad);
+  const sliderX = crankX + Math.sqrt(Math.max(0, ROD_L * ROD_L - (crankY - 800) ** 2));
+
+  const accent = isPowered ? 'rgba(255,90,0,0.15)' : 'rgba(0,0,0,0.03)';
+  const stroke = isPowered ? 'rgba(255,90,0,0.3)' : 'rgba(0,0,0,0.06)';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className={`${className} rounded-xl overflow-hidden select-none`}
-      style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.07)' }}
-    >
-      {/* Chrome bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
-        <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-        <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-500 ${isPowered ? 'bg-green-400' : 'bg-green-500/20'}`} />
-        <span className="ml-2 text-gray-500 text-[10px] tracking-wider font-mono">mechanics.sim</span>
-        <span className="ml-auto font-mono text-[10px]" style={{ color: rpm > 0 ? accent : '#4B5563' }}>
-          {rpm} RPM
-        </span>
-      </div>
+    <div className={`absolute inset-0 pointer-events-none overflow-hidden z-0 ${className}`}>
+      <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" className="opacity-40">
+        {/* Large Gear */}
+        <g transform={`translate(200, 300) rotate(${displayAngle})`} style={{ pointerEvents: 'all', cursor: 'grab' }} onMouseDown={handleMouseDown}>
+          <circle cx="0" cy="0" r="280" fill="transparent" />
+          <polygon points={buildGearPath(24, 250, 230)} fill="none" stroke={stroke} strokeWidth="4" />
+          <circle cx="0" cy="0" r="100" fill="none" stroke={stroke} strokeWidth="3" />
+          <circle cx="0" cy="0" r="15" fill={stroke} />
+          {[0,60,120,180,240,300].map(a => (
+            <line key={a} x1={15 * Math.cos(a*Math.PI/180)} y1={15 * Math.sin(a*Math.PI/180)}
+              x2={100 * Math.cos(a*Math.PI/180)} y2={100 * Math.sin(a*Math.PI/180)} stroke={stroke} strokeWidth="4" />
+          ))}
+        </g>
 
-      {/* SVG canvas */}
-      <div
-        className="relative"
-        style={{ cursor: 'grab' }}
-        onMouseDown={handleMouseDown}
-      >
-        <svg width="100%" viewBox="0 0 220 160" style={{ filter: glow, display: 'block' }}>
-          {/* Grid dots */}
-          <defs>
-            <pattern id="mgrid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="0" cy="0" r="0.8" fill="rgba(255,255,255,0.06)" />
-            </pattern>
-          </defs>
-          <rect width="220" height="160" fill="url(#mgrid)" />
+        {/* Small Gear */}
+        <g transform={`translate(515, 300) rotate(${angleB})`}>
+           <polygon points={buildGearPath(10, 85, 70)} fill="none" stroke={stroke} strokeWidth="3" />
+           <circle cx="0" cy="0" r="25" fill="none" stroke={stroke} strokeWidth="2" />
+        </g>
 
-          {/* ── Large gear (draggable, center 70,70) ── */}
-          <g transform={`translate(70,70) rotate(${displayAngle})`}>
-            <polygon points={buildGearPath(TEETH_L, RL, rL)}
-              fill="none" stroke={accent} strokeWidth="2" />
-            <circle cx="0" cy="0" r="18" fill="none" stroke={accent} strokeWidth="1.5" />
-            <circle cx="0" cy="0" r="5" fill={accent} />
-            {/* Spokes */}
-            {[0,60,120,180,240,300].map(a => (
-              <line key={a}
-                x1={5 * Math.cos(a*Math.PI/180)} y1={5 * Math.sin(a*Math.PI/180)}
-                x2={18 * Math.cos(a*Math.PI/180)} y2={18 * Math.sin(a*Math.PI/180)}
-                stroke={accent} strokeWidth="1.5" />
-            ))}
-          </g>
-
-          {/* ── Small gear (center 155,70, counter-rotating) ── */}
-          <g transform={`translate(155,70) rotate(${angleB})`}>
-            <polygon points={buildGearPath(TEETH_S, RS, rS)}
-              fill="none" stroke={accent} strokeWidth="1.8" opacity="0.85"/>
-            <circle cx="0" cy="0" r="10" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.85"/>
-            <circle cx="0" cy="0" r="3.5" fill={accent} opacity="0.85"/>
-          </g>
-
-          {/* ── Crank arm (from large gear center to crank pin) ── */}
-          <line x1="70" y1="70" x2={crankX} y2={crankY}
-            stroke={accent} strokeWidth="3" strokeLinecap="round" />
-          <circle cx={crankX} cy={crankY} r="5" fill={accent} />
-
-          {/* ── Connecting rod ── */}
-          <line x1={crankX} y1={crankY} x2={sliderX} y2="130"
-            stroke={accent} strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
-
-          {/* ── Slider track ── */}
-          <rect x="30" y="124" width="160" height="12" rx="3"
-            fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
-
-          {/* ── Piston / slider block ── */}
-          <rect x={sliderX - 14} y="122" width="28" height="16" rx="3"
-            fill={isPowered ? 'rgba(255,90,0,0.15)' : 'rgba(255,255,255,0.05)'}
-            stroke={accent} strokeWidth="2" />
-
-          {/* Hint text */}
-          {rpm === 0 && (
-            <text x="110" y="152" textAnchor="middle" fontSize="8"
-              fill="rgba(255,255,255,0.2)" fontFamily="monospace">← drag gear to run →</text>
-          )}
-        </svg>
-      </div>
-
-      {/* Status bar */}
-      <div className="px-4 py-2 border-t border-white/5 flex items-center gap-3 font-mono text-[10px]">
-        <span style={{ color: accent }}>⚙</span>
-        <span className="text-gray-500">gear ratio {TEETH_L}:{TEETH_S} · crank-slider</span>
-        {rpm > 0 && (
-          <motion.span
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="ml-auto"
-            style={{ color: accent }}
-          >torque ↑</motion.span>
-        )}
-      </div>
-    </motion.div>
+        {/* Crank-slider */}
+        <line x1="200" y1="300" x2={crankX-100} y2={crankY} stroke={stroke} strokeWidth="12" strokeLinecap="round" />
+        <circle cx={crankX-100} cy={crankY} r="15" fill={accent} stroke={stroke} strokeWidth="4" />
+        
+        {/* Connecting rod */}
+        <line x1={crankX-100} y1={crankY} x2={sliderX-100} y2="800" stroke={stroke} strokeWidth="8" strokeLinecap="round" />
+        
+        {/* Piston block */}
+        <rect x={sliderX - 140} y="780" width="80" height="40" rx="10" fill={accent} stroke={stroke} strokeWidth="4" />
+      </svg>
+    </div>
   );
 };
 
-// ─── Oscilloscope Widget ──────────────────────────────────────────────────────
-// Live animated waveform panel — click to cycle wave types
-const WAVE_TYPES = ['sine', 'square', 'sawtooth', 'triangle'];
-const WAVE_LABELS = { sine: 'SIN', square: 'SQR', sawtooth: 'SAW', triangle: 'TRI' };
-const WAVE_FREQ = { sine: 2, square: 2, sawtooth: 2.5, triangle: 2 };
-
-function getWaveY(type, x, W, H, t) {
-  const f = WAVE_FREQ[type];
-  const phase = (x / W) * Math.PI * 2 * f + t;
-  const amp = H * 0.38;
-  const mid = H / 2;
-  if (type === 'sine')     return mid - Math.sin(phase) * amp;
-  if (type === 'square')   return mid - (Math.sin(phase) >= 0 ? 1 : -1) * amp;
-  if (type === 'sawtooth') return mid - (((phase / (Math.PI)) % 2) - 1) * amp;
-  if (type === 'triangle') return mid - (2 / Math.PI) * Math.asin(Math.sin(phase)) * amp;
-  return mid;
-}
-
-export const OscilloscopeWidget = ({ className = "" }) => {
+// ─── Oscilloscope Band ────────────────────────────────────────────────────────
+// Full-width animated waveform band — design element, not a boxed sim
+export const OscilloscopeBand = ({ className = "" }) => {
   const { isPowered } = useCircuit();
-  const [waveIdx, setWaveIdx] = useState(0);
   const [t, setT] = useState(0);
   const rafRef = useRef(null);
-  const W = 220, H = 100;
-  const waveType = WAVE_TYPES[waveIdx];
+  const W = 1200, H = 80;
   const accent = isPowered ? '#FF5A00' : '#22c55e';
 
   useEffect(() => {
     const loop = () => {
-      setT(prev => prev + 0.06);
+      setT(prev => prev + 0.05);
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const pts = Array.from({ length: W }, (_, x) =>
-    `${x},${getWaveY(waveType, x, W, H, t).toFixed(2)}`
-  ).join(' ');
+  const pts = Array.from({ length: W }, (_, x) => {
+    const phase = (x / 150) * Math.PI * 2 - t;
+    const envelope = Math.sin((x / W) * Math.PI); // fade at edges
+    const y = H/2 - Math.sin(phase) * (H * 0.3) * envelope;
+    return `${x},${y.toFixed(2)}`;
+  }).join(' ');
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }} transition={{ duration: 0.5 }}
-      className={`${className} rounded-xl overflow-hidden font-mono select-none`}
-      style={{ background: '#050d05', border: '1px solid rgba(34,197,94,0.15)' }}
-    >
-      {/* Chrome */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
-        <div className="w-2 h-2 rounded-full bg-red-500/60"/>
-        <div className="w-2 h-2 rounded-full bg-yellow-500/60"/>
-        <div className="w-2 h-2 rounded-full bg-green-500/60"/>
-        <span className="ml-2 text-green-500/60 text-[10px] tracking-wider">OSCILLOSCOPE</span>
-        <span className="ml-auto text-[10px] text-green-400">{WAVE_LABELS[waveType]} · 440Hz</span>
-      </div>
-
-      {/* Screen */}
-      <div className="relative" style={{ background: '#030a03' }}>
-        {/* Grid lines */}
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-          {/* H grid */}
-          {[0.25,0.5,0.75].map(f => (
-            <line key={f} x1="0" y1={H*f} x2={W} y2={H*f} stroke="rgba(34,197,94,0.08)" strokeWidth="1"/>
-          ))}
-          {/* V grid */}
-          {[0.25,0.5,0.75].map(f => (
-            <line key={f} x1={W*f} y1="0" x2={W*f} y2={H} stroke="rgba(34,197,94,0.08)" strokeWidth="1"/>
-          ))}
-          {/* Center line */}
-          <line x1="0" y1={H/2} x2={W} y2={H/2} stroke="rgba(34,197,94,0.15)" strokeWidth="1" strokeDasharray="4,4"/>
-          {/* Waveform */}
-          <polyline points={pts} fill="none" stroke={accent}
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            style={{ filter: `drop-shadow(0 0 4px ${accent})` }}
-          />
-        </svg>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center gap-2 px-3 py-2 border-t border-white/5">
-        {WAVE_TYPES.map((w, i) => (
-          <button key={w} onClick={() => setWaveIdx(i)}
-            className="text-[10px] px-2 py-1 rounded transition-all duration-200 font-mono uppercase"
-            style={{
-              background: i === waveIdx ? (isPowered ? 'rgba(255,90,0,0.2)' : 'rgba(34,197,94,0.2)') : 'transparent',
-              color: i === waveIdx ? accent : 'rgba(255,255,255,0.3)',
-              border: `1px solid ${i === waveIdx ? accent : 'transparent'}`
-            }}>
-            {WAVE_LABELS[w]}
-          </button>
-        ))}
-        <span className="ml-auto text-[9px] text-green-500/40">CH1 · 2V/div</span>
-      </div>
-    </motion.div>
+    <div className={`w-full overflow-hidden opacity-20 pointer-events-none ${className}`}>
+      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+        <line x1="0" y1={H/2} x2={W} y2={H/2} stroke={accent} strokeWidth="1" strokeDasharray="4,4" opacity="0.5"/>
+        <polyline points={pts} fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
+          style={{ filter: isPowered ? `drop-shadow(0 0 8px ${accent})` : 'none' }} />
+      </svg>
+    </div>
   );
 };
 
@@ -686,7 +544,6 @@ export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }
     const animate = (ts) => {
       if (!start) start = ts;
       const p = Math.min((ts - start) / duration, 1);
-      // Ease out + flicker at start
       const eased = p < 0.1 ? Math.random() * value : value * (1 - Math.pow(1 - p, 3));
       setDisplayed(Math.round(eased));
       if (p < 1) { frame = requestAnimationFrame(animate); }
@@ -704,7 +561,6 @@ export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }
       className={`${className} rounded-xl p-5 font-mono`}
       style={{ background: '#0D1117', border: `1px solid ${settled ? accent + '40' : 'rgba(255,255,255,0.06)'}`, transition: 'border-color 0.5s' }}
     >
-      {/* LCD number */}
       <div className="flex items-baseline gap-1 mb-1">
         <span className="text-4xl font-bold tracking-tighter tabular-nums transition-colors duration-500"
           style={{ color: accent, fontFamily: 'monospace', textShadow: settled && isPowered ? `0 0 20px ${accent}60` : 'none' }}>
@@ -712,7 +568,6 @@ export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }
         </span>
         <span className="text-lg font-bold" style={{ color: accent + 'aa' }}>{unit}</span>
       </div>
-      {/* Segment bar */}
       <div className="h-1 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
         <motion.div className="h-full rounded-full" style={{ background: accent }}
           initial={{ width: 0 }} whileInView={{ width: `${Math.min(100, (displayed / value) * 100)}%` }}
@@ -724,97 +579,112 @@ export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }
   );
 };
 
-// ─── Drag-to-Build CTA ───────────────────────────────────────────────────────
-// Users drag components onto a grid to complete a circuit → CTA illuminates
-const SNAP_COMPONENTS = [
-  { id: 'led',      label: 'LED',      color: '#FF5A00', icon: '💡' },
-  { id: 'resistor', label: '220Ω',     color: '#FFB347', icon: '⬛' },
-  { id: 'wire',     label: 'WIRE',     color: '#60A5FA', icon: '〰' },
-];
-const SLOTS = [
-  { id: 's1', x: '20%',  label: 'LED' },
-  { id: 's2', x: '50%',  label: '220Ω' },
-  { id: 's3', x: '80%',  label: 'WIRE' },
+// ─── Drag-to-Build CTA (Closed Loop SVG) ──────────────────────────────────────
+const SVG_COMPONENTS = {
+  led: (
+    <g>
+      <polygon points="-9,-7 -9,7 7,0" fill="#FF5A00" />
+      <line x1="7" y1="-7" x2="7" y2="7" stroke="#FF5A00" strokeWidth="2.5" />
+      <line x1="-15" y1="0" x2="-9" y2="0" stroke="#FF5A00" strokeWidth="2" />
+      <line x1="7" y1="0" x2="15" y2="0" stroke="#FF5A00" strokeWidth="2" />
+    </g>
+  ),
+  resistor: (
+    <g>
+      <line x1="-18" y1="0" x2="-10" y2="0" stroke="#FFB347" strokeWidth="2"/>
+      <rect x="-10" y="-6" width="20" height="12" rx="2" fill="none" stroke="#FFB347" strokeWidth="2"/>
+      <line x1="-5" y1="-6" x2="-5" y2="6" stroke="#FFB347" strokeWidth="2.5"/>
+      <line x1="0" y1="-6" x2="0" y2="6" stroke="#FFB347" strokeWidth="2.5"/>
+      <line x1="5" y1="-6" x2="5" y2="6" stroke="#FFB347" strokeWidth="2.5"/>
+      <line x1="10" y1="0" x2="18" y2="0" stroke="#FFB347" strokeWidth="2"/>
+    </g>
+  ),
+  capacitor: (
+    <g>
+      <line x1="-18" y1="0" x2="-4" y2="0" stroke="#60A5FA" strokeWidth="2"/>
+      <line x1="-4" y1="-9" x2="-4" y2="9" stroke="#60A5FA" strokeWidth="3"/>
+      <line x1="4" y1="-9" x2="4" y2="9" stroke="#60A5FA" strokeWidth="3"/>
+      <line x1="4" y1="0" x2="18" y2="0" stroke="#60A5FA" strokeWidth="2"/>
+    </g>
+  )
+};
+
+const SNAP_ITEMS = [
+  { id: 'led', label: 'LED', color: '#FF5A00' },
+  { id: 'resistor', label: '220Ω', color: '#FFB347' },
+  { id: 'capacitor', label: '10µF', color: '#60A5FA' },
 ];
 
-export const DragToBuildCTA = ({ onComplete, className = "" }) => {
+export const DragToBuildCTA = ({ className = "" }) => {
   const { isPowered } = useCircuit();
-  const [filled, setFilled] = useState({});
+  const [filled, setFilled] = useState({ led: false, resistor: false, capacitor: false });
   const [dragging, setDragging] = useState(null);
-  const [complete, setComplete] = useState(false);
-  const boardRef = useRef(null);
+  
+  const complete = filled.led && filled.resistor && filled.capacitor;
+  const accent = isPowered ? '#FF5A00' : '#6366f1';
 
-  const handleDragStart = (comp) => setDragging(comp);
-
-  const handleDrop = (e, slot) => {
+  const handleDrop = (e, id) => {
     e.preventDefault();
-    if (!dragging) return;
-    if (dragging.label === slot.label) {
-      const next = { ...filled, [slot.id]: dragging };
-      setFilled(next);
-      if (Object.keys(next).length === SLOTS.length) {
-        setTimeout(() => setComplete(true), 300);
-      }
-    }
+    if (dragging === id) setFilled(prev => ({ ...prev, [id]: true }));
     setDragging(null);
   };
 
-  const accent = isPowered ? '#FF5A00' : '#6366f1';
-
   return (
-    <div className={`${className} flex flex-col items-center gap-8`}>
-      {/* Instruction */}
+    <div className={`${className} flex flex-col items-center gap-12`}>
       <p className="font-mono text-sm uppercase tracking-widest text-white/40 text-center">
-        {complete ? '⚡ Circuit complete — you\'re ready' : 'Drag components to build the circuit'}
+        {complete ? '⚡ Circuit closed — system ready' : 'Complete the circuit to continue'}
       </p>
 
-      {/* Component palette */}
-      <div className="flex gap-4">
-        {SNAP_COMPONENTS.map(comp => (
+      <div className="flex gap-8">
+        {SNAP_ITEMS.map(comp => !filled[comp.id] && (
           <motion.div key={comp.id}
             draggable
-            onDragStart={() => handleDragStart(comp)}
+            onDragStart={() => setDragging(comp.id)}
             onDragEnd={() => setDragging(null)}
             whileHover={{ scale: 1.1, y: -4 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex flex-col items-center gap-2 cursor-grab select-none"
+            className="flex flex-col items-center gap-3 cursor-grab select-none"
           >
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-mono border-2 transition-all duration-300"
-              style={{ background: comp.color + '15', borderColor: comp.color + '60', color: comp.color }}>
-              {comp.icon}
-            </div>
+            <svg width="40" height="40" viewBox="-20 -20 40 40">
+              {SVG_COMPONENTS[comp.id]}
+            </svg>
             <span className="text-[10px] font-mono text-white/40 tracking-wider">{comp.label}</span>
           </motion.div>
         ))}
       </div>
 
-      {/* Board / slots */}
-      <div ref={boardRef} className="relative w-full max-w-xs h-20 rounded-xl"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.1)' }}>
-        {/* Wire line connecting slots */}
-        <div className="absolute top-1/2 left-[15%] right-[15%] h-[2px] -translate-y-1/2"
-          style={{ background: complete ? accent : 'rgba(255,255,255,0.08)', transition: 'background 0.5s', boxShadow: complete ? `0 0 10px ${accent}` : 'none' }} />
+      <div className="relative w-full max-w-sm" style={{ height: '160px' }}>
+        <svg width="100%" height="100%" viewBox="0 0 300 160" className="overflow-visible">
+          <rect x="20" y="20" width="260" height="120" rx="10" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="4 4" />
+          
+          <motion.rect x="20" y="20" width="260" height="120" rx="10" fill="none" stroke={accent} strokeWidth="3"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: complete ? 1 : 0, opacity: complete ? 1 : 0 }}
+            transition={{ duration: 1 }}
+            style={{ filter: `drop-shadow(0 0 6px ${accent})` }}
+          />
 
-        {SLOTS.map(slot => (
-          <div key={slot.id}
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => handleDrop(e, slot)}
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-14 h-14 rounded-xl flex flex-col items-center justify-center transition-all duration-300"
-            style={{
-              left: slot.x,
-              background: filled[slot.id] ? filled[slot.id].color + '20' : 'rgba(255,255,255,0.04)',
-              border: `2px ${filled[slot.id] ? 'solid' : 'dashed'} ${filled[slot.id] ? filled[slot.id].color : 'rgba(255,255,255,0.15)'}`,
-            }}
-          >
-            {filled[slot.id]
-              ? <span className="text-xl">{filled[slot.id].icon}</span>
-              : <span className="text-[9px] font-mono text-white/20 tracking-wider">{slot.label}</span>
-            }
-          </div>
-        ))}
+          <g transform="translate(150, 20)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'led')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
+            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.led ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
+            {filled.led && SVG_COMPONENTS.led}
+          </g>
+
+          <g transform="translate(280, 80) rotate(90)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'resistor')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
+            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.resistor ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
+            {filled.resistor && SVG_COMPONENTS.resistor}
+          </g>
+
+          <g transform="translate(20, 80) rotate(90)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'capacitor')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
+            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.capacitor ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
+            {filled.capacitor && SVG_COMPONENTS.capacitor}
+          </g>
+          
+          <g transform="translate(150, 140)">
+            <circle cx="0" cy="0" r="12" fill={complete ? accent : "rgba(255,255,255,0.1)"} />
+            <text x="0" y="3" textAnchor="middle" fontSize="10" fill="black" fontWeight="bold">PWR</text>
+          </g>
+        </svg>
       </div>
 
-      {/* CTA button — illuminates on complete */}
       <motion.a href="#experience"
         animate={{
           boxShadow: complete ? `0 0 60px ${accent}60, 0 0 20px ${accent}40` : '0 0 0px transparent',
@@ -822,18 +692,11 @@ export const DragToBuildCTA = ({ onComplete, className = "" }) => {
           color: complete ? accent : 'white',
         }}
         transition={{ duration: 0.5 }}
-        className="px-12 py-5 rounded-full border-2 font-bold text-lg uppercase tracking-widest transition-colors duration-300 cursor-hover"
-        style={{ background: complete ? accent + '15' : 'transparent' }}
+        className="px-12 py-5 rounded-full border-2 font-bold text-lg uppercase tracking-widest transition-colors duration-300 cursor-hover z-10"
+        style={{ background: complete ? accent + '15' : 'transparent', pointerEvents: complete ? 'all' : 'none', opacity: complete ? 1 : 0.4 }}
       >
-        {complete ? '⚡ Apply For 2026' : 'Apply For 2026'}
+        {complete ? '⚡ Apply For 2026' : 'Circuit Open'}
       </motion.a>
-
-      {complete && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="font-mono text-xs text-white/30 tracking-widest">
-          circuit verified · ready to build
-        </motion.p>
-      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { OscilloscopeWidget, MultimeterStat } from './MakerElements';
+import { OscilloscopeBand, MultimeterStat } from './MakerElements';
 
 const stats = [
   { value: 600,  unit: '+',  label: 'Students mentored',    delay: 0 },
@@ -18,30 +18,22 @@ const points = [
 export default function Credibility() {
   return (
     <section className="py-32 bg-[var(--color-accent)] relative text-white">
-      <div className="max-w-[90rem] mx-auto px-6 md:px-12">
+      <OscilloscopeBand className="absolute top-0 left-0 h-24 -translate-y-1/2 z-0" />
+      
+      <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
 
-        {/* Top row — heading + oscilloscope */}
-        <div className="grid lg:grid-cols-2 gap-16 items-start mb-20">
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="font-mono text-sm uppercase tracking-widest text-black font-bold mb-6"
-            >
-              The Credentials
-            </motion.div>
-            <h2 className="text-5xl md:text-7xl font-display font-bold mb-8 uppercase tracking-tighter leading-[0.9]">
-              Built by <br/>Educators.<br/>
-              <span className="text-black">Proven by Experience.</span>
-            </h2>
-          </div>
-
-          {/* Oscilloscope lives here — feels like it's measuring the impact */}
-          <div className="flex flex-col gap-6 justify-start">
-            <p className="font-mono text-xs uppercase tracking-widest text-black/50">
-              Signal output · student impact
-            </p>
-            <OscilloscopeWidget className="w-full" />
-          </div>
+        {/* Top row — heading */}
+        <div className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="font-mono text-sm uppercase tracking-widest text-black font-bold mb-6"
+          >
+            The Credentials
+          </motion.div>
+          <h2 className="text-5xl md:text-7xl font-display font-bold uppercase tracking-tighter leading-[0.9]">
+            Built by <br/>Educators.<br/>
+            <span className="text-black">Proven by Experience.</span>
+          </h2>
         </div>
 
         {/* Multimeter stats row */}

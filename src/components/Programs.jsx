@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import MagneticButton from './MagneticButton';
-import { BlueprintGrid, ScrollCircuitLine, LEDIndicator, HoverGearSystem, MechanicsWidget } from './MakerElements';
+import { BlueprintGrid, ScrollCircuitLine, LEDIndicator, HoverGearSystem, BackgroundMechanics } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
 
 const pathways = [
@@ -53,6 +53,7 @@ export default function Programs() {
   return (
     <section ref={sectionRef} id="programs" className="py-32 bg-[var(--color-light)] relative overflow-hidden">
       <BlueprintGrid />
+      <BackgroundMechanics className="absolute top-0 right-0 w-full md:w-[800px] h-[800px] opacity-60" />
 
       {/* PCB Trace — mechanisms + electronics with threshold activation */}
       <ScrollCircuitLine 
@@ -71,8 +72,8 @@ export default function Programs() {
 
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
         
-        {/* Section header + MechanicsWidget side by side */}
-        <div className="flex flex-col lg:flex-row justify-between items-start mb-20 gap-8">
+        {/* Section header */}
+        <div className="mb-20">
           <div className="max-w-xl">
             <h2 className="text-5xl md:text-7xl font-display font-bold uppercase tracking-tighter leading-[0.9] text-black">
               Structured <br /> Pathways
@@ -85,9 +86,6 @@ export default function Programs() {
               </MagneticButton>
             </div>
           </div>
-
-          {/* Standalone mechanics widget */}
-          <MechanicsWidget className="w-full lg:w-[320px] flex-shrink-0" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
