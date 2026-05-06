@@ -93,9 +93,138 @@ const MotorComp = ({ on }) => {
     <g>
       <circle cx="0" cy="0" r="13" fill="none" stroke={c} strokeWidth="2"/>
       <text x="0" y="4" textAnchor="middle" fontSize="9" fontFamily="monospace" fontWeight="bold" fill={c}>M</text>
-      <motion.line x1="-5" y1="-9" x2="5" y2="9" stroke={c} strokeWidth="2" style={{ rotate: rot, originX: '0px', originY: '0px' }}/>
+      <motion.line x1="-5" y1="-9" x2="5" y2="9" stroke={c} strokeWidth="2" style={{ rotate: rot }}/>
       <line x1="-20" y1="0" x2="-13" y2="0" stroke={c} strokeWidth="2"/>
       <line x1="13" y1="0" x2="20" y2="0" stroke={c} strokeWidth="2"/>
+    </g>
+  );
+};
+
+const MotorFan = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  const rot = useSpring(0, { damping: 12, stiffness: 40 });
+  useEffect(() => {
+    if (!on) return;
+    const id = setInterval(() => rot.set(rot.get() + 120), 100);
+    return () => clearInterval(id);
+  }, [on]);
+  return (
+    <g>
+      <circle cx="0" cy="0" r="8" fill="none" stroke={c} strokeWidth="2"/>
+      <motion.g style={{ rotate: rot }}>
+        <path d="M 0 0 Q 10 -15 0 -20 Q -10 -15 0 0" fill={on ? '#FF5A00' : '#ddd'} opacity="0.6"/>
+        <path d="M 0 0 Q 15 10 20 0 Q 15 -10 0 0" fill={on ? '#FF5A00' : '#ddd'} opacity="0.6" transform="rotate(120)"/>
+        <path d="M 0 0 Q -5 15 -10 20 Q -15 5 0 0" fill={on ? '#FF5A00' : '#ddd'} opacity="0.6" transform="rotate(240)"/>
+      </motion.g>
+      <circle cx="0" cy="0" r="2" fill={c}/>
+      <line x1="-20" y1="0" x2="-8" y2="0" stroke={c} strokeWidth="2"/>
+      <line x1="8" y1="0" x2="20" y2="0" stroke={c} strokeWidth="2"/>
+    </g>
+  );
+};
+
+const MCU = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      <rect x="-18" y="-14" width="36" height="28" rx="2" fill="none" stroke={c} strokeWidth="2.5"/>
+      <rect x="-12" y="-9" width="24" height="18" rx="1" fill={on ? '#FF5A00' : '#eee'} opacity={on ? 0.2 : 1}/>
+      {/* Pins */}
+      {[-12, -6, 0, 6, 12].map(x => (
+        <g key={x}>
+          <line x1={x} y1="-14" x2={x} y2="-18" stroke={c} strokeWidth="1.5"/>
+          <line x1={x} y1="14" x2={x} y2="18" stroke={c} strokeWidth="1.5"/>
+        </g>
+      ))}
+      {[-8, -2, 4].map(y => (
+        <g key={y}>
+          <line x1="-18" y1={y} x2="-22" y2={y} stroke={c} strokeWidth="1.5"/>
+          <line x1="18" y1={y} x2="22" y2={y} stroke={c} strokeWidth="1.5"/>
+        </g>
+      ))}
+      {on && <motion.circle cx="0" cy="0" r="4" fill="#FF5A00" animate={{ opacity: [0.2, 0.8, 0.2] }} transition={{ duration: 1, repeat: Infinity }}/>}
+    </g>
+  );
+};
+
+const RoboticArm = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  const a1 = useSpring(0, { damping: 15, stiffness: 50 });
+  const a2 = useSpring(0, { damping: 15, stiffness: 50 });
+  useEffect(() => {
+    if (!on) return;
+    const id = setInterval(() => {
+      a1.set(Math.sin(Date.now()/500) * 20 - 10);
+      a2.set(Math.cos(Date.now()/500) * 30 + 20);
+    }, 50);
+    return () => clearInterval(id);
+  }, [on]);
+  return (
+    <g transform="translate(-10, 10)">
+      <rect x="-5" y="0" width="10" height="5" fill={c}/>
+      <motion.g style={{ rotate: a1, originX: '0px', originY: '0px' }}>
+        <line x1="0" y1="0" x2="0" y2="-20" stroke={c} strokeWidth="4" strokeLinecap="round"/>
+        <circle cx="0" cy="-20" r="3" fill="none" stroke={c} strokeWidth="2"/>
+        <motion.g transform="translate(0, -20)" style={{ rotate: a2, originX: '0px', originY: '0px' }}>
+          <line x1="0" y1="0" x2="15" y2="-10" stroke={c} strokeWidth="3" strokeLinecap="round"/>
+          {/* Gripper */}
+          <g transform="translate(15, -10)">
+            <path d="M 0 0 L 5 -5 M 0 0 L 5 5" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+          </g>
+        </motion.g>
+      </motion.g>
+    </g>
+  );
+};
+
+const NeuralNetwork = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      {/* Nodes */}
+      <circle cx="-15" cy="0" r="3" fill={c}/>
+      <circle cx="0" cy="-12" r="3" fill={c}/>
+      <circle cx="0" cy="12" r="3" fill={c}/>
+      <circle cx="15" cy="0" r="3" fill={c}/>
+      {/* Connections */}
+      <motion.g initial={{ opacity: 0.2 }} animate={on ? { opacity: 1 } : { opacity: 0.2 }}>
+        <line x1="-15" y1="0" x2="0" y2="-12" stroke={c} strokeWidth="1"/>
+        <line x1="-15" y1="0" x2="0" y2="12" stroke={c} strokeWidth="1"/>
+        <line x1="0" y1="-12" x2="15" y2="0" stroke={c} strokeWidth="1"/>
+        <line x1="0" y1="12" x2="15" y2="0" stroke={c} strokeWidth="1"/>
+        <line x1="0" y1="-12" x2="0" y2="12" stroke={c} strokeWidth="1"/>
+        {on && <>
+          <motion.circle cx="-15" cy="0" r="1.5" fill="#fff" animate={{ cx: [ -15, 0 ], cy: [ 0, -12 ] }} transition={{ duration: 1, repeat: Infinity }}/>
+          <motion.circle cx="0" cy="12" r="1.5" fill="#fff" animate={{ cx: [ 0, 15 ], cy: [ 12, 0 ] }} transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}/>
+        </>}
+      </motion.g>
+    </g>
+  );
+};
+
+const F1Car = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g transform="scale(0.8)">
+      <path d="M -25 10 L -20 0 L 10 0 L 25 10 Z" fill="none" stroke={c} strokeWidth="2"/>
+      <rect x="-22" y="8" width="8" height="6" fill={c}/>
+      <rect x="14" y="8" width="8" height="6" fill={c}/>
+      <path d="M -5 -5 L 5 -5 L 8 0 L -8 0 Z" fill="none" stroke={c} strokeWidth="1.5"/>
+      <path d="M 20 0 L 22 -8 L 28 -8" stroke={c} strokeWidth="2"/>
+      {on && <motion.path d="M -25 5 H -35" stroke="#FF5A00" strokeWidth="1.5" strokeDasharray="2,2" animate={{ x: [-5, 0] }} transition={{ duration: 0.3, repeat: Infinity }}/>}
+    </g>
+  );
+};
+
+const RocketIcon = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g transform="rotate(-45)">
+      <path d="M 0 -20 C 5 -10 5 10 0 20 C -5 10 -5 -10 0 -20" fill="none" stroke={c} strokeWidth="2.5"/>
+      <path d="M 5 10 L 12 18 L 5 15" fill="none" stroke={c} strokeWidth="2"/>
+      <path d="M -5 10 L -12 18 L -5 15" fill="none" stroke={c} strokeWidth="2"/>
+      <circle cx="0" cy="-5" r="3" fill="none" stroke={c} strokeWidth="1.5"/>
+      {on && <motion.path d="M -3 20 Q 0 35 3 20" stroke="#FF5A00" strokeWidth="3" animate={{ opacity: [0.5, 1, 0.5], scaleY: [1, 2, 1] }} transition={{ duration: 0.3, repeat: Infinity }}/>}
     </g>
   );
 };
@@ -222,7 +351,11 @@ const Symbol = ({ type, on }) => {
   if (type === 'resistor')  return <Resistor on={on}/>;
   if (type === 'buzzer')    return <Buzzer on={on}/>;
   if (type === 'capacitor') return <Capacitor on={on}/>;
-  if (type === 'motor')     return <MotorComp on={on}/>;
+  if (type === 'motor')     return <MotorFan on={on}/>;
+  if (type === 'mcu')       return <MCU on={on}/>;
+  if (type === 'arm')       return <RoboticArm on={on}/>;
+  if (type === 'car')       return <F1Car on={on}/>;
+  if (type === 'rocket')    return <RocketIcon on={on}/>;
   if (type === 'gear')      return <SmallGear on={on}/>;
   if (type === 'linkage')   return <Linkage on={on}/>;
   if (type === 'piston')    return <Piston on={on}/>;
@@ -246,10 +379,53 @@ const CircuitComponent = ({ type, cx, cy, pathLength, threshold, isPowered }) =>
 
 // ─── Scroll Circuit Line ──────────────────────────────────────────────────────
 // components: [{ type, cx, cy, threshold }]  threshold is 0-1 along the path
-export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 200 200", components = [], sectionRef }) => {
+// ─── Power Flow Circuit Line ─────────────────────────────────────────────────
+// Animates when isPowered toggles to true, with a moving current pulse
+export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", components = [] }) => {
+  const { isPowered } = useCircuit();
+  const pathLength = useSpring(0, { stiffness: 40, damping: 20 });
+  const glow = isPowered ? 'rgba(255,90,0,0.9)' : 'rgba(0,0,0,0.15)';
+  const stroke = isPowered ? '#FF5A00' : 'rgba(0,0,0,0.12)';
+
+  useEffect(() => {
+    pathLength.set(isPowered ? 1 : 0);
+  }, [isPowered, pathLength]);
+
+  return (
+    <div className={`absolute pointer-events-none ${className}`}>
+      <svg viewBox={viewBox} fill="none" strokeLinecap="square" strokeLinejoin="miter" className="w-full h-full overflow-visible">
+        <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2.5"/>
+        <motion.path d={pathD} stroke={stroke} strokeWidth="2.5"
+          style={{ pathLength, filter: isPowered ? `drop-shadow(0 0 8px ${glow})` : 'none' }}/>
+        
+        {/* Moving Current Pulse (Circles) */}
+        {isPowered && (
+          <motion.path 
+            d={pathD} 
+            stroke="white" 
+            strokeWidth="6" 
+            strokeDasharray="1, 100"
+            strokeLinecap="round"
+            initial={{ strokeDashoffset: 101 }}
+            animate={{ strokeDashoffset: -101 }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+            style={{ filter: "drop-shadow(0 0 6px #FF5A00)" }}
+          />
+        )}
+
+        {components.map((comp, i) => (
+          <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}
+            pathLength={pathLength} threshold={comp.threshold} isPowered={isPowered}/>
+        ))}
+      </svg>
+    </div>
+  );
+};
+
+export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 200 200", components = [], sectionRef, scrollOffset = ["start end", "end start"] }) => {
   const { isPowered } = useCircuit();
   const innerRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef || innerRef, offset: ["start end", "end start"] });
+  const { scrollYProgress } = useScroll({ target: sectionRef || innerRef, offset: scrollOffset });
   const pathLength = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const glow = isPowered ? 'rgba(255,90,0,0.9)' : 'rgba(0,0,0,0.15)';
   const stroke = isPowered ? '#FF5A00' : 'rgba(0,0,0,0.12)';
@@ -272,28 +448,51 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 200 20
 // ─── Power Switch ─────────────────────────────────────────────────────────────
 export const PowerSwitch = ({ className = "" }) => {
   const { isPowered, togglePower } = useCircuit();
+  
   return (
-    <motion.button onClick={togglePower} whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.03 }}
-      className={`relative flex items-center gap-3 pl-4 pr-6 py-3 rounded-full border-2 cursor-hover overflow-hidden transition-all duration-500 z-20 font-mono text-sm font-bold uppercase tracking-widest ${
-        isPowered
-          ? 'border-[var(--color-accent)] text-[var(--color-accent)] shadow-[0_0_35px_rgba(255,90,0,0.4)]'
-          : 'border-black/40 text-black hover:border-black'
-      } ${className}`}
-    >
-      <motion.div className="absolute inset-0 bg-[var(--color-accent)]/8 pointer-events-none"
-        animate={{ opacity: isPowered ? 1 : 0 }} transition={{ duration: 0.4 }}/>
-      {/* Battery icon */}
-      <svg width="34" height="17" viewBox="0 0 34 17" fill="none" className="relative z-10 flex-shrink-0">
-        <rect x="0.5" y="0.5" width="28" height="16" rx="3" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill="none"/>
-        <path d="M29.5 5.5 H32 V11.5 H29.5" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill={isPowered ? '#FF5A00' : 'currentColor'}/>
-        <motion.rect x="3" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0 }}/>
-        <motion.rect x="11" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0.1 }}/>
-        <motion.rect x="19" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0.2 }}/>
-      </svg>
-      <span className="relative z-10 whitespace-nowrap">
-        {isPowered ? '⚡ Online' : 'Power your creativity'}
-      </span>
-    </motion.button>
+    <div className={`relative ${className}`}>
+      {/* Pulse effect when NOT powered */}
+      {!isPowered && (
+        <>
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0.8 }}
+            animate={{ scale: 1.8, opacity: 0 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full z-0"
+            style={{ backgroundColor: '#7B2CBF' }}
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0.6 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.4 }}
+            className="absolute inset-0 rounded-full z-0"
+            style={{ backgroundColor: '#7B2CBF' }}
+          />
+        </>
+      )}
+
+      <motion.button onClick={togglePower} whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.03 }}
+        className={`relative flex items-center gap-3 pl-4 pr-6 py-3 rounded-full border-2 cursor-hover overflow-hidden transition-all duration-500 z-20 font-mono text-sm font-bold uppercase tracking-widest ${
+          isPowered
+            ? 'border-[var(--color-accent)] text-[var(--color-accent)] shadow-[0_0_35px_rgba(255,90,0,0.4)]'
+            : 'border-black/40 text-black hover:border-black bg-white/80 backdrop-blur-sm'
+        }`}
+      >
+        <motion.div className="absolute inset-0 bg-[var(--color-accent)]/8 pointer-events-none"
+          animate={{ opacity: isPowered ? 1 : 0 }} transition={{ duration: 0.4 }}/>
+        {/* Battery icon */}
+        <svg width="34" height="17" viewBox="0 0 34 17" fill="none" className="relative z-10 flex-shrink-0">
+          <rect x="0.5" y="0.5" width="28" height="16" rx="3" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill="none"/>
+          <path d="M29.5 5.5 H32 V11.5 H29.5" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill={isPowered ? '#FF5A00' : 'currentColor'}/>
+          <motion.rect x="3" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0 }}/>
+          <motion.rect x="11" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0.1 }}/>
+          <motion.rect x="19" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0.2 }}/>
+        </svg>
+        <span className="relative z-10 whitespace-nowrap">
+          {isPowered ? '⚡ Online' : 'Power your creativity'}
+        </span>
+      </motion.button>
+    </div>
   );
 };
 
@@ -368,8 +567,10 @@ export const FloatingCodeWidget = ({ className = "" }) => {
         ))}
       </div>
       {/* ► RUN button — this IS the power toggle */}
-      <div className="px-4 py-2.5 border-t border-white/5 flex items-center gap-3">
+      <div className="px-4 py-2.5 border-t border-white/5 flex items-center gap-3 relative">
         <motion.button onClick={togglePower} whileTap={{ scale: 0.94 }} whileHover={{ scale: 1.04 }}
+          animate={!isPowered ? { boxShadow: ["0 0 0px transparent", "0 0 20px rgba(123, 44, 191, 0.6)", "0 0 0px transparent"] } : {}}
+          transition={!isPowered ? { duration: 1.5, repeat: Infinity } : {}}
           className={`flex items-center gap-2 px-3 py-1.5 rounded text-[11px] font-bold uppercase tracking-widest transition-all duration-400 ${
             isPowered
               ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
