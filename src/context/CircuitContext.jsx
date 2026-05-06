@@ -6,12 +6,17 @@ export function CircuitProvider({ children }) {
   const [isPowered, setIsPowered] = useState(false);
   const timerRef = useRef(null);
 
+  const [isPowerFlowComplete, setIsPowerFlowComplete] = useState(false);
+
   const togglePower = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    setIsPowered(prev => !prev);
+    setIsPowered(prev => {
+      if (prev) setIsPowerFlowComplete(false); // Reset when turning off
+      return !prev;
+    });
   };
 
   useEffect(() => {
@@ -27,7 +32,7 @@ export function CircuitProvider({ children }) {
   }, []);
 
   return (
-    <CircuitContext.Provider value={{ isPowered, togglePower }}>
+    <CircuitContext.Provider value={{ isPowered, togglePower, isPowerFlowComplete, setIsPowerFlowComplete }}>
       {children}
     </CircuitContext.Provider>
   );

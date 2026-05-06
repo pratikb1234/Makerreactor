@@ -1,10 +1,27 @@
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import MagneticButton from './MagneticButton';
+import { ScrollCircuitLine } from './MakerElements';
 
 export default function FoundingMakers() {
+  const sectionRef = useRef(null);
+
   return (
-    <section id="founding150" className="py-32 bg-[var(--color-light)] relative border-b border-black/10">
+    <section ref={sectionRef} id="founding150" className="py-32 bg-[var(--color-light)] relative border-b border-black/10 overflow-hidden">
       
+      {/* Circuit Trace bridging the gap */}
+      <ScrollCircuitLine 
+        sectionRef={sectionRef}
+        className="top-0 left-0 w-[140px] h-full"
+        pathD="M 20 0 V 250 H 80 V 600 H 20 V 1000"
+        viewBox="0 0 100 1000"
+        components={[
+          { type: 'rocket_planet', cx: 20, cy: 125, threshold: 0.12 },
+          { type: 'printer',       cx: 80, cy: 425, threshold: 0.55 },
+          { type: 'arm',           cx: 20, cy: 800, threshold: 0.85 },
+        ]}
+      />
+
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-16">
           

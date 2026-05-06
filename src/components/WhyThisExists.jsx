@@ -27,15 +27,13 @@ export default function WhyThisExists() {
       {/* PCB Trace — branches right at each card with buzzer/motor/buzzer */}
       <ScrollCircuitLine 
         sectionRef={sectionRef}
-        className="top-0 left-[8%] w-[120px] h-full"
-        pathD="M 10 0 V 250 H 80 V 500 H 10 V 750 H 80 V 1000"
-        viewBox="0 0 80 1000"
+        className="top-0 left-0 w-[140px] h-full"
+        pathD="M 20 0 V 250 H 80 V 600 H 20 V 1000"
+        viewBox="0 0 100 1000"
         components={[
-          { type: 'buzzer',    cx: 10,  cy: 250, threshold: 0.21 },
-          { type: 'motor',     cx: 80,  cy: 375, threshold: 0.37 },
-          { type: 'buzzer',    cx: 10,  cy: 500, threshold: 0.53 },
-          { type: 'led',       cx: 80,  cy: 625, threshold: 0.63 },
-          { type: 'buzzer',    cx: 10,  cy: 750, threshold: 0.76 },
+          { type: 'ai',    cx: 20, cy: 125, threshold: 0.12 },
+          { type: 'motor', cx: 80, cy: 425, threshold: 0.55 },
+          { type: 'led',   cx: 20, cy: 800, threshold: 0.85 },
         ]}
       />
 
