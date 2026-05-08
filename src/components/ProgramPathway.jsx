@@ -285,15 +285,24 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
     if (cardRef.current) {
       const section = cardRef.current.closest('section');
       if (section) {
+        let offsetTop = 0;
+        let el = cardRef.current;
+        while (el && el !== section) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
         // The center of this timeline row relative to the top of the section
-        const center = (cardRef.current.offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
+        const center = (offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
         setActivationPoint(center);
       }
     }
   }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // Activate right as the payload drops into the gear's center!
+    // The payload capsule height is 80px, gear radius is 64px.
+    // They intersect slightly before the centers align. 
+    // We activate right as the hook of the capsule touches the top of the gear!
+    // Since the center tracks scrollYProgress, we activate slightly before the center hits.
     setIsActive(latest > activationPoint - 0.02);
   });
 
