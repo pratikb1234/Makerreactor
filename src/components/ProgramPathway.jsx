@@ -146,14 +146,15 @@ export default function ProgramPathway() {
           {/* Containment Shield Top Edge */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
           
-          <div className="relative z-10 max-w-4xl">
+          <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto">
             <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
               // CORE SYSTEM REACTOR
+              <div className="w-8 h-px bg-[var(--color-accent)]/50" />
             </div>
             <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
-              <span className="inline-flex items-center gap-4 flex-wrap">
+              <span className="inline-flex items-center gap-4 flex-wrap justify-center">
                 Every level builds new skills.
                 <span className="hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 border-[var(--color-accent)]">
                   <span className="w-2 h-2 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
@@ -165,11 +166,6 @@ export default function ProgramPathway() {
             <p className="text-2xl text-white/40 font-display italic">
               Nobody stays where they started.
             </p>
-          </div>
-          
-          {/* The Code Metaphor Widget */}
-          <div className="relative mt-12 md:absolute md:bottom-8 md:right-8 z-10 w-full md:w-[350px] shadow-2xl shadow-black/50 opacity-80 group-hover/system:opacity-100 transition-opacity duration-700">
-            <FloatingCodeWidget className="w-full" />
           </div>
         </motion.div>
 
