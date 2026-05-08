@@ -272,23 +272,23 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
-      {/* Level Card Base Content - Wrapped in a jolt animation */}
+      {/* Level Card Base Content - Wrapped in a magnetic pull animation */}
       <motion.div 
         className="w-full lg:w-[45%]" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
-        animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
+        animate={(isActive || isHovered) ? { x: isEven ? 15 : -15 } : { x: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20, mass: 2 }}
       >
-        {/* Pass isActive down so the card can light up when punched */}
+        {/* Pass isActive down so the card can light up when magnetized */}
         <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
           <LevelCardBase level={level} index={index} />
         </div>
       </motion.div>
 
-      {/* Decorative Mechanical Linkage Piston Arm - LG only */}
-      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
-        <PistonArm isActive={isActive || isHovered} isEven={isEven} />
+      {/* Magnetic Connector - LG only */}
+      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-12 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
+        <ElectroMagnetNode isActive={isActive || isHovered} isEven={isEven} />
       </div>
       
       {/* Empty space on opposite side */}
@@ -297,37 +297,37 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   );
 }
 
-function PistonArm({ isActive, isEven }) {
-  // Piston pushes OUT from the center towards the card.
-  // Center is at the right for isEven, left for !isEven.
+function ElectroMagnetNode({ isActive, isEven }) {
+  // Magnet is attached to the center track and pulls the card towards it.
   return (
     <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Outer Cylinder (attached to center) */}
-      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
-         {/* Decorative cylinder stripes */}
-         <div className="w-full h-[2px] bg-black/20" />
+      
+      {/* Magnet Base (attached to center) */}
+      <div className={`w-6 h-12 bg-[#222] border-2 border-[#111] rounded-sm relative z-10 flex items-center justify-center shadow-lg transition-colors duration-300 ${isActive ? 'shadow-[0_0_20px_var(--color-accent)]' : ''}`}>
+         {/* Electromagnetic Coils */}
+         <div className="w-4 h-10 flex flex-col justify-evenly">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className={`w-full h-0.5 transition-colors duration-300 ${isActive ? 'bg-[var(--color-accent)] shadow-[0_0_5px_var(--color-accent)]' : 'bg-[#555]'}`} />
+            ))}
+         </div>
       </div>
 
-      {/* Inner Rod (shoots out to the card) */}
-      <motion.div 
-        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
-        initial={{ width: '10%' }}
-        animate={{ width: isActive ? '100%' : '10%' }}
-        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
-      >
-        {/* Plunger Head hitting the card */}
-        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
-          {/* Spark effect when hitting */}
-          {isActive && (
-            <motion.div 
-              initial={{ scale: 0, opacity: 1 }}
-              animate={{ scale: 2.5, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
-            />
-          )}
-        </div>
-      </motion.div>
+      {/* Magnetic Pull Waves */}
+      <div className="flex-grow h-full flex items-center justify-center relative overflow-hidden">
+        {isActive && (
+          <motion.div 
+            className={`absolute flex gap-1 ${isEven ? 'flex-row-reverse' : 'flex-row'}`}
+            initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+            animate={{ opacity: [0, 1, 0], x: isEven ? 10 : -10 }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: "linear" }}
+          >
+            {/* Arcs/Waves flowing into the magnet */}
+            <div className="w-1.5 h-6 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-100" />
+            <div className="w-1.5 h-4 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-60" />
+            <div className="w-1.5 h-2 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-30" />
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }
