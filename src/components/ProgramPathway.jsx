@@ -7,33 +7,49 @@ const levels = [
     id: "01",
     title: "TINKER",
     grades: "Grades 1 to 3",
-    desc: "Young makers explore materials, movement, structures, balance and simple mechanisms. They learn to use their hands, try ideas, make choices and explain what they made.",
-    skills: ["Materials", "Structures", "Simple Machines", "Cutting", "Joining", "Assembling", "Creative Confidence", "Early Design Thinking"],
-    accent: "var(--color-accent)"
+    desc: "Young makers begin with materials, movement, balance, structures and simple mechanisms. They learn to use their hands, make choices, work safely and explain what they created.",
+    grid: {
+      inquire: "Observe materials, ask simple “what if” questions, notice patterns, predict what might happen.",
+      make: "Cutting, joining, folding, assembling, structures, balance, simple machines, movement.",
+      reflect: "What worked? What fell? What changed? What would I try again?",
+      present: "Show-and-tell, naming design choices, explaining how the project works."
+    }
   },
   {
     id: "02",
-    title: "EXPLORE",
-    grades: "Grades 4 and 5",
-    desc: "The jump from building to engineering. Students learn electronics, coding logic, measuring, drawing and bringing multiple mechanisms together.",
-    skills: ["Circuits", "Motors & LEDs", "Block Coding", "Measurements", "Drafting", "Testing", "Iteration", "Tool Safety"],
-    accent: "var(--color-accent)"
+    title: "BUILD",
+    grades: "Grades 4 to 5",
+    desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
+    grid: {
+      inquire: "Define a problem, compare ideas, plan before building, choose materials with purpose.",
+      make: "Mechanisms, gears, pulleys, levers, circuits, motors, LEDs, switches, sensors, block coding, measurement.",
+      reflect: "Test, debug, improve, notice cause and effect, understand why a system works or fails.",
+      present: "Explain the function, describe improvements, work in teams, present the process."
+    }
   },
   {
     id: "03",
-    title: "BUILD",
-    grades: "Grades 6 and 7",
-    desc: "The shift to real-world tooling. Students move from craft to fabrication, learning 3D design, Python coding, sensors, soldering, and building functional machines.",
-    skills: ["3D Modeling", "3D Printing", "Python syntax", "Microcontrollers", "Sensors", "Soldering", "Prototyping", "Troubleshooting"],
-    accent: "var(--color-accent)"
+    title: "ENGINEER",
+    grades: "Grades 6 to 7",
+    desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
+    grid: {
+      inquire: "Break complex problems into systems, identify inputs and outputs, use data to make decisions.",
+      make: "Robotics, microcontrollers, sensors, actuators, Python, automation, 3D modelling, 3D printing, laser cutting basics, soldering.",
+      reflect: "Calibrate, troubleshoot, document tests, redesign parts, improve reliability and performance.",
+      present: "Technical explanation, system diagrams, engineering notes, demo presentation."
+    }
   },
   {
     id: "04",
     title: "INVENT",
-    grades: "Grades 8 and 9",
-    desc: "Complete autonomy. Students use AI, advanced CAD, physics simulation and connected devices to build actual, deployable products that solve real problems.",
-    skills: ["AI Integration", "Parametric CAD", "IoT", "PCB Design", "Data Analysis", "Project Management", "UI/UX", "Deployment"],
-    accent: "var(--color-accent)"
+    grades: "Grades 8 to 9+",
+    desc: "Makers take on original work. They use advanced robotics, CAD, AI, connected devices, electronics and product thinking to build solutions that can be tested, presented and improved in the real world.",
+    grid: {
+      inquire: "Frame real problems, research users, question assumptions, define constraints and success criteria.",
+      make: "Advanced robotics, parametric CAD, fabrication planning, PCB basics, IoT, AI integration, data analysis, UI/UX.",
+      reflect: "Evaluate impact, iterate independently, manage longer projects, document decisions and trade-offs.",
+      present: "Portfolio building, competition presentation, pitch-style demos, leadership, mentoring younger makers."
+    }
   }
 ];
 
@@ -89,8 +105,8 @@ export default function ProgramPathway() {
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:w-1/2 space-y-6">
               <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs stop at teaching a skill.</p>
               <p className="text-lg text-gray-500 leading-relaxed max-w-xl">At Bits & Studios, makers grow through a year-long pathway of projects, tools, challenges and showcases.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">As the year progresses, the work becomes deeper, the tools become more serious, and makers become more independent.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">They don’t just complete projects.<br/>They build confidence, capability and proof of how they think.</p>
+              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">The work becomes deeper.<br/>The tools become more serious.<br/>The thinking becomes more independent.</p>
+              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">By the end, makers have more than finished projects.<br/>They have confidence, capability and proof of how they think.</p>
             </motion.div>
           </div>
         </div>
@@ -124,7 +140,8 @@ export default function ProgramPathway() {
             <h3 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter leading-none mb-12">
               Every maker enters at a level. <br/>
               Every level builds new skills. <br/>
-              Every year adds new projects, confidence and proof of growth.
+              Every project creates evidence of growth. <br/>
+              Every showcase builds confidence.
             </h3>
             <p className="text-2xl text-white/40 font-display italic">
               Nobody stays where they started.
@@ -221,21 +238,21 @@ function LevelCard({ level, index, scrollYProgress }) {
           {level.desc}
         </p>
 
-        <div className="space-y-4">
-          <div className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-black/30 mb-4 flex items-center gap-2">
-            <div className="w-8 h-px bg-black/10" />
-            Core Skills
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {level.skills.map((skill, i) => (
-              <span 
-                key={i} 
-                className="px-3 py-1.5 rounded-full border border-black/5 bg-gray-50 text-[11px] font-bold uppercase tracking-tight text-gray-600 transition-colors group-hover:bg-white group-hover:border-[var(--color-accent)]/20"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
+          {[
+            { label: 'INQUIRE', text: level.grid.inquire },
+            { label: 'MAKE', text: level.grid.make },
+            { label: 'REFLECT', text: level.grid.reflect },
+            { label: 'PRESENT', text: level.grid.present }
+          ].map((item, idx) => (
+            <div key={idx} className="relative group/grid">
+              <div className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]/20 group-hover/grid:bg-[var(--color-accent)] transition-colors duration-500" />
+              <div className="pl-3">
+                <h5 className="font-mono text-[10px] font-bold uppercase tracking-widest text-black/40 mb-1">{item.label}</h5>
+                <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Accent Bar */}
