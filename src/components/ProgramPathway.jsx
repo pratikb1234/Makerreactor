@@ -309,9 +309,10 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
       // payloadCenter + 40 > gearCenter - 60  => payloadCenter > gearCenter - 100
       const startPixel = gearCenter - 100;
       
-      // Collision ends when top of payload (hook) leaves bottom of gear:
-      // payloadCenter - 56 > gearCenter + 60 => payloadCenter > gearCenter + 116
-      const endPixel = gearCenter + 116;
+      // Keep it active until the payload drops completely past the bottom of the card
+      // Card bottom is `offsetTop + cardRef.current.offsetHeight`.
+      // The payload center leaves the card bottom when `payloadCenter > cardBottom`.
+      const endPixel = offsetTop + cardRef.current.offsetHeight;
       
       setActivationStart(startPixel / sectionHeight);
       setActivationEnd(endPixel / sectionHeight);
