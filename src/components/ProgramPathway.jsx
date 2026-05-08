@@ -98,18 +98,23 @@ export default function ProgramPathway() {
         <span className="inline-flex items-center gap-4 flex-wrap justify-center">
           Every level builds new skills.
           <span 
-            onMouseEnter={() => setIsEasterEggActive(true)}
-            onMouseLeave={() => setIsEasterEggActive(false)}
-            className={`cursor-pointer hidden md:inline-flex relative -top-1 items-center justify-center rounded-full transition-all duration-300 ${
+            className={`pointer-events-none hidden md:inline-flex relative -top-1 items-center justify-center rounded-full transition-all duration-300 ${
               isEasterEggActive 
                 ? 'w-10 h-10 border-4 border-[var(--color-accent)] shadow-[0_0_30px_rgba(255,90,0,0.6)]' 
                 : 'w-6 h-6 border-2 border-[var(--color-accent)]'
             }`}
           >
+            {/* The Tiny Hitbox for precise activation (Inner Dot Alignment) */}
+            <span 
+              onMouseEnter={() => setIsEasterEggActive(true)}
+              onMouseLeave={() => setIsEasterEggActive(false)}
+              className="absolute w-3 h-3 rounded-full pointer-events-auto z-50 cursor-crosshair"
+            />
+            {/* Visual Rings */}
             <span className={`absolute rounded-full border-[3px] border-[var(--color-accent)] transition-all duration-300 ${
               isEasterEggActive ? 'w-6 h-6 opacity-100' : 'w-2 h-2 opacity-0'
             }`} />
-            <span className={`rounded-full bg-[var(--color-accent)] transition-all duration-300 ${
+            <span className={`rounded-full bg-[var(--color-accent)] transition-all duration-300 pointer-events-none ${
               isEasterEggActive 
                 ? 'w-2.5 h-2.5 shadow-[0_0_15px_var(--color-accent)] brightness-150' 
                 : 'w-2 h-2 shadow-[0_0_10px_var(--color-accent)] animate-pulse'
