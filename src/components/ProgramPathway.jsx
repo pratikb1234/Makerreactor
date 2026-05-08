@@ -238,22 +238,7 @@ function LevelCard({ level, index, scrollYProgress }) {
           {level.desc}
         </p>
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
-          {[
-            { label: 'INQUIRE', text: level.grid.inquire },
-            { label: 'MAKE', text: level.grid.make },
-            { label: 'REFLECT', text: level.grid.reflect },
-            { label: 'PRESENT', text: level.grid.present }
-          ].map((item, idx) => (
-            <div key={idx} className="relative group/grid">
-              <div className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]/20 group-hover/grid:bg-[var(--color-accent)] transition-colors duration-500" />
-              <div className="pl-3">
-                <h5 className="font-mono text-[10px] font-bold uppercase tracking-widest text-black/40 mb-1">{item.label}</h5>
-                <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <LevelTabs gridData={level.grid} levelId={level.id} />
 
         {/* Accent Bar */}
         <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gray-100 group-hover:bg-[var(--color-accent)] transition-colors duration-500" />
@@ -268,4 +253,151 @@ function LevelCard({ level, index, scrollYProgress }) {
   );
 }
 
+// --- Minimalist Toggle Options ---
+// Added 5 different toggle styles per user request.
+// The user can hover over the top-right of the tab area to see the tiny 1-5 selector and preview the 5 designs!
+function LevelTabs({ gridData, levelId }) {
+  const [activeTab, setActiveTab] = useState(0);
+  const [styleOption, setStyleOption] = useState(3); // Defaulting to option 3 (Vertical Sidebar) which fits the grid vibe well
 
+  const tabs = [
+    { id: 'inquire', label: 'INQUIRE', text: gridData.inquire },
+    { id: 'make', label: 'MAKE', text: gridData.make },
+    { id: 'reflect', label: 'REFLECT', text: gridData.reflect },
+    { id: 'present', label: 'PRESENT', text: gridData.present }
+  ];
+
+  return (
+    <div className="mt-8 pt-4 border-t border-black/5 relative group/tabs">
+      {/* Dev-only style switcher (invisible unless hovered) */}
+      <div className="absolute -top-3 right-0 opacity-0 group-hover/tabs:opacity-100 transition-opacity flex gap-1 z-50">
+        {[1, 2, 3, 4, 5].map(opt => (
+          <button 
+            key={opt} 
+            onClick={() => setStyleOption(opt)} 
+            className={`text-[9px] font-mono w-4 h-4 flex items-center justify-center rounded border transition-colors ${styleOption === opt ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200 hover:text-black'}`}
+            title={`Toggle Style ${opt}`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+
+      {/* Render selected style */}
+      {styleOption === 1 && <TabStyle1 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
+      {styleOption === 2 && <TabStyle2 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
+      {styleOption === 3 && <TabStyle3 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
+      {styleOption === 4 && <TabStyle4 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
+      {styleOption === 5 && <TabStyle5 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
+    </div>
+  );
+}
+
+// 1. Premium Pill Toggle (Apple style)
+function TabStyle1({ tabs, activeTab, setActiveTab, levelId }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex bg-gray-100/80 p-1 rounded-xl relative">
+        {tabs.map((tab, idx) => (
+          <button key={idx} onClick={() => setActiveTab(idx)} className="flex-1 relative py-2 px-2 text-center z-10">
+            {activeTab === idx && (
+              <motion.div layoutId={`pill-${levelId}`} className="absolute inset-0 bg-white rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.08)] z-0" transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />
+            )}
+            <span className={`relative z-10 font-mono text-[10px] font-bold tracking-widest transition-colors duration-300 ${activeTab === idx ? 'text-black' : 'text-gray-400 hover:text-gray-600'}`}>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="min-h-[80px]">
+        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="text-sm text-gray-600 leading-relaxed font-medium">
+          {tabs[activeTab].text}
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+// 2. Minimalist Underline (Clean, editorial)
+function TabStyle2({ tabs, activeTab, setActiveTab, levelId }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex border-b border-black/5">
+        {tabs.map((tab, idx) => (
+          <button key={idx} onClick={() => setActiveTab(idx)} className="flex-1 pb-3 relative text-center">
+            <span className={`font-mono text-[10px] font-bold tracking-widest transition-colors duration-300 ${activeTab === idx ? 'text-[var(--color-accent)]' : 'text-gray-400 hover:text-gray-600'}`}>{tab.label}</span>
+            {activeTab === idx && (
+              <motion.div layoutId={`underline-${levelId}`} className="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--color-accent)]" />
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="min-h-[80px]">
+        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
+          {tabs[activeTab].text}
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+// 3. Vertical Sidebar (Developer/System style)
+function TabStyle3({ tabs, activeTab, setActiveTab, levelId }) {
+  return (
+    <div className="flex gap-6 min-h-[120px] bg-gray-50 rounded-2xl p-6 border border-black/5">
+      <div className="flex flex-col gap-3 w-1/3 border-r border-black/5 pr-4 justify-center">
+        {tabs.map((tab, idx) => (
+          <button key={idx} onClick={() => setActiveTab(idx)} className={`text-left relative pl-3 py-1 ${activeTab === idx ? '' : 'hover:opacity-70'}`}>
+            {activeTab === idx && <motion.div layoutId={`vert-line-${levelId}`} className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]" />}
+            <span className={`font-mono text-[10px] font-bold tracking-widest transition-colors ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="w-2/3 flex items-center">
+        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-gray-600 leading-relaxed font-medium">
+          {tabs[activeTab].text}
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+// 4. Glowing Dots (Futuristic/Minimal)
+function TabStyle4({ tabs, activeTab, setActiveTab, levelId }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center bg-black/5 rounded-full px-6 py-3">
+        {tabs.map((tab, idx) => (
+          <button key={idx} onClick={() => setActiveTab(idx)} className="flex items-center gap-2 group">
+            <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeTab === idx ? 'bg-[var(--color-accent)] shadow-[0_0_8px_var(--color-accent)]' : 'bg-black/10 group-hover:bg-black/20'}`} />
+            <span className={`font-mono text-[9px] font-bold tracking-widest transition-colors hidden sm:block ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="min-h-[80px] px-2 text-center flex items-center justify-center">
+        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
+          {tabs[activeTab].text}
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+// 5. Numbered Accordion-Style Tabs (Editorial / Serious)
+function TabStyle5({ tabs, activeTab, setActiveTab, levelId }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        {tabs.map((tab, idx) => (
+          <button key={idx} onClick={() => setActiveTab(idx)} className={`flex-1 py-3 border-t-2 text-left transition-all duration-300 ${activeTab === idx ? 'border-[var(--color-accent)] pt-4' : 'border-black/5 hover:border-black/20'}`}>
+            <div className="font-mono text-[9px] text-gray-400 mb-1">0{idx + 1}</div>
+            <div className={`font-mono text-[10px] font-bold tracking-widest ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</div>
+          </button>
+        ))}
+      </div>
+      <div className="min-h-[80px] bg-gray-50 p-6 rounded-xl border border-black/5 flex items-center">
+        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
+          {tabs[activeTab].text}
+        </motion.p>
+      </div>
+    </div>
+  );
+}
