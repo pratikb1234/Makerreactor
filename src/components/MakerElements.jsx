@@ -804,19 +804,42 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
             opacity: isActivated ? 0.3 : 0
           }}
         />
-        <motion.path d={scaledPathD} stroke={stroke} strokeWidth="2.5"
-          style={{ pathLength: displayPathLength, filter: isActivated ? `drop-shadow(0 0 6px ${glow})` : 'none' }} />
+        {/* Glow Layer (Safari Safe) */}
+        {isActivated && (
+          <motion.path 
+            d={scaledPathD} 
+            stroke={glow} 
+            strokeWidth="10"
+            style={{ pathLength: displayPathLength, opacity: 0.3 }} 
+          />
+        )}
+        <motion.path 
+          d={scaledPathD} 
+          stroke={stroke} 
+          strokeWidth="2.5"
+          style={{ pathLength: displayPathLength }} 
+        />
         
         {/* Solid white glowing core (Lightsaber effect) - perfectly matches pathLength */}
         {isActivated && (
-          <motion.path
-            d={scaledPathD}
-            stroke="white"
-            strokeWidth="4"
-            animate={{ opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{ pathLength: displayPathLength, filter: `drop-shadow(0 0 6px ${glow})` }}
-          />
+          <>
+            <motion.path
+              d={scaledPathD}
+              stroke={glow}
+              strokeWidth="12"
+              animate={{ opacity: [0.1, 0.4, 0.1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ pathLength: displayPathLength }}
+            />
+            <motion.path
+              d={scaledPathD}
+              stroke="white"
+              strokeWidth="4"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ pathLength: displayPathLength }}
+            />
+          </>
         )}
         {scaledComponents.map((comp, i) => (
           <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}
