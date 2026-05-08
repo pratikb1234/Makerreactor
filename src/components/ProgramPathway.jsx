@@ -108,7 +108,7 @@ export default function ProgramPathway() {
             <span 
               onMouseEnter={() => setIsEasterEggActive(true)}
               onMouseLeave={() => setIsEasterEggActive(false)}
-              className="absolute w-3 h-3 rounded-full pointer-events-auto z-50 cursor-crosshair"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-auto z-50 cursor-crosshair"
             />
             {/* Visual Rings */}
             <span className={`absolute rounded-full border-[3px] border-[var(--color-accent)] transition-all duration-300 ${
