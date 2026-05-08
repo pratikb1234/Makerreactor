@@ -126,17 +126,42 @@ export default function ProgramPathway() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white"
+          className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border border-black shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)]"
         >
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/10 blur-[100px] rounded-full" />
+          {/* Symmetrical Circuit Illumination Box */}
+          <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen opacity-70 group-hover/system:opacity-100 transition-opacity duration-700">
+            {/* The SVG paths draw a rounded circuit box that surrounds the content */}
+            <ScrollCircuitLine 
+              sectionRef={sectionRef} 
+              className="top-0 left-0 w-full h-full" 
+              pathD="M 500 0 V 48 C 500 20, 480 0, 450 0 H 48 C 20 0, 0 20, 0 48 V 952 C 0 980, 20 1000, 48 1000 H 450 C 480 1000, 500 980, 500 952" 
+              viewBox="0 0 1000 1000" 
+              scrollOffset={["start 80%", "center 40%"]} 
+            />
+            <ScrollCircuitLine 
+              sectionRef={sectionRef} 
+              className="top-0 left-0 w-full h-full" 
+              pathD="M 500 0 V 48 C 500 20, 520 0, 550 0 H 952 C 980 0, 1000 20, 1000 48 V 952 C 1000 980, 980 1000, 952 1000 H 550 C 520 1000, 500 980, 500 952" 
+              viewBox="0 0 1000 1000" 
+              scrollOffset={["start 80%", "center 40%"]} 
+            />
+          </div>
+
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
           
-          <div className="relative z-10 max-w-3xl">
-            <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8">
+          <div className="relative z-10 max-w-4xl">
+            <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
+              <div className="w-8 h-px bg-[var(--color-accent)]/50" />
               // THE SYSTEM
             </div>
-            <h3 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter leading-none mb-12">
+            <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
-              Every level builds new skills. <br/>
+              <span className="inline-flex items-center gap-4 flex-wrap">
+                Every level builds new skills.
+                <span className="hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 border-[var(--color-accent)]">
+                  <span className="w-2 h-2 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
+                </span>
+              </span> <br/>
               Every project creates evidence of growth. <br/>
               Every showcase builds confidence.
             </h3>
