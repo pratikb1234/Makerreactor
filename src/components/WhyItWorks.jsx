@@ -67,7 +67,7 @@ export default function WhyItWorks() {
             className="top-0 left-0 w-full h-full"
             pathD="M 40 0 V 1000"
             viewBox="0 0 80 1000"
-            scrollOffset={['start center', 'end bottom']}
+            scrollOffset={['start center', 'end center']}
             isActivated={isHeroBridgeComplete}
             components={[]}
           />

@@ -64,13 +64,22 @@ export default function ProgramPathway() {
   const circuitNames = ["Straight Bus", "Data Zig-Zag", "Dual Rail", "Stepped Routing", "Node Sequence"];
 
   return (
-    <section ref={sectionRef} className="py-24 md:py-40 bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
+    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
       <BlueprintGrid opacity={0.4} />
       
-      <div className="max-w-[90rem] mx-auto px-6 relative z-10">
-        
-        {/* Header Section */}
-        <div className="mb-32">
+      {/* ── Header Container (Handles top padding and dynamic text height) ── */}
+      <div className="relative pt-24 md:pt-40 pb-32">
+        {/* Top Connector Circuit Line - exactly spans this dynamic header gap */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full pointer-events-none z-0 hidden lg:block">
+          <ScrollCircuitLine 
+            className="top-0 left-0 w-full h-full"
+            pathD="M 50 0 V 1000" 
+            viewBox="0 0 100 1000"
+            scrollOffset={["start center", "end center"]}
+          />
+        </div>
+
+        <div className="max-w-[90rem] mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
             THE PROGRAM
           </motion.div>
@@ -85,7 +94,9 @@ export default function ProgramPathway() {
             </motion.div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         {/* Pathway Visualization */}
         <div className="relative">
           {/* Circuit Routing Options */}
