@@ -64,17 +64,19 @@ export default function ProgramPathway() {
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
       <BlueprintGrid opacity={0.4} />
       
+      {/* Single continuous circuit line for the entire section */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
+        <ScrollCircuitLine 
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 50 0 V 1000" 
+          viewBox="0 0 100 1000"
+          scrollOffset={["start center", "end center"]}
+        />
+      </div>
+
       {/* ── Header Container (Handles top padding and dynamic text height) ── */}
       <div className="relative pt-24 md:pt-40 pb-32">
-        {/* Top Connector Circuit Line - exactly spans this dynamic header gap */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full pointer-events-none z-0 hidden lg:block">
-          <ScrollCircuitLine 
-            className="top-0 left-0 w-full h-full"
-            pathD="M 50 0 V 1000" 
-            viewBox="0 0 100 1000"
-            scrollOffset={["start center", "end center"]}
-          />
-        </div>
 
         <div className="max-w-[90rem] mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
@@ -96,10 +98,7 @@ export default function ProgramPathway() {
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         {/* Pathway Visualization */}
         <div className="relative">
-          <ScrollCircuitLine 
-            sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
-            pathD="M 50 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-          />
+
           
           <div className="space-y-32 relative">
             {levels.map((level, idx) => (
