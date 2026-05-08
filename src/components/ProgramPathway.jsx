@@ -277,33 +277,63 @@ function LevelCardBase({ level, index }) {
 function LevelCardTimeline({ level, index, scrollYProgress }) {
   const isEven = index % 2 === 0;
   const cardRef = useRef(null);
-  const gearRef = useRef(null);
+  
+  // Track the precise window where the elevator and gear intersect
+  const [activationStart, setActivationStart] = useState(0);
+  const [activationEnd, setActivationEnd] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
-  // Directly calculate physical visual intersection!
-  useMotionValueEvent(scrollYProgress, "change", () => {
-    const hook = document.getElementById('elevator-hook');
-    if (!hook || !gearRef.current) return;
+  useEffect(() => {
+    if (!cardRef.current) return;
+    const section = cardRef.current.closest('section');
+    if (!section) return;
 
-    // Get exact visual positions on the screen right now
-    const hookRect = hook.getBoundingClientRect();
-    const gearRect = gearRef.current.getBoundingClientRect();
+    const calculate = () => {
+      let offsetTop = 0;
+      let el = cardRef.current;
+      while (el && el !== section) {
+        offsetTop += el.offsetTop;
+        el = el.offsetParent;
+      }
+      
+      const gearCenter = offsetTop + cardRef.current.offsetHeight / 2;
+      const sectionHeight = section.offsetHeight;
+      
+      // Physical Collision Math:
+      // The payload drops linearly. Its center is at `scrollYProgress * sectionHeight`.
+      // Payload extends 56px UP (to the hook) and 40px DOWN.
+      // Gear extends 60px UP and 60px DOWN.
+      
+      // Collision starts when bottom of payload hits top of gear:
+      // payloadCenter + 40 > gearCenter - 60  => payloadCenter > gearCenter - 100
+      const startPixel = gearCenter - 100;
+      
+      // Collision ends when top of payload (hook) leaves bottom of gear:
+      // payloadCenter - 56 > gearCenter + 60 => payloadCenter > gearCenter + 116
+      const endPixel = gearCenter + 116;
+      
+      setActivationStart(startPixel / sectionHeight);
+      setActivationEnd(endPixel / sectionHeight);
+    };
 
-    const hookY = hookRect.top + hookRect.height / 2;
-    const gearCenter = gearRect.top + gearRect.height / 2;
+    calculate();
+    const observer = new ResizeObserver(() => calculate());
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
-    // The gear starts below the hook and moves UP the screen faster than the hook does.
-    // As the gear moves UP past the hook, gearCenter becomes <= hookY.
-    // This perfectly triggers exactly when the hook is inside the gear!
-    setIsActive(gearCenter <= hookY);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    // The gear is ONLY active while the payload is physically touching it!
+    // Once the payload drops past it, it deactivates. This makes it feel like a real mechanical switch.
+    setIsActive(latest >= activationStart && latest <= activationEnd);
   });
 
   return (
     <div ref={cardRef} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
       {/* Visual Marker on central line */}
-      <div ref={gearRef} className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
+      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
         <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
