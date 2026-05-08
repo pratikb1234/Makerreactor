@@ -84,29 +84,42 @@ export default function ProgramPathway() {
     offset: ["start end", "end start"]
   });
 
-  // Strict collision trigger: true ONLY when the element is perfectly in the center 10% of the screen.
-  const easterEggRef = useRef(null);
-  const isEasterEggActive = useInView(easterEggRef, { margin: "-45% 0px -45% 0px" });
+  const [isEasterEggActive, setIsEasterEggActive] = useState(false);
 
   const textContent = (
     <>
-      <div className={`font-mono text-xs uppercase tracking-[0.4em] font-bold mb-8 flex items-center justify-center gap-3 transition-colors duration-500 ${isEasterEggActive ? 'text-red-500' : 'text-[var(--color-accent)]'}`}>
-        <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-red-500' : 'bg-[var(--color-accent)]/50'}`} />
-        {isEasterEggActive ? '// OVERDRIVE: SYSTEM DEPTH REACHED' : '// CORE SYSTEM REACTOR'}
-        <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-red-500' : 'bg-[var(--color-accent)]/50'}`} />
+      <div className={`font-mono text-xs uppercase tracking-[0.4em] font-bold mb-8 flex items-center justify-center gap-3 transition-all duration-500 ${isEasterEggActive ? 'text-[var(--color-accent)] brightness-150 drop-shadow-[0_0_10px_var(--color-accent)]' : 'text-[var(--color-accent)]'}`}>
+        <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
+        {isEasterEggActive ? '// IGNITION: DEPTH & ATTENTION DETECTED...' : '// CORE SYSTEM REACTOR'}
+        <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
       </div>
       <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
         Every maker enters at a level. <br/>
         <span className="inline-flex items-center gap-4 flex-wrap justify-center">
           Every level builds new skills.
-          <span ref={easterEggRef} className={`hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 transition-all duration-300 ${isEasterEggActive ? 'border-red-500 scale-[2] shadow-[0_0_30px_red]' : 'border-[var(--color-accent)]'}`}>
-            <span className={`w-2 h-2 rounded-full transition-colors duration-300 ${isEasterEggActive ? 'bg-red-500 shadow-[0_0_15px_red]' : 'bg-[var(--color-accent)] shadow-[0_0_10px_var(--color-accent)] animate-pulse'}`} />
+          <span 
+            onMouseEnter={() => setIsEasterEggActive(true)}
+            onMouseLeave={() => setIsEasterEggActive(false)}
+            className={`cursor-pointer hidden md:inline-flex relative -top-1 items-center justify-center rounded-full transition-all duration-300 ${
+              isEasterEggActive 
+                ? 'w-10 h-10 border-4 border-[var(--color-accent)] shadow-[0_0_30px_rgba(255,90,0,0.6)]' 
+                : 'w-6 h-6 border-2 border-[var(--color-accent)]'
+            }`}
+          >
+            <span className={`absolute rounded-full border-[3px] border-[var(--color-accent)] transition-all duration-300 ${
+              isEasterEggActive ? 'w-6 h-6 opacity-100' : 'w-2 h-2 opacity-0'
+            }`} />
+            <span className={`rounded-full bg-[var(--color-accent)] transition-all duration-300 ${
+              isEasterEggActive 
+                ? 'w-2.5 h-2.5 shadow-[0_0_15px_var(--color-accent)] brightness-150' 
+                : 'w-2 h-2 shadow-[0_0_10px_var(--color-accent)] animate-pulse'
+            }`} />
           </span>
         </span> <br/>
         Every project creates evidence of growth. <br/>
         Every showcase builds confidence.
       </h3>
-      <p className={`text-2xl font-display italic drop-shadow-md transition-colors duration-500 ${isEasterEggActive ? 'text-red-400' : 'text-[var(--color-accent)]'}`}>
+      <p className={`text-2xl font-display italic transition-all duration-500 ${isEasterEggActive ? 'text-[var(--color-accent)] brightness-150 drop-shadow-[0_0_10px_var(--color-accent)]' : 'text-[var(--color-accent)] drop-shadow-md'}`}>
         Nobody stays where they started.
       </p>
     </>
@@ -129,22 +142,21 @@ export default function ProgramPathway() {
         return (
           <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 relative flex flex-col items-center justify-center min-h-[800px] md:min-h-[1000px] py-32 group/system w-full">
             <motion.div 
-              animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,0,0,0.5)", boxShadow: "0 0 300px rgba(255,0,0,0.4)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
+              animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,90,0,0.8)", boxShadow: "0 0 300px rgba(255,90,0,0.6)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
               transition={{ type: "spring", stiffness: 60, damping: 15 }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-[#030303] rounded-full border-4 flex items-center justify-center overflow-hidden"
             >
               <motion.div 
-                animate={isEasterEggActive ? { opacity: 0.6 } : { opacity: 0.2 }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] blur-[80px] animate-pulse"
-                style={{ background: isEasterEggActive ? 'radial-gradient(ellipse at center, red 0%, transparent 70%)' : 'radial-gradient(ellipse at center, var(--color-accent) 0%, transparent 70%)' }} 
+                animate={isEasterEggActive ? { opacity: 0.8, scale: 1.2 } : { opacity: 0.2, scale: 1 }}
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] blur-[80px] animate-pulse bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)]"
               />
               <div className="absolute w-full h-full pointer-events-none flex items-center justify-center opacity-[0.05] mix-blend-screen transition-opacity duration-1000">
-                <motion.div animate={isEasterEggActive ? { rotate: 360, borderColor: "red" } : { rotate: 360, borderColor: "var(--color-accent)" }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 2 : 120, ease: "linear" }} className="absolute w-[90%] h-[90%] border-[2px] rounded-full" />
-                <motion.div animate={isEasterEggActive ? { rotate: -360, borderColor: "red" } : { rotate: -360, borderColor: "var(--color-accent)" }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1.5 : 80, ease: "linear" }} className="absolute w-[75%] h-[75%] border-[4px] border-dashed rounded-full" />
-                <motion.div animate={isEasterEggActive ? { rotate: 360, borderColor: "red" } : { rotate: 360, borderColor: "var(--color-accent)" }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1 : 60, ease: "linear" }} className="absolute w-[60%] h-[60%] border-[2px] border-dotted rounded-full" />
+                <motion.div animate={isEasterEggActive ? { rotate: 360, opacity: 1 } : { rotate: 360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 2 : 120, ease: "linear" }} className="absolute w-[90%] h-[90%] border-[2px] border-[var(--color-accent)] rounded-full" />
+                <motion.div animate={isEasterEggActive ? { rotate: -360, opacity: 1 } : { rotate: -360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1.5 : 80, ease: "linear" }} className="absolute w-[75%] h-[75%] border-[4px] border-[var(--color-accent)] border-dashed rounded-full" />
+                <motion.div animate={isEasterEggActive ? { rotate: 360, opacity: 1 } : { rotate: 360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1 : 60, ease: "linear" }} className="absolute w-[60%] h-[60%] border-[2px] border-[var(--color-accent)] border-dotted rounded-full" />
               </div>
               <motion.div 
-                animate={isEasterEggActive ? { scale: 3, boxShadow: "inset 0 20px 100px rgba(255,0,0,0.8)" } : { scale: 1, boxShadow: "inset 0 20px 50px rgba(255,90,0,0.3)" }}
+                animate={isEasterEggActive ? { scale: 3, boxShadow: "inset 0 20px 100px rgba(255,90,0,1)" } : { scale: 1, boxShadow: "inset 0 20px 50px rgba(255,90,0,0.3)" }}
                 className="absolute w-[15%] h-[15%] bg-black rounded-full animate-pulse" 
               />
             </motion.div>
