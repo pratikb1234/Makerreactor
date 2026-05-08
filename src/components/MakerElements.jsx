@@ -662,8 +662,8 @@ const CircuitComponent = ({ type, cx, cy, pathLength, threshold, isPowered }) =>
 
   return (
     <motion.g transform={`translate(${cx},${cy})`} style={{ opacity }}>
-      <foreignObject x="-50" y="-50" width="100" height="100" className="overflow-visible pointer-events-none">
-        <div className="w-full h-full flex items-center justify-center pointer-events-auto">
+      <foreignObject x="-50" y="-50" width="100" height="100" className="pointer-events-none">
+        <div xmlns="http://www.w3.org/1999/xhtml" className="w-full h-full flex items-center justify-center pointer-events-auto">
           <ArcReactorNode isActive={on} isHovered={isHovered} setIsHovered={setIsHovered}>
             <svg viewBox="-20 -20 40 40" className="w-8 h-8 pointer-events-none drop-shadow-sm">
               <Symbol type={type} on={on} />
@@ -688,6 +688,20 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
     <div className={`absolute pointer-events-none ${className}`}>
       <svg viewBox={viewBox} fill="none" strokeLinecap="square" strokeLinejoin="miter" className="w-full h-full overflow-visible">
         <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2.5" />
+        
+        {/* Glow Layer (Safari Safe) */}
+        {isPowered && (
+          <motion.path
+            d={pathD}
+            stroke={glow}
+            strokeWidth="10"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.0, ease: "linear" }}
+            style={{ opacity: 0.3 }}
+          />
+        )}
+        
         <motion.path
           d={pathD}
           stroke={stroke}
@@ -696,28 +710,25 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
           animate={{ pathLength: isPowered ? 1 : 0 }}
           transition={{ duration: 1.0, ease: "linear" }}
           onAnimationComplete={(definition) => {
-            // Check if this was the 'pathLength' animation completing to '1'
             if (isPowered && definition?.pathLength === 1) {
               onPowerReachTop?.();
             } else if (isPowered && !definition) {
-              onPowerReachTop?.(); // Fallback
+              onPowerReachTop?.();
             }
           }}
-          style={{ filter: isPowered ? `drop-shadow(0 0 8px ${glow})` : 'none' }}
         />
 
         {/* Moving Current Pulse (Circles) */}
         {isPowered && (
           <motion.path
             d={pathD}
-            stroke="white"
+            stroke="#FF5A00"
             strokeWidth="6"
             strokeDasharray="1, 100"
             strokeLinecap="round"
             initial={{ strokeDashoffset: 101 }}
             animate={{ strokeDashoffset: -101 }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-            style={{ filter: "drop-shadow(0 0 6px #FF5A00)" }}
           />
         )}
       </svg>

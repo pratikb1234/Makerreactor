@@ -125,84 +125,7 @@ export default function ProgramPathway() {
     </>
   );
 
-  const renderCore = () => {
-    switch(coreDesign) {
-      case 1:
-        // Option 1: The Original Sleek Card
-        return (
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className={`mt-48 rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-center group/system border border-white/5 shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)] transition-colors duration-1000 ${isEasterEggActive ? 'bg-[#1a0505]' : 'bg-[#0a0a0a]'}`}>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_50%)] opacity-5" />
-            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-              {textContent}
-            </div>
-          </motion.div>
-        );
-      case 2:
-        // Option 2: The Massive Spherical Reactor (Current) with EASTER EGG!
-        return (
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 relative flex flex-col items-center justify-center min-h-[800px] md:min-h-[1000px] py-32 group/system w-full">
-            <motion.div 
-              animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,90,0,0.8)", boxShadow: "0 0 300px rgba(255,90,0,0.6)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
-              transition={{ type: "spring", stiffness: 60, damping: 15 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-[#030303] rounded-full border-4 flex items-center justify-center overflow-hidden"
-            >
-              <motion.div 
-                animate={isEasterEggActive ? { opacity: 0.8, scale: 1.2 } : { opacity: 0.2, scale: 1 }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] blur-[80px] animate-pulse bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)]"
-              />
-              <div className="absolute w-full h-full pointer-events-none flex items-center justify-center opacity-[0.05] mix-blend-screen transition-opacity duration-1000">
-                <motion.div animate={isEasterEggActive ? { rotate: 360, opacity: 1 } : { rotate: 360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 2 : 120, ease: "linear" }} className="absolute w-[90%] h-[90%] border-[2px] border-[var(--color-accent)] rounded-full" />
-                <motion.div animate={isEasterEggActive ? { rotate: -360, opacity: 1 } : { rotate: -360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1.5 : 80, ease: "linear" }} className="absolute w-[75%] h-[75%] border-[4px] border-[var(--color-accent)] border-dashed rounded-full" />
-                <motion.div animate={isEasterEggActive ? { rotate: 360, opacity: 1 } : { rotate: 360, opacity: 0.5 }} transition={{ repeat: Infinity, duration: isEasterEggActive ? 1 : 60, ease: "linear" }} className="absolute w-[60%] h-[60%] border-[2px] border-[var(--color-accent)] border-dotted rounded-full" />
-              </div>
-              <motion.div 
-                animate={isEasterEggActive ? { scale: 3, boxShadow: "inset 0 20px 100px rgba(255,90,0,1)" } : { scale: 1, boxShadow: "inset 0 20px 50px rgba(255,90,0,0.3)" }}
-                className="absolute w-[15%] h-[15%] bg-black rounded-full animate-pulse" 
-              />
-            </motion.div>
-            <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto px-6 mt-16 pointer-events-none">
-              {textContent}
-            </div>
-          </motion.div>
-        );
-      case 3:
-        // Option 3: The Deep Server Blade (Vertical monolithic)
-        return (
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 bg-[#000] rounded-t-[5rem] border-t-[8px] border-x-[8px] border-[#111] p-8 md:p-20 relative overflow-hidden shadow-[0_0_100px_rgba(255,90,0,0.1)] w-full max-w-5xl mx-auto flex flex-col items-center">
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_49%,rgba(255,90,0,0.05)_50%,transparent_51%)] bg-[length:40px_100%]" />
-            <div className="absolute top-0 w-1/2 h-1 bg-[var(--color-accent)] shadow-[0_0_30px_var(--color-accent)]" />
-            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center mt-12 bg-black/50 p-12 rounded-3xl backdrop-blur-sm border border-white/5">
-              {textContent}
-            </div>
-          </motion.div>
-        );
-      case 4:
-        // Option 4: The Subterranean Vault Door
-        return (
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 bg-[#151515] border-[16px] border-[#0a0a0a] p-12 md:p-24 rounded-3xl relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,1)] w-full text-center">
-            <div className="absolute top-0 left-0 w-full h-6 bg-[repeating-linear-gradient(45deg,#000,#000_20px,#ff5a00_20px,#ff5a00_40px)] opacity-30" />
-            <div className="absolute bottom-0 left-0 w-full h-6 bg-[repeating-linear-gradient(45deg,#000,#000_20px,#ff5a00_20px,#ff5a00_40px)] opacity-30" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_40%,_rgba(0,0,0,0.8)_100%)] pointer-events-none" />
-            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center bg-[#050505] p-16 rounded-[2rem] border border-[var(--color-accent)]/20 shadow-[0_0_50px_rgba(255,90,0,0.1)]">
-              {textContent}
-            </div>
-          </motion.div>
-        );
-      case 5:
-        // Option 5: The Quantum Grid Floor
-        return (
-          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 w-full min-h-[600px] relative flex items-center justify-center overflow-hidden bg-[#020202] rounded-[3rem] border border-white/5 py-32 text-center shadow-[0_0_100px_rgba(255,90,0,0.05)]">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] [transform:perspective(1000px)_rotateX(60deg)] bg-[linear-gradient(transparent_95%,rgba(255,90,0,0.15)_100%),linear-gradient(90deg,transparent_95%,rgba(255,90,0,0.15)_100%)] bg-[length:60px_60px] animate-[pulse_4s_ease-in-out_infinite]" />
-             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#020202_70%)] pointer-events-none" />
-             <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-               {textContent}
-             </div>
-          </motion.div>
-        );
-      default:
-        return null;
-    }
-  };
+
 
   return (
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
@@ -245,7 +168,58 @@ export default function ProgramPathway() {
         </div>
 
 
-        {renderCore()}
+        {/* The System - Massive Spherical Reactor Core */}
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 relative flex flex-col items-center justify-center min-h-[800px] md:min-h-[1000px] py-32 group/system w-full">
+          <motion.div 
+            animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,90,0,0.8)", boxShadow: "0 0 300px rgba(255,90,0,0.6)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
+            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-[#030303] rounded-full border-4 flex items-center justify-center overflow-hidden"
+          >
+            <motion.div 
+              animate={isEasterEggActive ? { opacity: 0.8, scale: 1.2 } : { opacity: 0.2, scale: 1 }}
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] blur-[80px] animate-pulse bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)]"
+            />
+            <div className="absolute w-full h-full pointer-events-none flex items-center justify-center opacity-[0.2] mix-blend-screen transition-opacity duration-1000 z-0">
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                <motion.div 
+                  key={i}
+                  animate={isEasterEggActive ? { 
+                    scale: [0.05, 5], 
+                    opacity: [0, 1, 0],
+                    rotate: i % 2 === 0 ? 180 : -180,
+                    borderWidth: ["2px", "8px", "20px"]
+                  } : { 
+                    scale: 1 - i * 0.12, 
+                    opacity: 0.3,
+                    rotate: i % 2 === 0 ? 360 : -360,
+                    borderWidth: i % 2 === 0 ? "2px" : "4px"
+                  }} 
+                  transition={isEasterEggActive ? { 
+                    duration: 2.5, 
+                    repeat: Infinity, 
+                    delay: i * 0.35, 
+                    ease: "linear" 
+                  } : { 
+                    repeat: Infinity, 
+                    duration: 120 - i * 10, 
+                    ease: "linear" 
+                  }} 
+                  className={`absolute rounded-full border-[var(--color-accent)] will-change-transform transform-gpu ${i % 2 === 0 ? 'border-solid' : 'border-dashed'}`}
+                  style={{ width: '80%', height: '80%' }}
+                />
+              ))}
+            </div>
+            {/* The Central Deep Eye */}
+            <motion.div 
+              animate={isEasterEggActive ? { scale: [1, 1.5, 1], boxShadow: "inset 0 20px 200px rgba(255,90,0,1), 0 0 100px rgba(255,90,0,1)" } : { scale: 1, boxShadow: "inset 0 20px 50px rgba(255,90,0,0.3)" }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute w-[15%] h-[15%] bg-black rounded-full z-10" 
+            />
+          </motion.div>
+          <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto px-6 mt-16 pointer-events-auto">
+            {textContent}
+          </div>
+        </motion.div>
 
         {/* Membership Strip */}
         <motion.div 
@@ -275,25 +249,7 @@ export default function ProgramPathway() {
 
       </div>
 
-      {/* Developer Toggle Menu for Core Metaphor Designs */}
-      <div className="fixed bottom-4 left-4 z-[100] bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-black/10 flex flex-col gap-2">
-        <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-gray-500 mb-1">Select Core Design</div>
-        <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              key={n}
-              onClick={() => setCoreDesign(n)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                coreDesign === n 
-                  ? 'bg-[var(--color-accent)] text-white scale-110 shadow-lg shadow-[var(--color-accent)]/30' 
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-      </div>
+
     </section>
   );
 }
