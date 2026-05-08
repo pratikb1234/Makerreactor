@@ -88,7 +88,7 @@ export default function ProgramPathway() {
       <BlueprintGrid opacity={0.4} />
 
       {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-[5] hidden lg:block">
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-0 hidden lg:block">
         <MechanicalTimeline scrollYProgress={scrollYProgress} />
       </div>
 
@@ -112,7 +112,7 @@ export default function ProgramPathway() {
         </div>
       </div>
 
-      <div className="max-w-[90rem] mx-auto px-6 relative pb-24 md:pb-40">
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         
         {/* Pathway Visualization */}
         <div className="relative">
@@ -133,12 +133,12 @@ export default function ProgramPathway() {
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
           
-          <div className="relative z-10 w-full lg:max-w-[calc(50%-80px)]">
+          <div className="relative z-10 max-w-4xl">
             <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
               // THE SYSTEM
             </div>
-            <h3 className="text-4xl md:text-5xl lg:text-5xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
+            <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
               <span className="inline-flex items-center gap-4 flex-wrap">
                 Every level builds new skills.
@@ -321,7 +321,7 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
 
       {/* Level Card Base Content - Wrapped in a jolt animation */}
       <motion.div 
-        className="w-full lg:w-[calc(50%-80px)] relative z-10" 
+        className="w-full lg:w-[45%] relative z-10" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
         animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
