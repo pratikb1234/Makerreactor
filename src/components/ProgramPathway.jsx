@@ -277,55 +277,33 @@ function LevelCardBase({ level, index }) {
 function LevelCardTimeline({ level, index, scrollYProgress }) {
   const isEven = index % 2 === 0;
   const cardRef = useRef(null);
-  const [activationPoint, setActivationPoint] = useState((index + 0.5) / levels.length);
+  const gearRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
-  
-  // Calculate exact intersection point!
-  useEffect(() => {
-    if (!cardRef.current) return;
-    const section = cardRef.current.closest('section');
-    if (!section) return;
-
-    const calculate = () => {
-      let offsetTop = 0;
-      let el = cardRef.current;
-      while (el && el !== section) {
-        offsetTop += el.offsetTop;
-        el = el.offsetParent;
-      }
-      
-      const gearCenter = offsetTop + cardRef.current.offsetHeight / 2;
-      
-      // The hook is 56px above the elevator's center.
-      // The user wants activation when the *hook* aligns with the gear center.
-      // So the elevator's center must be exactly 56px past the gear center.
-      const activationPixel = gearCenter + 56;
-      
-      setActivationPoint(activationPixel / section.offsetHeight);
-    };
-
-    // Calculate immediately
-    calculate();
-
-    // Recalculate whenever the section size changes (e.g. when images load)
-    const observer = new ResizeObserver(() => calculate());
-    observer.observe(section);
-    
-    return () => observer.disconnect();
-  }, []);
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // Activate exactly when the hook of the payload aligns with the center of the gear!
-    setIsActive(latest >= activationPoint);
-  });
-
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Directly calculate physical visual intersection!
+  useMotionValueEvent(scrollYProgress, "change", () => {
+    const hook = document.getElementById('elevator-hook');
+    if (!hook || !gearRef.current) return;
+
+    // Get exact visual positions on the screen right now
+    const hookRect = hook.getBoundingClientRect();
+    const gearRect = gearRef.current.getBoundingClientRect();
+
+    const hookY = hookRect.top + hookRect.height / 2;
+    const gearCenter = gearRect.top + gearRect.height / 2;
+
+    // The gear starts below the hook and moves UP the screen faster than the hook does.
+    // As the gear moves UP past the hook, gearCenter becomes <= hookY.
+    // This perfectly triggers exactly when the hook is inside the gear!
+    setIsActive(gearCenter <= hookY);
+  });
 
   return (
     <div ref={cardRef} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
       {/* Visual Marker on central line */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
+      <div ref={gearRef} className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
         <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
@@ -438,7 +416,7 @@ function MechanicalTimeline({ scrollYProgress }) {
         style={{ top: payloadY, y: "-50%" }}
       >
         {/* Hook attaching capsule to rope */}
-        <div className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
+        <div id="elevator-hook" className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
            <div className="w-1.5 h-1.5 bg-[#555] rounded-full mt-1" />
         </div>
 
