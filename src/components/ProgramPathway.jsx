@@ -68,8 +68,6 @@ const membershipInclusions = [
 
 export default function ProgramPathway() {
   const sectionRef = useRef(null);
-  const [layoutStyle, setLayoutStyle] = useState(1); // 1: Timeline, 2: Horizontal, 3: Stacked, 4: Grid, 5: Tabs
-  const [activeTab, setActiveTab] = useState(0);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -77,37 +75,19 @@ export default function ProgramPathway() {
   });
 
   return (
-    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5 group/section">
+    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
       <BlueprintGrid opacity={0.4} />
-      
-      {/* Dev-only Overall Section Style Switcher */}
-      <div className="absolute top-4 right-4 lg:right-12 z-50 opacity-0 group-hover/section:opacity-100 transition-opacity bg-white/90 backdrop-blur p-2 rounded-xl border border-black/10 shadow-xl flex flex-col items-end gap-2">
-        <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-black/50 px-2">SECTION LAYOUT</div>
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5].map(opt => (
-            <button 
-              key={opt} 
-              onClick={() => setLayoutStyle(opt)} 
-              className={`w-8 h-8 rounded-lg font-mono text-xs flex items-center justify-center transition-all ${layoutStyle === opt ? 'bg-[var(--color-accent)] text-white shadow-lg scale-110' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-black'}`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Single continuous circuit line (Only for Layout 1) */}
-      {layoutStyle === 1 && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
-          <ScrollCircuitLine 
-            sectionRef={sectionRef}
-            className="top-0 left-0 w-full h-full"
-            pathD="M 50 0 V 1000" 
-            viewBox="0 0 100 1000"
-            scrollOffset={["start center", "end center"]}
-          />
-        </div>
-      )}
+      {/* Single continuous circuit line */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
+        <ScrollCircuitLine 
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 50 0 V 1000" 
+          viewBox="0 0 100 1000"
+          scrollOffset={["start center", "end center"]}
+        />
+      </div>
 
       {/* ── Header Container ── */}
       <div className="relative pt-24 md:pt-40 pb-24 md:pb-32">
@@ -131,70 +111,15 @@ export default function ProgramPathway() {
 
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         
-        {/* Dynamic Section Layout Render */}
+        {/* Pathway Visualization */}
         <div className="relative">
-          {layoutStyle === 1 && (
-            <div className="space-y-32 relative">
-              {levels.map((level, idx) => (
-                <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
-              ))}
-            </div>
-          )}
-
-          {layoutStyle === 2 && (
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-12 w-full pt-12" style={{ scrollbarWidth: 'none' }}>
-              {levels.map((level, idx) => (
-                <div key={level.id} className="min-w-[85vw] md:min-w-[60vw] lg:min-w-[45vw] snap-center">
-                  <LevelCardBase level={level} index={idx} />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {layoutStyle === 3 && (
-            <div className="flex flex-col gap-12 items-center">
-              {levels.map((level, idx) => (
-                <div key={level.id} className="w-full max-w-5xl">
-                  <LevelCardBase level={level} index={idx} />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {layoutStyle === 4 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {levels.map((level, idx) => (
-                <LevelCardBase key={level.id} level={level} index={idx} />
-              ))}
-            </div>
-          )}
-
-          {layoutStyle === 5 && (
-            <div className="flex flex-col items-center pt-8">
-              <div className="flex bg-black/5 rounded-full p-2 mb-12 overflow-x-auto max-w-full hide-scrollbar">
-                {levels.map((level, idx) => (
-                  <button 
-                    key={level.id} 
-                    onClick={() => setActiveTab(idx)}
-                    className={`px-6 py-3 rounded-full font-mono text-xs font-bold tracking-widest whitespace-nowrap transition-all duration-300 ${activeTab === idx ? 'bg-[var(--color-accent)] text-white shadow-lg scale-105' : 'text-gray-500 hover:text-black'}`}
-                  >
-                    LVL_{level.id} {level.title}
-                  </button>
-                ))}
-              </div>
-              <div className="w-full max-w-5xl">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                >
-                  <LevelCardBase level={levels[activeTab]} index={activeTab} />
-                </motion.div>
-              </div>
-            </div>
-          )}
+          <div className="space-y-32 relative">
+            {levels.map((level, idx) => (
+              <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
+            ))}
+          </div>
         </div>
+
 
         {/* The System - Dark Card */}
         <motion.div 
