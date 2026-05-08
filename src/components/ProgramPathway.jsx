@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
-import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode } from './MakerElements';
+import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, FloatingCodeWidget } from './MakerElements';
 
 const levels = [
   {
@@ -164,13 +164,9 @@ export default function ProgramPathway() {
             </p>
           </div>
           
-          {/* Decorative SVG Pattern */}
-          <div className="absolute bottom-[-10%] right-[-10%] opacity-10">
-            <svg width="400" height="400" viewBox="0 0 400 400">
-              <circle cx="200" cy="200" r="150" stroke="white" fill="none" strokeWidth="0.5" strokeDasharray="10 10" />
-              <circle cx="200" cy="200" r="100" stroke="white" fill="none" strokeWidth="0.5" />
-              <path d="M 200 50 V 350 M 50 200 H 350" stroke="white" strokeWidth="0.5" />
-            </svg>
+          {/* The Code Metaphor Widget */}
+          <div className="relative mt-12 md:absolute md:bottom-8 md:right-8 z-10 w-full md:w-80 shadow-2xl shadow-black/50">
+            <FloatingCodeWidget className="w-full" />
           </div>
         </motion.div>
 
@@ -271,14 +267,9 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   return (
     <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
-      {/* Visual Marker on central line */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
-        <MechanicalLinkageNode isActive={isActive || isHovered} />
-      </div>
-
       {/* Level Card Base Content - Wrapped in a jolt animation */}
       <motion.div 
-        className="w-full lg:w-[45%]" 
+        className="w-full lg:w-[45%] z-10 relative" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
         animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
@@ -289,6 +280,11 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
           <LevelCardBase level={level} index={index} />
         </div>
       </motion.div>
+
+      {/* Side-mounted Gear engaging with the Elevator Track */}
+      <div className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 z-30 ${isEven ? 'right-[calc(50%+16px)]' : 'left-[calc(50%+16px)]'}`}>
+        <MechanicalLinkageNode isActive={isActive || isHovered} />
+      </div>
 
       {/* Decorative Mechanical Linkage Piston Arm - LG only */}
       <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
@@ -302,11 +298,11 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
 }
 
 function PistonArm({ isActive, isEven }) {
-  // Piston pushes OUT from the center towards the card.
-  // Center is at the right for isEven, left for !isEven.
+  // Piston pushes OUT from the center track towards the card.
   return (
     <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Outer Cylinder (attached to center) */}
+      
+      {/* Outer Cylinder (attached to center track) */}
       <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
          {/* Decorative cylinder stripes */}
          <div className="w-full h-[2px] bg-black/20" />
