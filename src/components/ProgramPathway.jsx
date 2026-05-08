@@ -87,9 +87,10 @@ export default function ProgramPathway() {
               NOT A CLASS.<br/><span className="text-black/20">A YEARLY MAKER JOURNEY.</span>
             </motion.h2>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:w-1/2 space-y-6">
-              <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs teach children one skill at a time.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">At Bits & Studios, makers move through a year-long pathway where projects become more complex, tools become more serious, and thinking becomes more independent.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">Parents are not buying isolated activities. They are buying a recurring makerspace membership where their child builds skills, projects, confidence, portfolios and a community over time.</p>
+              <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs stop at teaching a skill.</p>
+              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">At Bits & Studios, makers grow through a year-long pathway of projects, tools, challenges and showcases.</p>
+              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">As the year progresses, the work becomes deeper, the tools become more serious, and makers become more independent.</p>
+              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">They don’t just complete projects.<br/>They build confidence, capability and proof of how they think.</p>
             </motion.div>
           </div>
         </div>
