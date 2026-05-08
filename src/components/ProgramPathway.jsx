@@ -276,16 +276,62 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
-      {/* Level Card Base Content */}
-      <div className="w-full lg:w-[45%]" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <LevelCardBase level={level} index={index} />
-      </div>
+      {/* Level Card Base Content - Wrapped in a jolt animation */}
+      <motion.div 
+        className="w-full lg:w-[45%]" 
+        onMouseEnter={() => setIsHovered(true)} 
+        onMouseLeave={() => setIsHovered(false)}
+        animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
+      >
+        {/* Pass isActive down so the card can light up when punched */}
+        <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
+          <LevelCardBase level={level} index={index} />
+        </div>
+      </motion.div>
 
-      {/* Decorative Mechanical Linkage connector - LG only */}
-      <div className={`hidden lg:block w-[5%] h-2 bg-black/5 rounded-full absolute top-1/2 ${isEven ? 'left-[45%]' : 'right-[45%]'}`} />
+      {/* Decorative Mechanical Linkage Piston Arm - LG only */}
+      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
+        <PistonArm isActive={isActive || isHovered} isEven={isEven} />
+      </div>
       
       {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
+    </div>
+  );
+}
+
+function PistonArm({ isActive, isEven }) {
+  // Piston pushes OUT from the center towards the card.
+  // Center is at the right for isEven, left for !isEven.
+  return (
+    <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
+      {/* Outer Cylinder (attached to center) */}
+      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
+         {/* Decorative cylinder stripes */}
+         <div className="w-full h-[2px] bg-black/20" />
+      </div>
+
+      {/* Inner Rod (shoots out to the card) */}
+      <motion.div 
+        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
+        initial={{ width: '10%' }}
+        animate={{ width: isActive ? '100%' : '10%' }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
+      >
+        {/* Plunger Head hitting the card */}
+        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
+          {/* Spark effect when hitting */}
+          {isActive && (
+            <motion.div 
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
+            />
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -294,29 +340,55 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
 
 function MechanicalTimeline({ scrollYProgress }) {
   const payloadY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const beltProgress = useTransform(scrollYProgress, [0, 1], ["0px", "1000px"]);
+  // The motor rotation is directly proportional to scroll
+  const motorRotation = useTransform(scrollYProgress, [0, 1], [0, 1440]); // 4 full spins
 
   return (
     <div className="absolute inset-0 flex flex-col items-center">
-      {/* Conveyor Belt / Elevator Shaft */}
-      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-[1rem] border-x border-black/10 flex justify-center shadow-inner overflow-hidden">
-        {/* Belt Treads */}
+      {/* Top Motor Assembly (mounted at the top of the section) */}
+      <div className="absolute top-0 -mt-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] z-30 flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
+        {/* Motor body casing details */}
+        <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
+        <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
+        
+        {/* Rotating Pulley Wheel */}
         <motion.div 
-          className="absolute top-[-1000px] bottom-[-1000px] w-full"
-          style={{ 
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 20px)',
-            y: beltProgress
-          }}
-        />
+          className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
+          style={{ rotate: motorRotation }}
+        >
+          {/* Pulley Spokes */}
+          <div className="absolute w-full h-1.5 bg-[#666]" />
+          <div className="absolute w-1.5 h-full bg-[#666]" />
+          {/* Glowing Axle Center */}
+          <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
+        </motion.div>
+      </div>
+
+      {/* Elevator Shaft / Track */}
+      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-b-[1rem] border-x border-b border-black/10 flex justify-center shadow-inner overflow-hidden">
         {/* Inner track rail */}
         <div className="absolute top-0 bottom-0 w-2 bg-black/5" />
       </div>
+
+      {/* The Rope (connecting motor to capsule) */}
+      <motion.div 
+        className="absolute top-0 w-1.5 bg-[#555] z-10 flex justify-center overflow-hidden"
+        style={{ height: payloadY }}
+      >
+        {/* Rope Texture */}
+        <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, black 2px, black 4px)' }} />
+      </motion.div>
 
       {/* The Elevator Capsule (Payload) */}
       <motion.div 
         className="absolute top-0 w-16 h-20 bg-white rounded-xl border-[3px] border-[var(--color-accent)] shadow-[0_10px_30px_rgba(255,90,0,0.4)] flex flex-col items-center justify-center z-20"
         style={{ top: payloadY, y: "-50%" }}
       >
+        {/* Hook attaching capsule to rope */}
+        <div className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
+           <div className="w-1.5 h-1.5 bg-[#555] rounded-full mt-1" />
+        </div>
+
         <div className="w-8 h-2 bg-black/10 rounded-full mb-2" />
         <div className="w-6 h-6 bg-[var(--color-accent)] rounded-full animate-pulse shadow-[inset_0_0_10px_white]" />
         <div className="w-8 h-2 bg-black/10 rounded-full mt-2" />
