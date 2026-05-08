@@ -133,12 +133,12 @@ export default function ProgramPathway() {
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
           
-          <div className="relative z-10 max-w-4xl">
+          <div className="relative z-10 w-full lg:w-[45%]">
             <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
               // THE SYSTEM
             </div>
-            <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
+            <h3 className="text-4xl md:text-5xl lg:text-5xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
               <span className="inline-flex items-center gap-4 flex-wrap">
                 Every level builds new skills.
