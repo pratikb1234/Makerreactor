@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, FloatingCodeWidget } from './MakerElements';
 
 const levels = [
@@ -78,9 +78,15 @@ export default function ProgramPathway() {
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
       <BlueprintGrid opacity={0.4} />
 
-      {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-0 hidden lg:block">
-        <MechanicalTimeline scrollYProgress={scrollYProgress} />
+      {/* Single continuous circuit line */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
+        <ScrollCircuitLine 
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 50 0 V 1000" 
+          viewBox="0 0 100 1000"
+          scrollOffset={["start center", "end center"]}
+        />
       </div>
 
       {/* ── Header Container ── */}
@@ -165,7 +171,7 @@ export default function ProgramPathway() {
           </div>
           
           {/* The Code Metaphor Widget */}
-          <div className="relative mt-12 md:absolute md:bottom-8 md:right-8 z-10 w-full md:w-80 shadow-2xl shadow-black/50">
+          <div className="relative mt-12 md:absolute md:bottom-8 md:right-8 z-10 w-full md:w-[350px] shadow-2xl shadow-black/50 opacity-80 group-hover/system:opacity-100 transition-opacity duration-700">
             <FloatingCodeWidget className="w-full" />
           </div>
         </motion.div>
@@ -267,29 +273,18 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   return (
     <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
-      {/* Level Card Base Content - Wrapped in a jolt animation */}
-      <motion.div 
-        className="w-full lg:w-[45%] z-10 relative" 
-        onMouseEnter={() => setIsHovered(true)} 
-        onMouseLeave={() => setIsHovered(false)}
-        animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
-      >
-        {/* Pass isActive down so the card can light up when punched */}
-        <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
-          <LevelCardBase level={level} index={index} />
-        </div>
-      </motion.div>
-
-      {/* Side-mounted Gear engaging with the Elevator Track */}
-      <div className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 z-30 ${isEven ? 'right-[calc(50%+16px)]' : 'left-[calc(50%+16px)]'}`}>
-        <MechanicalLinkageNode isActive={isActive || isHovered} />
+      {/* Visual Marker on central line */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
+        <ArcReactorNode isActive={isActive} isHovered={isHovered} setIsHovered={setIsHovered} />
       </div>
 
-      {/* Decorative Mechanical Linkage Piston Arm - LG only */}
-      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
-        <PistonArm isActive={isActive || isHovered} isEven={isEven} />
+      {/* Level Card Base Content */}
+      <div className="w-full lg:w-[45%]" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <LevelCardBase level={level} index={index} />
       </div>
+
+      {/* Decorative Blueprint connector - LG only */}
+      <div className={`hidden lg:block w-[5%] h-px bg-black/5 absolute top-1/2 ${isEven ? 'left-[45%]' : 'right-[45%]'}`} />
       
       {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
@@ -297,140 +292,4 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   );
 }
 
-function PistonArm({ isActive, isEven }) {
-  // Piston pushes OUT from the center track towards the card.
-  return (
-    <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
-      
-      {/* Outer Cylinder (attached to center track) */}
-      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
-         {/* Decorative cylinder stripes */}
-         <div className="w-full h-[2px] bg-black/20" />
-      </div>
 
-      {/* Inner Rod (shoots out to the card) */}
-      <motion.div 
-        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
-        initial={{ width: '10%' }}
-        animate={{ width: isActive ? '100%' : '10%' }}
-        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
-      >
-        {/* Plunger Head hitting the card */}
-        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
-          {/* Spark effect when hitting */}
-          {isActive && (
-            <motion.div 
-              initial={{ scale: 0, opacity: 1 }}
-              animate={{ scale: 2.5, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
-            />
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-// ── Mechanical Contraption Components ──
-
-function MechanicalTimeline({ scrollYProgress }) {
-  const payloadY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  // The motor rotation is directly proportional to scroll
-  const motorRotation = useTransform(scrollYProgress, [0, 1], [0, 1440]); // 4 full spins
-
-  return (
-    <div className="absolute inset-0 flex flex-col items-center">
-      {/* Top Motor Assembly (mounted at the top of the section) */}
-      <div className="absolute top-0 -mt-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] z-30 flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
-        {/* Motor body casing details */}
-        <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
-        <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
-        
-        {/* Rotating Pulley Wheel */}
-        <motion.div 
-          className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
-          style={{ rotate: motorRotation }}
-        >
-          {/* Pulley Spokes */}
-          <div className="absolute w-full h-1.5 bg-[#666]" />
-          <div className="absolute w-1.5 h-full bg-[#666]" />
-          {/* Glowing Axle Center */}
-          <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
-        </motion.div>
-      </div>
-
-      {/* Elevator Shaft / Track */}
-      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-b-[1rem] border-x border-b border-black/10 flex justify-center shadow-inner overflow-hidden">
-        {/* Inner track rail */}
-        <div className="absolute top-0 bottom-0 w-2 bg-black/5" />
-      </div>
-
-      {/* The Rope (connecting motor to capsule) */}
-      <motion.div 
-        className="absolute top-0 w-1.5 bg-[#555] z-10 flex justify-center overflow-hidden"
-        style={{ height: payloadY }}
-      >
-        {/* Rope Texture */}
-        <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, black 2px, black 4px)' }} />
-      </motion.div>
-
-      {/* The Elevator Capsule (Payload) */}
-      <motion.div 
-        className="absolute top-0 w-16 h-20 bg-white rounded-xl border-[3px] border-[var(--color-accent)] shadow-[0_10px_30px_rgba(255,90,0,0.4)] flex flex-col items-center justify-center z-20"
-        style={{ top: payloadY, y: "-50%" }}
-      >
-        {/* Hook attaching capsule to rope */}
-        <div className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
-           <div className="w-1.5 h-1.5 bg-[#555] rounded-full mt-1" />
-        </div>
-
-        <div className="w-8 h-2 bg-black/10 rounded-full mb-2" />
-        <div className="w-6 h-6 bg-[var(--color-accent)] rounded-full animate-pulse shadow-[inset_0_0_10px_white]" />
-        <div className="w-8 h-2 bg-black/10 rounded-full mt-2" />
-      </motion.div>
-    </div>
-  );
-}
-
-function MechanicalLinkageNode({ isActive }) {
-  return (
-    <div className="relative flex items-center justify-center w-32 h-32 group">
-      {/* Background large gear */}
-      <motion.div 
-        animate={{ rotate: isActive ? 360 : 0 }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-black/10'}`}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Inner medium gear (spins opposite) */}
-      <motion.div 
-        animate={{ rotate: isActive ? -360 : 0 }} 
-        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-black' : 'text-black/5'}`}
-        style={{ padding: '20%' }}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Center pivot */}
-      <div className={`w-6 h-6 rounded-full border-4 transition-all duration-500 z-10 ${isActive ? 'border-[var(--color-accent)] bg-white shadow-[0_0_20px_var(--color-accent)]' : 'border-black/20 bg-white'}`} />
-    </div>
-  );
-}
-
-function GearSVG({ width = "100", height = "100" }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 100 100" fill="currentColor">
-      <path d="M50 15C30.67 15 15 30.67 15 50C15 69.33 30.67 85 50 85C69.33 85 85 69.33 85 50C85 30.67 69.33 15 50 15ZM50 70C38.95 70 30 61.05 30 50C30 38.95 38.95 30 50 30C61.05 30 70 38.95 70 50C70 61.05 61.05 70 50 70Z" />
-      <rect x="45" y="0" width="10" height="20" rx="2" />
-      <rect x="45" y="80" width="10" height="20" rx="2" />
-      <rect x="0" y="45" width="20" height="10" rx="2" />
-      <rect x="80" y="45" width="20" height="10" rx="2" />
-      <rect x="18" y="14" width="10" height="20" rx="2" transform="rotate(45 23 24)" />
-      <rect x="74" y="70" width="10" height="20" rx="2" transform="rotate(45 79 80)" />
-      <rect x="14" y="74" width="20" height="10" rx="2" transform="rotate(45 24 79)" />
-      <rect x="70" y="18" width="20" height="10" rx="2" transform="rotate(45 80 23)" />
-    </svg>
-  );
-}
