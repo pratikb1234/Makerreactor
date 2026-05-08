@@ -68,32 +68,49 @@ const membershipInclusions = [
 
 export default function ProgramPathway() {
   const sectionRef = useRef(null);
+  const [layoutStyle, setLayoutStyle] = useState(1); // 1: Timeline, 2: Horizontal, 3: Stacked, 4: Grid, 5: Tabs
+  const [activeTab, setActiveTab] = useState(0);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
 
-
-
   return (
-    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
+    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5 group/section">
       <BlueprintGrid opacity={0.4} />
       
-      {/* Single continuous circuit line for the entire section */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
-        <ScrollCircuitLine 
-          sectionRef={sectionRef}
-          className="top-0 left-0 w-full h-full"
-          pathD="M 50 0 V 1000" 
-          viewBox="0 0 100 1000"
-          scrollOffset={["start center", "end center"]}
-        />
+      {/* Dev-only Overall Section Style Switcher */}
+      <div className="absolute top-4 right-4 lg:right-12 z-50 opacity-0 group-hover/section:opacity-100 transition-opacity bg-white/90 backdrop-blur p-2 rounded-xl border border-black/10 shadow-xl flex flex-col items-end gap-2">
+        <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-black/50 px-2">SECTION LAYOUT</div>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map(opt => (
+            <button 
+              key={opt} 
+              onClick={() => setLayoutStyle(opt)} 
+              className={`w-8 h-8 rounded-lg font-mono text-xs flex items-center justify-center transition-all ${layoutStyle === opt ? 'bg-[var(--color-accent)] text-white shadow-lg scale-110' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-black'}`}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* ── Header Container (Handles top padding and dynamic text height) ── */}
-      <div className="relative pt-24 md:pt-40 pb-32">
+      {/* Single continuous circuit line (Only for Layout 1) */}
+      {layoutStyle === 1 && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
+          <ScrollCircuitLine 
+            sectionRef={sectionRef}
+            className="top-0 left-0 w-full h-full"
+            pathD="M 50 0 V 1000" 
+            viewBox="0 0 100 1000"
+            scrollOffset={["start center", "end center"]}
+          />
+        </div>
+      )}
 
+      {/* ── Header Container ── */}
+      <div className="relative pt-24 md:pt-40 pb-24 md:pb-32">
         <div className="max-w-[90rem] mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
             THE PROGRAM
@@ -113,15 +130,70 @@ export default function ProgramPathway() {
       </div>
 
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
-        {/* Pathway Visualization */}
+        
+        {/* Dynamic Section Layout Render */}
         <div className="relative">
+          {layoutStyle === 1 && (
+            <div className="space-y-32 relative">
+              {levels.map((level, idx) => (
+                <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
+              ))}
+            </div>
+          )}
 
-          
-          <div className="space-y-32 relative">
-            {levels.map((level, idx) => (
-              <LevelCard key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
-            ))}
-          </div>
+          {layoutStyle === 2 && (
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-12 w-full pt-12" style={{ scrollbarWidth: 'none' }}>
+              {levels.map((level, idx) => (
+                <div key={level.id} className="min-w-[85vw] md:min-w-[60vw] lg:min-w-[45vw] snap-center">
+                  <LevelCardBase level={level} index={idx} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {layoutStyle === 3 && (
+            <div className="flex flex-col gap-12 items-center">
+              {levels.map((level, idx) => (
+                <div key={level.id} className="w-full max-w-5xl">
+                  <LevelCardBase level={level} index={idx} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {layoutStyle === 4 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {levels.map((level, idx) => (
+                <LevelCardBase key={level.id} level={level} index={idx} />
+              ))}
+            </div>
+          )}
+
+          {layoutStyle === 5 && (
+            <div className="flex flex-col items-center pt-8">
+              <div className="flex bg-black/5 rounded-full p-2 mb-12 overflow-x-auto max-w-full hide-scrollbar">
+                {levels.map((level, idx) => (
+                  <button 
+                    key={level.id} 
+                    onClick={() => setActiveTab(idx)}
+                    className={`px-6 py-3 rounded-full font-mono text-xs font-bold tracking-widest whitespace-nowrap transition-all duration-300 ${activeTab === idx ? 'bg-[var(--color-accent)] text-white shadow-lg scale-105' : 'text-gray-500 hover:text-black'}`}
+                  >
+                    LVL_{level.id} {level.title}
+                  </button>
+                ))}
+              </div>
+              <div className="w-full max-w-5xl">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <LevelCardBase level={levels[activeTab]} index={activeTab} />
+                </motion.div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* The System - Dark Card */}
@@ -189,10 +261,60 @@ export default function ProgramPathway() {
   );
 }
 
-function LevelCard({ level, index, scrollYProgress }) {
+// ── Shared Card Content (The 2x2 grid design the user liked!) ──
+function LevelCardBase({ level, index }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: "circOut", delay: index * 0.1 }}
+      className="w-full bg-white rounded-[2.5rem] border border-black/5 p-8 md:p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-[var(--color-accent)]/30 transition-all duration-500 h-full"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      {/* Technical Label */}
+      <div className="absolute top-8 right-8 font-mono text-[11px] text-black/20 font-bold uppercase tracking-widest">
+        LVL_{level.id}_PATH
+      </div>
+
+      <div className="mb-10 relative">
+        <div className="font-mono text-4xl font-bold text-black/5 mb-2 leading-none">{level.id}</div>
+        <h3 className="text-4xl md:text-5xl font-display font-bold text-black mb-2 tracking-tighter">{level.title}</h3>
+        <p className="font-mono text-sm font-bold text-[var(--color-accent)] uppercase tracking-widest">{level.grades}</p>
+      </div>
+
+      <p className="text-gray-500 text-lg leading-relaxed mb-10">
+        {level.desc}
+      </p>
+
+      {/* The 2x2 Grid Layout */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
+        {[
+          { label: 'INQUIRE', text: level.grid.inquire },
+          { label: 'MAKE', text: level.grid.make },
+          { label: 'REFLECT', text: level.grid.reflect },
+          { label: 'PRESENT', text: level.grid.present }
+        ].map((item, idx) => (
+          <div key={idx} className="relative group/grid">
+            <div className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]/20 group-hover/grid:bg-[var(--color-accent)] transition-colors duration-500" />
+            <div className="pl-3">
+              <h5 className="font-mono text-[10px] font-bold uppercase tracking-widest text-black/40 mb-1">{item.label}</h5>
+              <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Accent Bar */}
+      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gray-100 group-hover:bg-[var(--color-accent)] transition-colors duration-500" />
+    </motion.div>
+  );
+}
+
+// ── Layout 1: The Original Timeline Wrapper ──
+function LevelCardTimeline({ level, index, scrollYProgress }) {
   const isEven = index % 2 === 0;
-  
-  // Calculate activation point based on index
   const activationPoint = (index + 0.5) / levels.length;
   const [isActive, setIsActive] = useState(false);
   
@@ -205,199 +327,23 @@ function LevelCard({ level, index, scrollYProgress }) {
   return (
     <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
-      {/* Visual Marker on central line - Arc Reactor Hover Effect */}
-      <div 
-        className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30"
-      >
+      {/* Visual Marker on central line */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
         <ArcReactorNode isActive={isActive} isHovered={isHovered} setIsHovered={setIsHovered} />
       </div>
 
-      {/* Level Card Content */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "circOut" }}
-        className="w-full lg:w-[45%] bg-white rounded-[2.5rem] border border-black/5 p-8 md:p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-[var(--color-accent)]/30 transition-all duration-500"
-      >
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" 
-        />
-        {/* Technical Label */}
-        <div className="absolute top-8 right-8 font-mono text-[11px] text-black/20 font-bold uppercase tracking-widest">
-          LVL_{level.id}_PATH
-        </div>
-
-        <div className="mb-10 relative">
-          <div className="font-mono text-4xl font-bold text-black/5 mb-2 leading-none">{level.id}</div>
-          <h3 className="text-4xl md:text-5xl font-display font-bold text-black mb-2 tracking-tighter">{level.title}</h3>
-          <p className="font-mono text-sm font-bold text-[var(--color-accent)] uppercase tracking-widest">{level.grades}</p>
-        </div>
-
-        <p className="text-gray-500 text-lg leading-relaxed mb-10">
-          {level.desc}
-        </p>
-
-        <LevelTabs gridData={level.grid} levelId={level.id} />
-
-        {/* Accent Bar */}
-        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-gray-100 group-hover:bg-[var(--color-accent)] transition-colors duration-500" />
-      </motion.div>
+      {/* Level Card Base Content */}
+      <div className="w-full lg:w-[45%]" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <LevelCardBase level={level} index={index} />
+      </div>
 
       {/* Decorative Blueprint connector - LG only */}
       <div className={`hidden lg:block w-[5%] h-px bg-black/5 absolute top-1/2 ${isEven ? 'left-[45%]' : 'right-[45%]'}`} />
       
-      {/* Empty space on opposite side for text/image or just spacing */}
+      {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
     </div>
   );
 }
 
-// --- Minimalist Toggle Options ---
-// Added 5 different toggle styles per user request.
-// The user can hover over the top-right of the tab area to see the tiny 1-5 selector and preview the 5 designs!
-function LevelTabs({ gridData, levelId }) {
-  const [activeTab, setActiveTab] = useState(0);
-  const [styleOption, setStyleOption] = useState(3); // Defaulting to option 3 (Vertical Sidebar) which fits the grid vibe well
 
-  const tabs = [
-    { id: 'inquire', label: 'INQUIRE', text: gridData.inquire },
-    { id: 'make', label: 'MAKE', text: gridData.make },
-    { id: 'reflect', label: 'REFLECT', text: gridData.reflect },
-    { id: 'present', label: 'PRESENT', text: gridData.present }
-  ];
-
-  return (
-    <div className="mt-8 pt-4 border-t border-black/5 relative group/tabs">
-      {/* Dev-only style switcher (invisible unless hovered) */}
-      <div className="absolute -top-3 right-0 opacity-0 group-hover/tabs:opacity-100 transition-opacity flex gap-1 z-50">
-        {[1, 2, 3, 4, 5].map(opt => (
-          <button 
-            key={opt} 
-            onClick={() => setStyleOption(opt)} 
-            className={`text-[9px] font-mono w-4 h-4 flex items-center justify-center rounded border transition-colors ${styleOption === opt ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200 hover:text-black'}`}
-            title={`Toggle Style ${opt}`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-
-      {/* Render selected style */}
-      {styleOption === 1 && <TabStyle1 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
-      {styleOption === 2 && <TabStyle2 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
-      {styleOption === 3 && <TabStyle3 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
-      {styleOption === 4 && <TabStyle4 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
-      {styleOption === 5 && <TabStyle5 tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} levelId={levelId} />}
-    </div>
-  );
-}
-
-// 1. Premium Pill Toggle (Apple style)
-function TabStyle1({ tabs, activeTab, setActiveTab, levelId }) {
-  return (
-    <div className="space-y-6">
-      <div className="flex bg-gray-100/80 p-1 rounded-xl relative">
-        {tabs.map((tab, idx) => (
-          <button key={idx} onClick={() => setActiveTab(idx)} className="flex-1 relative py-2 px-2 text-center z-10">
-            {activeTab === idx && (
-              <motion.div layoutId={`pill-${levelId}`} className="absolute inset-0 bg-white rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.08)] z-0" transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />
-            )}
-            <span className={`relative z-10 font-mono text-[10px] font-bold tracking-widest transition-colors duration-300 ${activeTab === idx ? 'text-black' : 'text-gray-400 hover:text-gray-600'}`}>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-      <div className="min-h-[80px]">
-        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="text-sm text-gray-600 leading-relaxed font-medium">
-          {tabs[activeTab].text}
-        </motion.p>
-      </div>
-    </div>
-  );
-}
-
-// 2. Minimalist Underline (Clean, editorial)
-function TabStyle2({ tabs, activeTab, setActiveTab, levelId }) {
-  return (
-    <div className="space-y-6">
-      <div className="flex border-b border-black/5">
-        {tabs.map((tab, idx) => (
-          <button key={idx} onClick={() => setActiveTab(idx)} className="flex-1 pb-3 relative text-center">
-            <span className={`font-mono text-[10px] font-bold tracking-widest transition-colors duration-300 ${activeTab === idx ? 'text-[var(--color-accent)]' : 'text-gray-400 hover:text-gray-600'}`}>{tab.label}</span>
-            {activeTab === idx && (
-              <motion.div layoutId={`underline-${levelId}`} className="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--color-accent)]" />
-            )}
-          </button>
-        ))}
-      </div>
-      <div className="min-h-[80px]">
-        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
-          {tabs[activeTab].text}
-        </motion.p>
-      </div>
-    </div>
-  );
-}
-
-// 3. Vertical Sidebar (Developer/System style)
-function TabStyle3({ tabs, activeTab, setActiveTab, levelId }) {
-  return (
-    <div className="flex gap-6 min-h-[120px] bg-gray-50 rounded-2xl p-6 border border-black/5">
-      <div className="flex flex-col gap-3 w-1/3 border-r border-black/5 pr-4 justify-center">
-        {tabs.map((tab, idx) => (
-          <button key={idx} onClick={() => setActiveTab(idx)} className={`text-left relative pl-3 py-1 ${activeTab === idx ? '' : 'hover:opacity-70'}`}>
-            {activeTab === idx && <motion.div layoutId={`vert-line-${levelId}`} className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]" />}
-            <span className={`font-mono text-[10px] font-bold tracking-widest transition-colors ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-      <div className="w-2/3 flex items-center">
-        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="text-xs text-gray-600 leading-relaxed font-medium">
-          {tabs[activeTab].text}
-        </motion.p>
-      </div>
-    </div>
-  );
-}
-
-// 4. Glowing Dots (Futuristic/Minimal)
-function TabStyle4({ tabs, activeTab, setActiveTab, levelId }) {
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center bg-black/5 rounded-full px-6 py-3">
-        {tabs.map((tab, idx) => (
-          <button key={idx} onClick={() => setActiveTab(idx)} className="flex items-center gap-2 group">
-            <div className={`w-2 h-2 rounded-full transition-all duration-300 ${activeTab === idx ? 'bg-[var(--color-accent)] shadow-[0_0_8px_var(--color-accent)]' : 'bg-black/10 group-hover:bg-black/20'}`} />
-            <span className={`font-mono text-[9px] font-bold tracking-widest transition-colors hidden sm:block ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-      <div className="min-h-[80px] px-2 text-center flex items-center justify-center">
-        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
-          {tabs[activeTab].text}
-        </motion.p>
-      </div>
-    </div>
-  );
-}
-
-// 5. Numbered Accordion-Style Tabs (Editorial / Serious)
-function TabStyle5({ tabs, activeTab, setActiveTab, levelId }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        {tabs.map((tab, idx) => (
-          <button key={idx} onClick={() => setActiveTab(idx)} className={`flex-1 py-3 border-t-2 text-left transition-all duration-300 ${activeTab === idx ? 'border-[var(--color-accent)] pt-4' : 'border-black/5 hover:border-black/20'}`}>
-            <div className="font-mono text-[9px] text-gray-400 mb-1">0{idx + 1}</div>
-            <div className={`font-mono text-[10px] font-bold tracking-widest ${activeTab === idx ? 'text-black' : 'text-gray-400'}`}>{tab.label}</div>
-          </button>
-        ))}
-      </div>
-      <div className="min-h-[80px] bg-gray-50 p-6 rounded-xl border border-black/5 flex items-center">
-        <motion.p key={`${levelId}-${activeTab}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-gray-600 leading-relaxed font-medium">
-          {tabs[activeTab].text}
-        </motion.p>
-      </div>
-    </div>
-  );
-}
