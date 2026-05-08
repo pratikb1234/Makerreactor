@@ -293,15 +293,21 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         offsetTop += el.offsetTop;
         el = el.offsetParent;
       }
-      // The center of this timeline row relative to the top of the section
-      const center = (offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
-      setActivationPoint(center);
+      
+      const gearCenter = offsetTop + cardRef.current.offsetHeight / 2;
+      
+      // The hook is 56px above the elevator's center.
+      // The user wants activation when the *hook* aligns with the gear center.
+      // So the elevator's center must be exactly 56px past the gear center.
+      const activationPixel = gearCenter + 56;
+      
+      setActivationPoint(activationPixel / section.offsetHeight);
     };
 
     // Calculate immediately
     calculate();
 
-    // Recalculate whenever the section size changes (e.g. when images load and push content down)
+    // Recalculate whenever the section size changes (e.g. when images load)
     const observer = new ResizeObserver(() => calculate());
     observer.observe(section);
     
@@ -309,11 +315,8 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // The payload capsule height is 80px, gear radius is 64px.
-    // They intersect slightly before the centers align. 
-    // We activate right as the hook of the capsule touches the top of the gear!
-    // Since the center tracks scrollYProgress, we activate slightly before the center hits.
-    setIsActive(latest > activationPoint - 0.02);
+    // Activate exactly when the hook of the payload aligns with the center of the gear!
+    setIsActive(latest >= activationPoint);
   });
 
   const [isHovered, setIsHovered] = useState(false);
