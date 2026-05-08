@@ -124,12 +124,12 @@ export default function ProgramPathway() {
         </div>
 
 
-        {/* The System - Dark Card */}
+        {/* The System - Dark Card (The Core) */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border border-black shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)]"
+          className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border border-black shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)] flex flex-col items-center text-center"
         >
           {/* Symmetrical Circuit Illumination Box */}
           <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen opacity-70 group-hover/system:opacity-100 transition-opacity duration-700">
@@ -150,32 +150,36 @@ export default function ProgramPathway() {
             />
           </div>
 
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
+          {/* Deep Core Glow */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--color-accent)]/10 blur-[120px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-1000" />
           
-          <div className="relative z-10 max-w-4xl">
-            <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
+          <div className="relative z-10 max-w-4xl flex flex-col items-center">
+            <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center justify-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
-              // THE SYSTEM
+              // THE SYSTEM CORE
+              <div className="w-8 h-px bg-[var(--color-accent)]/50" />
             </div>
             <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
-              <span className="inline-flex items-center gap-4 flex-wrap">
-                Every level builds new skills.
-                <span className="hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 border-[var(--color-accent)]">
-                  <span className="w-2 h-2 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
-                </span>
-              </span> <br/>
+              Every level builds new skills. <br/>
               Every project creates evidence of growth. <br/>
               Every showcase builds confidence.
             </h3>
-            <p className="text-2xl text-white/40 font-display italic">
+            <p className="text-2xl text-white/40 font-display italic mb-20">
               Nobody stays where they started.
             </p>
           </div>
           
-          {/* The Code Metaphor Widget */}
-          <div className="relative mt-12 md:absolute md:bottom-8 md:right-8 z-10 w-full md:w-[350px] shadow-2xl shadow-black/50 opacity-80 group-hover/system:opacity-100 transition-opacity duration-700">
-            <FloatingCodeWidget className="w-full" />
+          {/* The Code Metaphor Widget - Dropped in the center where the elevator descends */}
+          <div className="relative z-10 w-full md:w-[600px] shadow-2xl shadow-black/50 opacity-90 group-hover/system:opacity-100 transition-opacity duration-700">
+            {/* Elevator Port (Visual element showing where the rope connects) */}
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-24 h-8 flex flex-col items-center z-0">
+               <div className="w-16 h-8 bg-[#0a0a0a] rounded-t-xl border-x border-t border-[var(--color-accent)]/30 flex justify-center overflow-hidden">
+                  <div className="w-6 h-full bg-black shadow-[inset_0_10px_20px_rgba(0,0,0,1)]" />
+               </div>
+            </div>
+
+            <FloatingCodeWidget className="w-full relative z-10 border border-[var(--color-accent)]/20 shadow-[0_0_50px_rgba(255,90,0,0.1)]" />
           </div>
         </motion.div>
 
