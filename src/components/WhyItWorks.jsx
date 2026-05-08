@@ -154,10 +154,16 @@ export default function WhyItWorks() {
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         
-        {/* Symmetrical Frame Circuit Lines */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
+        {/* Central Circuit Line - seamlessly connects with the line from the white section */}
+        <div className="absolute left-1/2 -translate-x-1/2 hidden lg:block pointer-events-none z-0" style={{ top: 0, bottom: 0, width: 80 }}>
+          <ScrollCircuitLine 
+            sectionRef={enderRef}
+            className="top-0 left-0 w-full h-full"
+            pathD="M 40 0 V 1000"
+            viewBox="0 0 80 1000"
+            isActivated={isHeroBridgeComplete}
+            scrollOffset={["start center", "end center"]}
+          />
         </div>
 
 
