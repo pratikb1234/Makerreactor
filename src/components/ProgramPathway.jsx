@@ -77,11 +77,105 @@ const membershipInclusions = [
 
 export default function ProgramPathway() {
   const sectionRef = useRef(null);
+  const [coreDesign, setCoreDesign] = useState(2); // Default to Sphere
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
+
+  const textContent = (
+    <>
+      <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center justify-center gap-3">
+        <div className="w-8 h-px bg-[var(--color-accent)]/50" />
+        // CORE SYSTEM REACTOR
+        <div className="w-8 h-px bg-[var(--color-accent)]/50" />
+      </div>
+      <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
+        Every maker enters at a level. <br/>
+        <span className="inline-flex items-center gap-4 flex-wrap justify-center">
+          Every level builds new skills.
+          <span className="hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 border-[var(--color-accent)]">
+            <span className="w-2 h-2 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
+          </span>
+        </span> <br/>
+        Every project creates evidence of growth. <br/>
+        Every showcase builds confidence.
+      </h3>
+      <p className="text-2xl text-[var(--color-accent)] font-display italic drop-shadow-md">
+        Nobody stays where they started.
+      </p>
+    </>
+  );
+
+  const renderCore = () => {
+    switch(coreDesign) {
+      case 1:
+        // Option 1: The Original Sleek Card
+        return (
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 bg-[#0a0a0a] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-center group/system border border-white/5 shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_50%)] opacity-5" />
+            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+              {textContent}
+            </div>
+          </motion.div>
+        );
+      case 2:
+        // Option 2: The Massive Spherical Reactor (Current)
+        return (
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 relative flex flex-col items-center justify-center min-h-[800px] md:min-h-[1000px] py-32 group/system w-full">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-[#030303] rounded-full border-4 border-black/90 shadow-[0_0_150px_rgba(255,90,0,0.15)] flex items-center justify-center overflow-hidden">
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)] opacity-20 blur-[80px] animate-pulse" />
+              <div className="absolute w-full h-full pointer-events-none flex items-center justify-center opacity-[0.05] mix-blend-screen group-hover/system:opacity-[0.12] transition-opacity duration-1000">
+                <div className="absolute w-[90%] h-[90%] border-[2px] border-[var(--color-accent)] rounded-full animate-[spin_120s_linear_infinite]" />
+                <div className="absolute w-[75%] h-[75%] border-[4px] border-dashed border-[var(--color-accent)] rounded-full animate-[spin_80s_linear_infinite_reverse]" />
+                <div className="absolute w-[60%] h-[60%] border-[2px] border-dotted border-[var(--color-accent)] rounded-full animate-[spin_60s_linear_infinite]" />
+              </div>
+              <div className="absolute w-[15%] h-[15%] bg-black rounded-full shadow-[inset_0_20px_50px_rgba(255,90,0,0.3)] animate-pulse" />
+            </div>
+            <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto px-6 mt-16 pointer-events-none">
+              {textContent}
+            </div>
+          </motion.div>
+        );
+      case 3:
+        // Option 3: The Deep Server Blade (Vertical monolithic)
+        return (
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 bg-[#000] rounded-t-[5rem] border-t-[8px] border-x-[8px] border-[#111] p-8 md:p-20 relative overflow-hidden shadow-[0_0_100px_rgba(255,90,0,0.1)] w-full max-w-5xl mx-auto flex flex-col items-center">
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_49%,rgba(255,90,0,0.05)_50%,transparent_51%)] bg-[length:40px_100%]" />
+            <div className="absolute top-0 w-1/2 h-1 bg-[var(--color-accent)] shadow-[0_0_30px_var(--color-accent)]" />
+            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center mt-12 bg-black/50 p-12 rounded-3xl backdrop-blur-sm border border-white/5">
+              {textContent}
+            </div>
+          </motion.div>
+        );
+      case 4:
+        // Option 4: The Subterranean Vault Door
+        return (
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 bg-[#151515] border-[16px] border-[#0a0a0a] p-12 md:p-24 rounded-3xl relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,1)] w-full text-center">
+            <div className="absolute top-0 left-0 w-full h-6 bg-[repeating-linear-gradient(45deg,#000,#000_20px,#ff5a00_20px,#ff5a00_40px)] opacity-30" />
+            <div className="absolute bottom-0 left-0 w-full h-6 bg-[repeating-linear-gradient(45deg,#000,#000_20px,#ff5a00_20px,#ff5a00_40px)] opacity-30" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_40%,_rgba(0,0,0,0.8)_100%)] pointer-events-none" />
+            <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center bg-[#050505] p-16 rounded-[2rem] border border-[var(--color-accent)]/20 shadow-[0_0_50px_rgba(255,90,0,0.1)]">
+              {textContent}
+            </div>
+          </motion.div>
+        );
+      case 5:
+        // Option 5: The Quantum Grid Floor
+        return (
+          <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 w-full min-h-[600px] relative flex items-center justify-center overflow-hidden bg-[#020202] rounded-[3rem] border border-white/5 py-32 text-center shadow-[0_0_100px_rgba(255,90,0,0.05)]">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] [transform:perspective(1000px)_rotateX(60deg)] bg-[linear-gradient(transparent_95%,rgba(255,90,0,0.15)_100%),linear-gradient(90deg,transparent_95%,rgba(255,90,0,0.15)_100%)] bg-[length:60px_60px] animate-[pulse_4s_ease-in-out_infinite]" />
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#020202_70%)] pointer-events-none" />
+             <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+               {textContent}
+             </div>
+          </motion.div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
@@ -124,50 +218,7 @@ export default function ProgramPathway() {
         </div>
 
 
-        {/* The System - Dark Card (Reactor Core Metaphor) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-48 bg-[#050505] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border-2 border-black/80 shadow-[0_40px_100px_-20px_rgba(255,90,0,0.2)]"
-        >
-          {/* Reactor Core Ambient Glows */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
-          <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_60%)] opacity-10 blur-[80px] animate-pulse" />
-          
-          {/* Reactor Containment Rings */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none flex items-center justify-center opacity-[0.03] mix-blend-screen group-hover/system:opacity-[0.08] transition-opacity duration-1000">
-            <div className="absolute w-[1000px] h-[1000px] border-[1px] border-[var(--color-accent)] rounded-full animate-[spin_90s_linear_infinite]" />
-            <div className="absolute w-[800px] h-[800px] border-[2px] border-dashed border-[var(--color-accent)] rounded-full animate-[spin_60s_linear_infinite_reverse]" />
-            <div className="absolute w-[600px] h-[600px] border-[4px] border-dotted border-[var(--color-accent)] rounded-full animate-[spin_40s_linear_infinite]" />
-            <div className="absolute w-[400px] h-[400px] border-[8px] border-[var(--color-accent)] rounded-full opacity-30 shadow-[0_0_50px_var(--color-accent)]" />
-          </div>
-
-          {/* Containment Shield Top Edge */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
-          
-          <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto">
-            <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
-              <div className="w-8 h-px bg-[var(--color-accent)]/50" />
-              // CORE SYSTEM REACTOR
-              <div className="w-8 h-px bg-[var(--color-accent)]/50" />
-            </div>
-            <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
-              Every maker enters at a level. <br/>
-              <span className="inline-flex items-center gap-4 flex-wrap justify-center">
-                Every level builds new skills.
-                <span className="hidden md:inline-flex relative -top-1 w-6 h-6 items-center justify-center rounded-full border-2 border-[var(--color-accent)]">
-                  <span className="w-2 h-2 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
-                </span>
-              </span> <br/>
-              Every project creates evidence of growth. <br/>
-              Every showcase builds confidence.
-            </h3>
-            <p className="text-2xl text-white/40 font-display italic">
-              Nobody stays where they started.
-            </p>
-          </div>
-        </motion.div>
+        {renderCore()}
 
         {/* Membership Strip */}
         <motion.div 
@@ -195,6 +246,26 @@ export default function ProgramPathway() {
           </div>
         </motion.div>
 
+      </div>
+
+      {/* Developer Toggle Menu for Core Metaphor Designs */}
+      <div className="fixed bottom-4 left-4 z-[100] bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-black/10 flex flex-col gap-2">
+        <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-gray-500 mb-1">Select Core Design</div>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              onClick={() => setCoreDesign(n)}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                coreDesign === n 
+                  ? 'bg-[var(--color-accent)] text-white scale-110 shadow-lg shadow-[var(--color-accent)]/30' 
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
