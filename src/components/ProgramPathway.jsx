@@ -88,7 +88,7 @@ export default function ProgramPathway() {
       <BlueprintGrid opacity={0.4} />
 
       {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-0 hidden lg:block">
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-20 hidden lg:block">
         <MechanicalTimeline scrollYProgress={scrollYProgress} />
       </div>
 
@@ -131,24 +131,7 @@ export default function ProgramPathway() {
           viewport={{ once: true }}
           className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border border-black shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)] flex flex-col items-center text-center"
         >
-          {/* Symmetrical Circuit Illumination Box */}
-          <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen opacity-70 group-hover/system:opacity-100 transition-opacity duration-700">
-            {/* The SVG paths draw a rounded circuit box that surrounds the content */}
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} 
-              className="top-0 left-0 w-full h-full" 
-              pathD="M 500 0 V 48 C 500 20, 480 0, 450 0 H 48 C 20 0, 0 20, 0 48 V 952 C 0 980, 20 1000, 48 1000 H 450 C 480 1000, 500 980, 500 952" 
-              viewBox="0 0 1000 1000" 
-              scrollOffset={["start 80%", "center 40%"]} 
-            />
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} 
-              className="top-0 left-0 w-full h-full" 
-              pathD="M 500 0 V 48 C 500 20, 520 0, 550 0 H 952 C 980 0, 1000 20, 1000 48 V 952 C 1000 980, 980 1000, 952 1000 H 550 C 520 1000, 500 980, 500 952" 
-              viewBox="0 0 1000 1000" 
-              scrollOffset={["start 80%", "center 40%"]} 
-            />
-          </div>
+
 
           {/* Deep Core Glow */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--color-accent)]/10 blur-[120px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-1000" />
