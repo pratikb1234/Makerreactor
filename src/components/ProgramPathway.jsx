@@ -133,7 +133,7 @@ export default function ProgramPathway() {
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
           
-          <div className="relative z-10 w-full lg:w-[45%]">
+          <div className="relative z-10 w-full lg:max-w-[calc(50%-80px)]">
             <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
               // THE SYSTEM
@@ -321,7 +321,7 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
 
       {/* Level Card Base Content - Wrapped in a jolt animation */}
       <motion.div 
-        className="w-full lg:w-[45%] relative z-10" 
+        className="w-full lg:w-[calc(50%-80px)] relative z-10" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
         animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
