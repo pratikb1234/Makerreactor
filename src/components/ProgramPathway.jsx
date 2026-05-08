@@ -2,10 +2,16 @@ import { useRef, useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, FloatingCodeWidget } from './MakerElements';
 
+import imgTinker from '../assets/tinker.png';
+import imgBuild from '../assets/builder.png';
+import imgEngineer from '../assets/engineer.png';
+import imgInvent from '../assets/inventor.png';
+
 const levels = [
   {
     id: "01",
     title: "TINKER",
+    image: imgTinker,
     grades: "Grades 1 to 3",
     desc: "Young makers begin with materials, movement, balance, structures and simple mechanisms. They learn to use their hands, make choices, work safely and explain what they created.",
     grid: {
@@ -18,6 +24,7 @@ const levels = [
   {
     id: "02",
     title: "BUILD",
+    image: imgBuild,
     grades: "Grades 4 to 5",
     desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
     grid: {
@@ -30,6 +37,7 @@ const levels = [
   {
     id: "03",
     title: "ENGINEER",
+    image: imgEngineer,
     grades: "Grades 6 to 7",
     desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
     grid: {
@@ -42,6 +50,7 @@ const levels = [
   {
     id: "04",
     title: "INVENT",
+    image: imgInvent,
     grades: "Grades 8 to 9+",
     desc: "Makers take on original work. They use advanced robotics, CAD, AI, connected devices, electronics and product thinking to build solutions that can be tested, presented and improved in the real world.",
     grid: {
@@ -214,9 +223,21 @@ function LevelCardBase({ level, index }) {
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       {/* Technical Label */}
-      <div className="absolute top-8 right-8 font-mono text-[11px] text-black/20 font-bold uppercase tracking-widest">
+      <div className="absolute top-8 right-8 font-mono text-[11px] text-black/20 font-bold uppercase tracking-widest z-20 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
         LVL_{level.id}_PATH
       </div>
+
+      {/* Hero Image */}
+      {level.image && (
+        <div className="relative -mx-8 md:-mx-12 -mt-8 md:-mt-12 mb-8 h-48 sm:h-64 overflow-hidden rounded-t-[2.5rem] border-b border-black/5">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
+          <img 
+            src={level.image} 
+            alt={level.title} 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+          />
+        </div>
+      )}
 
       <div className="mb-10 relative">
         <div className="font-mono text-4xl font-bold text-black/5 mb-2 leading-none">{level.id}</div>
@@ -272,23 +293,23 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
-      {/* Level Card Base Content - Wrapped in a magnetic pull animation */}
+      {/* Level Card Base Content - Wrapped in a jolt animation */}
       <motion.div 
         className="w-full lg:w-[45%]" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
-        animate={(isActive || isHovered) ? { x: isEven ? 15 : -15 } : { x: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20, mass: 2 }}
+        animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
       >
-        {/* Pass isActive down so the card can light up when magnetized */}
+        {/* Pass isActive down so the card can light up when punched */}
         <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
           <LevelCardBase level={level} index={index} />
         </div>
       </motion.div>
 
-      {/* Magnetic Connector - LG only */}
-      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-12 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
-        <ElectroMagnetNode isActive={isActive || isHovered} isEven={isEven} />
+      {/* Decorative Mechanical Linkage Piston Arm - LG only */}
+      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
+        <PistonArm isActive={isActive || isHovered} isEven={isEven} />
       </div>
       
       {/* Empty space on opposite side */}
@@ -297,37 +318,37 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   );
 }
 
-function ElectroMagnetNode({ isActive, isEven }) {
-  // Magnet is attached to the center track and pulls the card towards it.
+function PistonArm({ isActive, isEven }) {
+  // Piston pushes OUT from the center towards the card.
+  // Center is at the right for isEven, left for !isEven.
   return (
     <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
-      
-      {/* Magnet Base (attached to center) */}
-      <div className={`w-6 h-12 bg-[#222] border-2 border-[#111] rounded-sm relative z-10 flex items-center justify-center shadow-lg transition-colors duration-300 ${isActive ? 'shadow-[0_0_20px_var(--color-accent)]' : ''}`}>
-         {/* Electromagnetic Coils */}
-         <div className="w-4 h-10 flex flex-col justify-evenly">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className={`w-full h-0.5 transition-colors duration-300 ${isActive ? 'bg-[var(--color-accent)] shadow-[0_0_5px_var(--color-accent)]' : 'bg-[#555]'}`} />
-            ))}
-         </div>
+      {/* Outer Cylinder (attached to center) */}
+      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
+         {/* Decorative cylinder stripes */}
+         <div className="w-full h-[2px] bg-black/20" />
       </div>
 
-      {/* Magnetic Pull Waves */}
-      <div className="flex-grow h-full flex items-center justify-center relative overflow-hidden">
-        {isActive && (
-          <motion.div 
-            className={`absolute flex gap-1 ${isEven ? 'flex-row-reverse' : 'flex-row'}`}
-            initial={{ opacity: 0, x: isEven ? -20 : 20 }}
-            animate={{ opacity: [0, 1, 0], x: isEven ? 10 : -10 }}
-            transition={{ duration: 0.6, repeat: Infinity, ease: "linear" }}
-          >
-            {/* Arcs/Waves flowing into the magnet */}
-            <div className="w-1.5 h-6 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-100" />
-            <div className="w-1.5 h-4 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-60" />
-            <div className="w-1.5 h-2 bg-[var(--color-accent)] rounded-full blur-[1px] opacity-30" />
-          </motion.div>
-        )}
-      </div>
+      {/* Inner Rod (shoots out to the card) */}
+      <motion.div 
+        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
+        initial={{ width: '10%' }}
+        animate={{ width: isActive ? '100%' : '10%' }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
+      >
+        {/* Plunger Head hitting the card */}
+        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
+          {/* Spark effect when hitting */}
+          {isActive && (
+            <motion.div 
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
+            />
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }
