@@ -5,7 +5,7 @@ export default function TextReveal({ text, className = "", delay = 0 }) {
 
   const container = {
     hidden: { opacity: 0 },
-    visible: (i = 1) => ({
+    visible: () => ({
       opacity: 1,
       transition: { staggerChildren: 0.12, delayChildren: delay * 0.3 },
     }),

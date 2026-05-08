@@ -3,10 +3,14 @@ import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, Symbol } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
 
+import img1 from '../assets/card1.jpeg';
+import img2 from '../assets/card2.png';
+import img3 from '../assets/card3.png';
+
 const STEPS = [
-  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", image: '/src/assets/WhatsApp Image 2026-04-30 at 20.48.28.jpeg', threshold: 0.15 },
-  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', image: '/src/assets/card 2.png', threshold: 0.50 },
-  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', image: '/src/assets/card 3.png', threshold: 0.85 },
+  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", image: img1, threshold: 0.15 },
+  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', image: img2, threshold: 0.50 },
+  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', image: img3, threshold: 0.85 },
 ];
 
 export default function WhyItWorks() {
@@ -15,7 +19,7 @@ export default function WhyItWorks() {
   const enderRef = useRef(null);
   const { isHeroBridgeComplete } = useCircuit();
 
-  const { scrollYProgress } = useScroll({
+  useScroll({
     target: sectionRef,
     offset: ['start center', 'end center'],
   });

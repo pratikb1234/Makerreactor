@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode } from './MakerElements';
-import { useCircuit } from '../context/CircuitContext';
 
 const levels = [
   {
@@ -60,8 +58,7 @@ export default function ProgramPathway() {
     offset: ["start end", "end start"]
   });
 
-  const [circuitDesign, setCircuitDesign] = useState(0);
-  const circuitNames = ["Straight Bus", "Data Zig-Zag", "Dual Rail", "Stepped Routing", "Node Sequence"];
+
 
   return (
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
@@ -99,52 +96,10 @@ export default function ProgramPathway() {
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         {/* Pathway Visualization */}
         <div className="relative">
-          {/* Circuit Routing Options */}
-          {circuitDesign === 0 && (
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
-              pathD="M 50 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-            />
-          )}
-          
-          {circuitDesign === 1 && (
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[200px] h-full z-0 hidden lg:block"
-              pathD="M 100 0 V 150 L 160 250 V 450 L 40 550 V 750 L 100 850 V 1000" viewBox="0 0 200 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-            />
-          )}
-
-          {circuitDesign === 2 && (
-            <>
-              <ScrollCircuitLine 
-                sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
-                pathD="M 30 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-              />
-              <ScrollCircuitLine 
-                sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
-                pathD="M 70 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-              />
-            </>
-          )}
-
-          {circuitDesign === 3 && (
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[1000px] h-full z-0 hidden lg:block"
-              pathD="M 500 0 V 50 H 200 V 300 H 800 V 550 H 200 V 800 H 800 V 950 H 500 V 1000" viewBox="0 0 1000 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-            />
-          )}
-
-          {circuitDesign === 4 && (
-            <ScrollCircuitLine 
-              sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
-              pathD="M 50 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
-              components={[
-                { type: 'node', cx: 50, cy: 150, r: 4 },
-                { type: 'node', cx: 50, cy: 450, r: 8 },
-                { type: 'node', cx: 50, cy: 750, r: 4 },
-              ]}
-            />
-          )}
+          <ScrollCircuitLine 
+            sectionRef={sectionRef} className="absolute left-1/2 -translate-x-1/2 top-0 w-[100px] h-full z-0 hidden lg:block"
+            pathD="M 50 0 V 1000" viewBox="0 0 100 1000" style={{ left: '50%', transform: 'translateX(-50%)' }}
+          />
           
           <div className="space-y-32 relative">
             {levels.map((level, idx) => (
@@ -296,24 +251,4 @@ function LevelCard({ level, index, scrollYProgress }) {
   );
 }
 
-{/* Design Toggle Button for Circuit Testing - Portaled to document.body */}
-export function CircuitToggle({ circuitDesign, setCircuitDesign, circuitNames }) {
-  if (typeof document === 'undefined') return null;
-  return createPortal(
-    <div className="fixed bottom-24 right-6 z-[99999] flex flex-col items-end gap-2" style={{ position: 'fixed' }}>
-      <div className="flex flex-col items-end gap-1 bg-white/90 p-3 rounded-xl border border-black/10 shadow-2xl backdrop-blur-md">
-        <span className="text-black/50 font-mono text-[11px] uppercase tracking-widest mr-2 mb-2 w-full border-b border-black/10 pb-1">Circuit Routing:</span>
-        {circuitNames.map((name, d) => (
-          <button 
-            key={d} 
-            onClick={() => setCircuitDesign(d)}
-            className={`px-3 py-1.5 w-full text-right rounded-md font-mono text-[11px] font-bold uppercase transition-colors ${circuitDesign === d ? 'bg-black text-white' : 'text-black/50 hover:bg-black/5 hover:text-black'}`}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
-    </div>,
-    document.body
-  );
-}
+

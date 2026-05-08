@@ -837,6 +837,7 @@ export const HeroBridge = ({ onBridgeComplete }) => {
 
   // Reset when bridge gate drops
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!isHeroBridgeComplete) setFired(false);
   }, [isHeroBridgeComplete]);
 
@@ -1002,6 +1003,7 @@ export const FloatingCodeWidget = ({ className = "" }) => {
   const lines = isPowered ? LINES_ON : LINES_OFF;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShown(0);
     let i = 0;
     const t = setInterval(() => { i++; setShown(i); if (i >= lines.length) clearInterval(t); }, 90);
