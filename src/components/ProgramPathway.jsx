@@ -124,19 +124,32 @@ export default function ProgramPathway() {
         </div>
 
 
-        {/* The System - Dark Card */}
+        {/* The System - Dark Card (Reactor Core Metaphor) */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-48 bg-[#0d0d0d] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border border-black shadow-[0_0_80px_-20px_rgba(255,90,0,0.15)]"
+          className="mt-48 bg-[#050505] rounded-[3rem] p-8 md:p-16 relative overflow-hidden text-white group/system border-2 border-black/80 shadow-[0_40px_100px_-20px_rgba(255,90,0,0.2)]"
         >
+          {/* Reactor Core Ambient Glows */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-accent)]/15 blur-[100px] rounded-full group-hover/system:bg-[var(--color-accent)]/20 transition-colors duration-700" />
+          <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_60%)] opacity-10 blur-[80px] animate-pulse" />
+          
+          {/* Reactor Containment Rings */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none flex items-center justify-center opacity-[0.03] mix-blend-screen group-hover/system:opacity-[0.08] transition-opacity duration-1000">
+            <div className="absolute w-[1000px] h-[1000px] border-[1px] border-[var(--color-accent)] rounded-full animate-[spin_90s_linear_infinite]" />
+            <div className="absolute w-[800px] h-[800px] border-[2px] border-dashed border-[var(--color-accent)] rounded-full animate-[spin_60s_linear_infinite_reverse]" />
+            <div className="absolute w-[600px] h-[600px] border-[4px] border-dotted border-[var(--color-accent)] rounded-full animate-[spin_40s_linear_infinite]" />
+            <div className="absolute w-[400px] h-[400px] border-[8px] border-[var(--color-accent)] rounded-full opacity-30 shadow-[0_0_50px_var(--color-accent)]" />
+          </div>
+
+          {/* Containment Shield Top Edge */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
           
           <div className="relative z-10 max-w-4xl">
             <div className="font-mono text-xs uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-8 flex items-center gap-3">
               <div className="w-8 h-px bg-[var(--color-accent)]/50" />
-              // THE SYSTEM
+              // CORE SYSTEM REACTOR
             </div>
             <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12">
               Every maker enters at a level. <br/>
