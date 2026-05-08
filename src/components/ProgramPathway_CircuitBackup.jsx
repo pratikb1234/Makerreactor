@@ -78,9 +78,15 @@ export default function ProgramPathway() {
     <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
       <BlueprintGrid opacity={0.4} />
 
-      {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-0 hidden lg:block">
-        <MechanicalTimeline scrollYProgress={scrollYProgress} />
+      {/* Single continuous circuit line */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[100px] pointer-events-none z-0 hidden lg:block">
+        <ScrollCircuitLine 
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 50 0 V 1000" 
+          viewBox="0 0 100 1000"
+          scrollOffset={["start center", "end center"]}
+        />
       </div>
 
       {/* ── Header Container ── */}
@@ -273,7 +279,7 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
       
       {/* Visual Marker on central line */}
       <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
-        <MechanicalLinkageNode isActive={isActive || isHovered} />
+        <ArcReactorNode isActive={isActive} isHovered={isHovered} setIsHovered={setIsHovered} />
       </div>
 
       {/* Level Card Base Content */}
@@ -281,8 +287,8 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         <LevelCardBase level={level} index={index} />
       </div>
 
-      {/* Decorative Mechanical Linkage connector - LG only */}
-      <div className={`hidden lg:block w-[5%] h-2 bg-black/5 rounded-full absolute top-1/2 ${isEven ? 'left-[45%]' : 'right-[45%]'}`} />
+      {/* Decorative Blueprint connector - LG only */}
+      <div className={`hidden lg:block w-[5%] h-px bg-black/5 absolute top-1/2 ${isEven ? 'left-[45%]' : 'right-[45%]'}`} />
       
       {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
@@ -290,79 +296,4 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   );
 }
 
-// ── Mechanical Contraption Components ──
 
-function MechanicalTimeline({ scrollYProgress }) {
-  const payloadY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const beltProgress = useTransform(scrollYProgress, [0, 1], ["0px", "1000px"]);
-
-  return (
-    <div className="absolute inset-0 flex flex-col items-center">
-      {/* Conveyor Belt / Elevator Shaft */}
-      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-[1rem] border-x border-black/10 flex justify-center shadow-inner overflow-hidden">
-        {/* Belt Treads */}
-        <motion.div 
-          className="absolute top-[-1000px] bottom-[-1000px] w-full"
-          style={{ 
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 20px)',
-            y: beltProgress
-          }}
-        />
-        {/* Inner track rail */}
-        <div className="absolute top-0 bottom-0 w-2 bg-black/5" />
-      </div>
-
-      {/* The Elevator Capsule (Payload) */}
-      <motion.div 
-        className="absolute top-0 w-16 h-20 bg-white rounded-xl border-[3px] border-[var(--color-accent)] shadow-[0_10px_30px_rgba(255,90,0,0.4)] flex flex-col items-center justify-center z-20"
-        style={{ top: payloadY, y: "-50%" }}
-      >
-        <div className="w-8 h-2 bg-black/10 rounded-full mb-2" />
-        <div className="w-6 h-6 bg-[var(--color-accent)] rounded-full animate-pulse shadow-[inset_0_0_10px_white]" />
-        <div className="w-8 h-2 bg-black/10 rounded-full mt-2" />
-      </motion.div>
-    </div>
-  );
-}
-
-function MechanicalLinkageNode({ isActive }) {
-  return (
-    <div className="relative flex items-center justify-center w-32 h-32 group">
-      {/* Background large gear */}
-      <motion.div 
-        animate={{ rotate: isActive ? 360 : 0 }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-black/10'}`}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Inner medium gear (spins opposite) */}
-      <motion.div 
-        animate={{ rotate: isActive ? -360 : 0 }} 
-        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-black' : 'text-black/5'}`}
-        style={{ padding: '20%' }}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Center pivot */}
-      <div className={`w-6 h-6 rounded-full border-4 transition-all duration-500 z-10 ${isActive ? 'border-[var(--color-accent)] bg-white shadow-[0_0_20px_var(--color-accent)]' : 'border-black/20 bg-white'}`} />
-    </div>
-  );
-}
-
-function GearSVG({ width = "100", height = "100" }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 100 100" fill="currentColor">
-      <path d="M50 15C30.67 15 15 30.67 15 50C15 69.33 30.67 85 50 85C69.33 85 85 69.33 85 50C85 30.67 69.33 15 50 15ZM50 70C38.95 70 30 61.05 30 50C30 38.95 38.95 30 50 30C61.05 30 70 38.95 70 50C70 61.05 61.05 70 50 70Z" />
-      <rect x="45" y="0" width="10" height="20" rx="2" />
-      <rect x="45" y="80" width="10" height="20" rx="2" />
-      <rect x="0" y="45" width="20" height="10" rx="2" />
-      <rect x="80" y="45" width="20" height="10" rx="2" />
-      <rect x="18" y="14" width="10" height="20" rx="2" transform="rotate(45 23 24)" />
-      <rect x="74" y="70" width="10" height="20" rx="2" transform="rotate(45 79 80)" />
-      <rect x="14" y="74" width="20" height="10" rx="2" transform="rotate(45 24 79)" />
-      <rect x="70" y="18" width="20" height="10" rx="2" transform="rotate(45 80 23)" />
-    </svg>
-  );
-}
