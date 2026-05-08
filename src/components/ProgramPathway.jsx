@@ -282,20 +282,30 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   
   // Calculate exact intersection point!
   useEffect(() => {
-    if (cardRef.current) {
-      const section = cardRef.current.closest('section');
-      if (section) {
-        let offsetTop = 0;
-        let el = cardRef.current;
-        while (el && el !== section) {
-          offsetTop += el.offsetTop;
-          el = el.offsetParent;
-        }
-        // The center of this timeline row relative to the top of the section
-        const center = (offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
-        setActivationPoint(center);
+    if (!cardRef.current) return;
+    const section = cardRef.current.closest('section');
+    if (!section) return;
+
+    const calculate = () => {
+      let offsetTop = 0;
+      let el = cardRef.current;
+      while (el && el !== section) {
+        offsetTop += el.offsetTop;
+        el = el.offsetParent;
       }
-    }
+      // The center of this timeline row relative to the top of the section
+      const center = (offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
+      setActivationPoint(center);
+    };
+
+    // Calculate immediately
+    calculate();
+
+    // Recalculate whenever the section size changes (e.g. when images load and push content down)
+    const observer = new ResizeObserver(() => calculate());
+    observer.observe(section);
+    
+    return () => observer.disconnect();
   }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
