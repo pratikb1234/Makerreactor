@@ -24,18 +24,22 @@ export default function WhyThisExists() {
     <section ref={sectionRef} className="py-32 bg-[var(--color-dark)] relative text-[var(--color-light)] overflow-hidden">
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       
-      {/* PCB Trace — branches right at each card with buzzer/motor/buzzer */}
-      <ScrollCircuitLine 
-        sectionRef={sectionRef}
-        className="top-0 left-0 w-[140px] h-full"
-        pathD="M 20 0 V 250 H 80 V 600 H 20 V 1000"
-        viewBox="0 0 100 1000"
-        components={[
-          { type: 'ai',    cx: 20, cy: 125, threshold: 0.12 },
-          { type: 'motor', cx: 80, cy: 425, threshold: 0.55 },
-          { type: 'led',   cx: 20, cy: 800, threshold: 0.85 },
-        ]}
-      />
+      {/* Central PCB Trace */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 pointer-events-none z-0" style={{ width: 80 }}>
+        <ScrollCircuitLine 
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 40 0 V 1000"
+          viewBox="0 0 80 1000"
+          components={[
+            { type: 'quantum', cx: 40, cy: 150, threshold: 0.15 },
+            { type: 'linkage', cx: 40, cy: 350, threshold: 0.35 },
+            { type: 'brain', cx: 40, cy: 550, threshold: 0.55 },
+            { type: 'satellite', cx: 40, cy: 750, threshold: 0.75 },
+            { type: 'rocket', cx: 40, cy: 950, threshold: 0.95 },
+          ]}
+        />
+      </div>
 
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-8 relative">

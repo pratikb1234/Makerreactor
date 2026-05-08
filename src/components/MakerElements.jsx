@@ -444,8 +444,78 @@ const Piston = ({ on }) => {
 };
 
 
+// ─── Futuristic Tech & Skills ──────────────────────────────────────────────────
+const QuantumCore = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      <circle cx="0" cy="0" r="14" fill="none" stroke={c} strokeWidth="1.5" strokeDasharray="3 3" />
+      <ellipse cx="0" cy="0" rx="18" ry="6" fill="none" stroke={c} strokeWidth="1" transform="rotate(45)" />
+      <ellipse cx="0" cy="0" rx="18" ry="6" fill="none" stroke={c} strokeWidth="1" transform="rotate(-45)" />
+      <circle cx="0" cy="0" r="4" fill={on ? c : 'none'} stroke={c} strokeWidth="2" />
+      {on && <circle cx="0" cy="0" r="4" fill={c} filter="blur(2px)" />}
+    </g>
+  );
+};
+
+const VRHeadset = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      <rect x="-14" y="-8" width="28" height="14" rx="4" fill="none" stroke={c} strokeWidth="2" />
+      <path d="M-14 -2 C-18 -2, -18 6, -14 6" fill="none" stroke={c} strokeWidth="2" />
+      <path d="M14 -2 C18 -2, 18 6, 14 6" fill="none" stroke={c} strokeWidth="2" />
+      <rect x="-10" y="-4" width="8" height="6" rx="1" fill={on ? 'rgba(255,90,0,0.3)' : 'none'} stroke={c} strokeWidth="1.5" />
+      <rect x="2" y="-4" width="8" height="6" rx="1" fill={on ? 'rgba(255,90,0,0.3)' : 'none'} stroke={c} strokeWidth="1.5" />
+    </g>
+  );
+};
+
+const Satellite = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g transform="rotate(-30)">
+      <rect x="-6" y="-6" width="12" height="12" rx="2" fill="none" stroke={c} strokeWidth="2" />
+      <rect x="-24" y="-4" width="16" height="8" fill="none" stroke={c} strokeWidth="1.5" strokeDasharray="2 1" />
+      <rect x="8" y="-4" width="16" height="8" fill="none" stroke={c} strokeWidth="1.5" strokeDasharray="2 1" />
+      <circle cx="0" cy="0" r="2" fill={c} />
+      <path d="M0 6 L0 14" stroke={c} strokeWidth="1.5" />
+      {on && <path d="M-4 16 A 6 6 0 0 0 4 16" fill="none" stroke={c} strokeWidth="1.5" strokeDasharray="2 2" />}
+      {on && <path d="M-8 20 A 10 10 0 0 0 8 20" fill="none" stroke={c} strokeWidth="1.5" strokeDasharray="2 2" opacity="0.5" />}
+    </g>
+  );
+};
+
+const NeuralBrain = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      <path d="M-12 0 C-12 -10, -4 -16, 0 -12 C4 -16, 12 -10, 12 0 C16 6, 8 14, 0 10 C-8 14, -16 6, -12 0 Z" fill="none" stroke={c} strokeWidth="2" />
+      <circle cx="-5" cy="-2" r="1.5" fill={c} />
+      <circle cx="5" cy="2" r="1.5" fill={c} />
+      <circle cx="0" cy="5" r="1.5" fill={c} />
+      <path d="M-5 -2 L5 2 L0 5 Z" fill="none" stroke={c} strokeWidth="1" strokeDasharray="1 2" />
+      {on && <circle cx="-5" cy="-2" r="3" fill={c} opacity="0.3" />}
+    </g>
+  );
+};
+
+const DNAHelix = ({ on }) => {
+  const c = on ? '#FF5A00' : '#bbb';
+  return (
+    <g>
+      <path d="M-6 -12 C 10 -6, -10 6, 6 12" fill="none" stroke={c} strokeWidth="2" />
+      <path d="M6 -12 C -10 -6, 10 6, -6 12" fill="none" stroke={c} strokeWidth="2" opacity="0.5" />
+      <line x1="-3" y1="-8" x2="3" y2="-8" stroke={c} strokeWidth="1.5" />
+      <line x1="-5" y1="0" x2="5" y2="0" stroke={c} strokeWidth="1.5" />
+      <line x1="-3" y1="8" x2="3" y2="8" stroke={c} strokeWidth="1.5" />
+      {on && <circle cx="0" cy="0" r="12" fill="none" stroke={c} strokeWidth="1" opacity="0.2" />}
+    </g>
+  );
+};
+
 // ─── Symbol Dispatcher ────────────────────────────────────────────────────────
-const Symbol = ({ type, on }) => {
+export const Symbol = ({ type, on }) => {
   if (type === 'led') return <LED on={on} />;
   if (type === 'resistor') return <Resistor on={on} />;
   if (type === 'buzzer') return <Buzzer on={on} />;
@@ -462,22 +532,145 @@ const Symbol = ({ type, on }) => {
   if (type === 'gear') return <SmallGear on={on} />;
   if (type === 'linkage') return <Linkage on={on} />;
   if (type === 'piston') return <Piston on={on} />;
+  if (type === 'quantum') return <QuantumCore on={on} />;
+  if (type === 'vr') return <VRHeadset on={on} />;
+  if (type === 'satellite') return <Satellite on={on} />;
+  if (type === 'brain') return <NeuralBrain on={on} />;
+  if (type === 'dna') return <DNAHelix on={on} />;
   return null;
 };
 
 // Wrapper: activates when pathLength crosses this component's threshold
+export const ArcReactorNode = ({ isActive, isHovered, setIsHovered, children, className = "" }) => {
+  return (
+    <div className={`flex items-center justify-center z-30 ${className}`}>
+      <motion.div 
+        animate={isHovered ? {
+          scale: 1.35,
+          borderColor: 'var(--color-accent)',
+          boxShadow: '0 0 30px rgba(255, 90, 0, 0.4), inset 0 0 10px rgba(255, 90, 0, 0.2)',
+          backgroundColor: '#111111'
+        } : {
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#FFFFFF',
+          borderColor: isActive ? 'var(--color-accent)' : 'rgba(0,0,0,0.1)'
+        }}
+        className="w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-500 relative overflow-visible"
+      >
+        {/* Reliable HTML Sliding Doors (Left & Right Halves) */}
+        <motion.div 
+          className="absolute inset-[-2px] rounded-full overflow-hidden z-20 pointer-events-none"
+          initial={false}
+          animate={{ rotate: isHovered ? 90 : 0 }}
+          transition={{ duration: 0.8, ease: "anticipate" }}
+        >
+          <motion.div 
+            className="absolute left-0 top-0 bottom-0 w-[51%] bg-white border-r border-black/20"
+            animate={isHovered ? { x: '-100%' } : { x: 0 }}
+            transition={{ duration: 0.8, ease: "anticipate" }}
+          />
+          <motion.div 
+            className="absolute right-0 top-0 bottom-0 w-[51%] bg-white border-l border-black/20"
+            animate={isHovered ? { x: '100%' } : { x: 0 }}
+            transition={{ duration: 0.8, ease: "anticipate" }}
+          />
+        </motion.div>
+
+        {/* Dark Mechanical Arc Reactor (Revealed when gates open) */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.15, type: "spring", stiffness: 150, damping: 20 }}
+          className="absolute inset-[-4px] rounded-full flex items-center justify-center pointer-events-none z-10"
+        >
+          {/* The 10 Mechanical Coils (Ratchet Spin) */}
+          <motion.div 
+            animate={isHovered ? { rotate: -360 } : {}}
+            transition={{ duration: 15, repeat: Infinity, ease: "steps(10)" }}
+            className="absolute w-[120%] h-[120%]"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              {/* Heavy Black Torus */}
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#1a1a1a" strokeWidth="10" />
+              {/* 10 Dark Coils */}
+              {Array.from({ length: 10 }).map((_, i) => (
+                <g key={i} transform={`rotate(${i * 36} 50 50)`}>
+                  <rect x="43" y="5" width="14" height="10" fill="#111111" stroke="var(--color-accent)" strokeWidth="1" />
+                  <line x1="45" y1="8" x2="55" y2="8" stroke="var(--color-accent)" strokeWidth="1" opacity="0.8" />
+                  <line x1="45" y1="12" x2="55" y2="12" stroke="var(--color-accent)" strokeWidth="1" opacity="0.8" />
+                </g>
+              ))}
+            </svg>
+          </motion.div>
+
+          {/* Inner Glowing Ring & Rivets (Smooth Spin) */}
+          <motion.div 
+            animate={isHovered ? { rotate: 360 } : {}}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="absolute w-[85%] h-[85%]"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <circle cx="50" cy="50" r="28" fill="none" stroke="var(--color-accent)" strokeWidth="6" className="opacity-80 drop-shadow-[0_0_6px_var(--color-accent)]" />
+              <circle cx="50" cy="50" r="28" fill="none" stroke="#ffffff" strokeWidth="1" className="opacity-80" />
+              {Array.from({ length: 12 }).map((_, i) => (
+                <circle key={`dot-${i}`} cx="50" cy="22" r="2" fill="#ffffff" className="drop-shadow-[0_0_2px_var(--color-accent)]" transform={`rotate(${i * 30} 50 50)`} />
+              ))}
+            </svg>
+          </motion.div>
+
+          {/* Center Core & Mesh */}
+          <div className="absolute w-[30%] h-[30%] rounded-full bg-white blur-[2px] shadow-[0_0_10px_var(--color-accent),0_0_20px_var(--color-accent)]" />
+          <svg viewBox="0 0 100 100" className="absolute w-[40%] h-[40%] animate-[spin_4s_linear_infinite]">
+             <circle cx="50" cy="50" r="45" fill="none" stroke="var(--color-accent)" strokeWidth="3" strokeDasharray="6 10" opacity="0.8" />
+          </svg>
+        </motion.div>
+
+        {/* Central Component (Visible when gates are closed) */}
+        <motion.div 
+          animate={isHovered ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
+          className="transition-all duration-300 relative z-30 pointer-events-none flex items-center justify-center" 
+        >
+          {children ? children : (
+            <div style={{ backgroundColor: isActive ? 'var(--color-accent)' : 'black' }} className="w-3 h-3 rounded-full" />
+          )}
+        </motion.div>
+        
+        {/* Precision Trigger Zone - ONLY activates when perfectly centered */}
+        <div 
+           className="absolute inset-0 m-auto w-8 h-8 rounded-full z-50 cursor-pointer"
+           onMouseEnter={() => setIsHovered?.(true)}
+           onMouseLeave={() => setIsHovered?.(false)}
+        />
+      </motion.div>
+    </div>
+  );
+};
+
 const CircuitComponent = ({ type, cx, cy, pathLength, threshold, isPowered }) => {
-  const opacity = useTransform(pathLength, [Math.max(0, threshold - 0.04), threshold + 0.01], [0, 1]);
+  const pathOpacity = useTransform(pathLength, [Math.max(0, threshold - 0.04), threshold + 0.01], [0, 1]);
+  // Gate: icon is invisible when not powered, regardless of path progress
+  const opacity = useTransform(pathOpacity, (v) => isPowered ? v : 0);
   const [on, setOn] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
   useEffect(() => {
     const update = () => setOn(pathLength.get() >= threshold && isPowered);
-    update(); // Initial check in case isPowered just changed
+    update();
     const unsub = pathLength.on('change', update);
     return unsub;
   }, [pathLength, threshold, isPowered]);
+
   return (
     <motion.g transform={`translate(${cx},${cy})`} style={{ opacity }}>
-      <Symbol type={type} on={on} />
+      <foreignObject x="-50" y="-50" width="100" height="100" className="overflow-visible pointer-events-none">
+        <div className="w-full h-full flex items-center justify-center pointer-events-auto">
+          <ArcReactorNode isActive={on} isHovered={isHovered} setIsHovered={setIsHovered}>
+            <svg viewBox="-20 -20 40 40" className="w-8 h-8 pointer-events-none drop-shadow-sm">
+              <Symbol type={type} on={on} />
+            </svg>
+          </ArcReactorNode>
+        </div>
+      </foreignObject>
     </motion.g>
   );
 };
@@ -532,11 +725,35 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
   );
 };
 
-export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 1000", components = [], sectionRef, scrollOffset = ["start end", "end start"], isActivated: propIsActivated }) => {
+export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 1000", components = [], sectionRef, scrollOffset = ["start end", "end start"], isActivated: propIsActivated, shouldBoost = false, maxBackgroundLength = 1, onReachCenter }) => {
   const { isPowerFlowComplete } = useCircuit();
   const innerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef || innerRef, offset: scrollOffset });
-  const pathLength = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const pathLength = scrollYProgress;
+
+  // shouldBoost: when power trail reaches top, auto-illuminate to 2nd icon (threshold ~0.58)
+  const boostTarget = useMotionValue(0);
+  const boostProgress = useSpring(boostTarget, { stiffness: 30, damping: 25 });
+  useEffect(() => {
+    boostTarget.set(shouldBoost ? 0.46 : 0);
+  }, [shouldBoost]);
+  const displayPathLength = useTransform([pathLength, boostProgress], ([p, b]) => Math.max(p, b));
+
+  // Fire onReachCenter when scroll crosses 0.995 (line has bent fully right to center)
+  const hasFiredRef = useRef(false);
+  useEffect(() => {
+    if (!onReachCenter) return;
+    const unsubscribe = scrollYProgress.on('change', (v) => {
+      if (v >= 0.995 && !hasFiredRef.current) {
+        hasFiredRef.current = true;
+        onReachCenter(true);
+      } else if (v < 0.98 && hasFiredRef.current) {
+        hasFiredRef.current = false;
+        onReachCenter(false);
+      }
+    });
+    return unsubscribe;
+  }, [onReachCenter, scrollYProgress]);
 
   const [size, setSize] = useState({ w: 0, h: 0 });
 
@@ -578,9 +795,17 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
   return (
     <div ref={innerRef} className={`absolute pointer-events-none ${className}`}>
       <svg viewBox={`0 0 ${size.w} ${size.h}`} fill="none" strokeLinecap="square" strokeLinejoin="miter" className="w-full h-full overflow-visible">
-        <path d={scaledPathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2.5" />
+        <motion.path 
+          d={scaledPathD} 
+          stroke="rgba(0,0,0,0.07)" 
+          strokeWidth="2.5" 
+          style={{ 
+            pathLength: isActivated ? maxBackgroundLength : 0,
+            opacity: isActivated ? 0.3 : 0
+          }}
+        />
         <motion.path d={scaledPathD} stroke={stroke} strokeWidth="2.5"
-          style={{ pathLength, filter: isActivated ? `drop-shadow(0 0 6px ${glow})` : 'none' }} />
+          style={{ pathLength: displayPathLength, filter: isActivated ? `drop-shadow(0 0 6px ${glow})` : 'none' }} />
         
         {/* Solid white glowing core (Lightsaber effect) - perfectly matches pathLength */}
         {isActivated && (
@@ -590,13 +815,104 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
             strokeWidth="4"
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{ pathLength, filter: `drop-shadow(0 0 6px ${glow})` }}
+            style={{ pathLength: displayPathLength, filter: `drop-shadow(0 0 6px ${glow})` }}
           />
         )}
         {scaledComponents.map((comp, i) => (
           <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}
-            pathLength={pathLength} threshold={comp.threshold} isPowered={isActivated} />
+            pathLength={displayPathLength} threshold={comp.threshold} isPowered={isActivated} />
         ))}
+      </svg>
+    </div>
+  );
+};
+
+// ─── Hero → Section 2 Bridge ──────────────────────────────────────────────────
+// Renders as a thin centred column between Hero and WhyItWorks.
+// Draws a vertical glow line top→bottom when isHeroBridgeComplete is true,
+// then fires onBridgeComplete so Section 2 knows to turn on its circuit.
+export const HeroBridge = ({ onBridgeComplete }) => {
+  const { isHeroBridgeComplete } = useCircuit();
+  const [fired, setFired] = useState(false);
+
+  // Reset when bridge gate drops
+  useEffect(() => {
+    if (!isHeroBridgeComplete) setFired(false);
+  }, [isHeroBridgeComplete]);
+
+  const pathD = "M 40 0 V 100";
+  const viewBox = "0 0 80 100";
+
+  return (
+    <div
+      className="relative w-full pointer-events-none overflow-visible hidden lg:block"
+      style={{ height: '80px', zIndex: 20 }}
+    >
+      {/* Ghost track — always visible, very faint */}
+      <svg
+        viewBox={viewBox}
+        fill="none"
+        className="absolute left-1/2 -translate-x-1/2"
+        style={{ width: 80, height: 80, top: 0, overflow: 'visible' }}
+      >
+        <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2.5" strokeLinecap="square" />
+
+        {/* Live orange trace */}
+        {isHeroBridgeComplete && (
+          <motion.path
+            d={pathD}
+            stroke="#FF5A00"
+            strokeWidth="2.5"
+            strokeLinecap="square"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.5, ease: 'linear' }}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(255,90,0,0.9))' }}
+            onAnimationComplete={() => {
+              if (!fired) {
+                setFired(true);
+                onBridgeComplete?.();
+              }
+            }}
+          />
+        )}
+
+        {/* Repeating pulse along the bridge when live */}
+        {isHeroBridgeComplete && (
+          <motion.path
+            d={pathD}
+            stroke="white"
+            strokeWidth="6"
+            strokeDasharray="1, 100"
+            strokeLinecap="round"
+            initial={{ strokeDashoffset: 101 }}
+            animate={{ strokeDashoffset: -101 }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+            style={{ filter: 'drop-shadow(0 0 6px #FF5A00)' }}
+          />
+        )}
+
+        {/* Junction dot at top (hero end) */}
+        {isHeroBridgeComplete && (
+          <motion.circle
+            cx="40" cy="0" r="5"
+            fill="#FF5A00"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            style={{ filter: 'drop-shadow(0 0 8px #FF5A00)' }}
+          />
+        )}
+
+        {/* Junction dot at bottom (section 2 start) */}
+        {fired && (
+          <motion.circle
+            cx="40" cy="100" r="5"
+            fill="#FF5A00"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            style={{ filter: 'drop-shadow(0 0 8px #FF5A00)' }}
+          />
+        )}
       </svg>
     </div>
   );
@@ -675,9 +991,9 @@ const LINES_ON = [
   [{ t: '// ', c: '#6B7280' }, { t: 'System: ', c: '#6B7280' }, { t: 'MAKER MINDSET ON ✓', c: '#34D399' }],
   [],
   [{ t: 'const ', c: '#C084FC' }, { t: 'power', c: '#60A5FA' }, { t: ' = ', c: '#e5e7eb' }, { t: 'true', c: '#34D399' }],
-  [{ t: 'led', c: '#34D399' }, { t: '.brightness ', c: '#FCD34D' }, { t: '= ', c: '#e5e7eb' }, { t: '255', c: '#FF5A00' }],
-  [{ t: 'motor', c: '#34D399' }, { t: '.speed ', c: '#FCD34D' }, { t: '= ', c: '#e5e7eb' }, { t: '100', c: '#FF5A00' }],
-  [{ t: 'gear', c: '#34D399' }, { t: '.rpm ', c: '#FCD34D' }, { t: '= ', c: '#e5e7eb' }, { t: '360', c: '#FF5A00' }],
+  [{ t: 'drone', c: '#34D399' }, { t: '.deploy', c: '#FCD34D' }, { t: '({ mode: ', c: '#e5e7eb' }, { t: '"BUILD"', c: '#FF5A00' }, { t: ' })', c: '#e5e7eb' }],
+  [{ t: 'makers', c: '#34D399' }, { t: '.founding', c: '#FCD34D' }, { t: ' = ', c: '#e5e7eb' }, { t: '150', c: '#FF5A00' }],
+  [{ t: 'future', c: '#34D399' }, { t: '.belongs_to', c: '#FCD34D' }, { t: '(', c: '#e5e7eb' }, { t: '"MAKERS"', c: '#FF5A00' }, { t: ')', c: '#e5e7eb' }],
 ];
 
 export const FloatingCodeWidget = ({ className = "" }) => {

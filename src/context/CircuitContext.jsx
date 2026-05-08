@@ -7,6 +7,10 @@ export function CircuitProvider({ children }) {
   const timerRef = useRef(null);
 
   const [isPowerFlowComplete, setIsPowerFlowComplete] = useState(false);
+  const [globalCircuitX, setGlobalCircuitX] = useState(0);
+
+  // Bridge gate: true only after hero circuit line reaches center and fires the bridge animation
+  const [isHeroBridgeComplete, setIsHeroBridgeComplete] = useState(false);
 
   const togglePower = () => {
     if (timerRef.current) {
@@ -14,7 +18,10 @@ export function CircuitProvider({ children }) {
       timerRef.current = null;
     }
     setIsPowered(prev => {
-      if (prev) setIsPowerFlowComplete(false); // Reset when turning off
+      if (prev) {
+        setIsPowerFlowComplete(false);
+        setIsHeroBridgeComplete(false); // Reset bridge when powering off
+      }
       return !prev;
     });
   };
@@ -32,7 +39,12 @@ export function CircuitProvider({ children }) {
   }, []);
 
   return (
-    <CircuitContext.Provider value={{ isPowered, togglePower, isPowerFlowComplete, setIsPowerFlowComplete }}>
+    <CircuitContext.Provider value={{
+      isPowered, togglePower,
+      isPowerFlowComplete, setIsPowerFlowComplete,
+      globalCircuitX, setGlobalCircuitX,
+      isHeroBridgeComplete, setIsHeroBridgeComplete,
+    }}>
       {children}
     </CircuitContext.Provider>
   );
