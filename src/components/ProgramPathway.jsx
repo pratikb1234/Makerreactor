@@ -276,17 +276,31 @@ function LevelCardBase({ level, index }) {
 // ── Layout 1: The Original Timeline Wrapper ──
 function LevelCardTimeline({ level, index, scrollYProgress }) {
   const isEven = index % 2 === 0;
-  const activationPoint = (index + 0.5) / levels.length;
+  const cardRef = useRef(null);
+  const [activationPoint, setActivationPoint] = useState((index + 0.5) / levels.length);
   const [isActive, setIsActive] = useState(false);
   
+  // Calculate exact intersection point!
+  useEffect(() => {
+    if (cardRef.current) {
+      const section = cardRef.current.closest('section');
+      if (section) {
+        // The center of this timeline row relative to the top of the section
+        const center = (cardRef.current.offsetTop + cardRef.current.offsetHeight / 2) / section.offsetHeight;
+        setActivationPoint(center);
+      }
+    }
+  }, []);
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setIsActive(latest > activationPoint - 0.1);
+    // Activate right as the payload drops into the gear's center!
+    setIsActive(latest > activationPoint - 0.02);
   });
 
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
+    <div ref={cardRef} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
       {/* Visual Marker on central line */}
       <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
@@ -442,16 +456,22 @@ function MechanicalLinkageNode({ isActive }) {
 
 function GearSVG({ width = "100", height = "100" }) {
   return (
-    <svg width={width} height={height} viewBox="0 0 100 100" fill="currentColor">
-      <path d="M50 15C30.67 15 15 30.67 15 50C15 69.33 30.67 85 50 85C69.33 85 85 69.33 85 50C85 30.67 69.33 15 50 15ZM50 70C38.95 70 30 61.05 30 50C30 38.95 38.95 30 50 30C61.05 30 70 38.95 70 50C70 61.05 61.05 70 50 70Z" />
-      <rect x="45" y="0" width="10" height="20" rx="2" />
-      <rect x="45" y="80" width="10" height="20" rx="2" />
-      <rect x="0" y="45" width="20" height="10" rx="2" />
-      <rect x="80" y="45" width="20" height="10" rx="2" />
-      <rect x="18" y="14" width="10" height="20" rx="2" transform="rotate(45 23 24)" />
-      <rect x="74" y="70" width="10" height="20" rx="2" transform="rotate(45 79 80)" />
-      <rect x="14" y="74" width="20" height="10" rx="2" transform="rotate(45 24 79)" />
-      <rect x="70" y="18" width="20" height="10" rx="2" transform="rotate(45 80 23)" />
+    <svg width={width} height={height} viewBox="0 0 120 120" fill="currentColor">
+      {/* 12 Teeth */}
+      {[...Array(12)].map((_, i) => (
+        <rect key={i} x="52" y="2" width="16" height="116" rx="4" transform={`rotate(${i * 30} 60 60)`} />
+      ))}
+      
+      {/* Main Outer Ring (with cutout) */}
+      <path fillRule="evenodd" clipRule="evenodd" d="M60 14a46 46 0 1 0 0 92 46 46 0 0 0 0-92zm0 14a32 32 0 1 1 0 64 32 32 0 0 1 0-64z" />
+      
+      {/* Inner Hub (with cutout) */}
+      <path fillRule="evenodd" clipRule="evenodd" d="M60 40a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 12a8 8 0 1 1 0 16 8 8 0 0 1 0-16z" />
+      
+      {/* Spokes connecting hub to ring */}
+      {[...Array(4)].map((_, i) => (
+        <rect key={i} x="56" y="28" width="8" height="64" transform={`rotate(${i * 45} 60 60)`} />
+      ))}
     </svg>
   );
 }
