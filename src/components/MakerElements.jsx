@@ -687,35 +687,38 @@ const CircuitComponent = ({ type, cx, cy, pathLength, threshold, isPowered }) =>
 export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", onPowerReachTop }) => {
   const { isPowered } = useCircuit();
   const glow = isPowered ? 'rgba(255,90,0,0.9)' : 'rgba(0,0,0,0.15)';
-  const stroke = isPowered ? '#FF5A00' : 'rgba(0,0,0,0.12)';
+  const stroke = isPowered ? '#FFFFFF' : 'rgba(0,0,0,0.12)';
 
   return (
     <div className={`absolute pointer-events-none ${className}`}>
       <svg viewBox={viewBox} fill="none" strokeLinecap="square" strokeLinejoin="miter" className="w-full h-full overflow-visible">
         <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2" />
         
-        {/* Glow Layer (Pulsing) */}
+        {/* Glow Layer (Lightsaber Blur) */}
         {isPowered && (
           <motion.path
             d={pathD}
             stroke={glow}
             strokeWidth="8"
             initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1, opacity: [0.1, 0.5, 0.1] }}
+            animate={{ pathLength: 1, opacity: [0.5, 1, 0.5] }}
             transition={{ 
               pathLength: { duration: 1.0, ease: "linear" },
               opacity: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
             }}
+            style={{ filter: "blur(4px)" }}
           />
         )}
         
+        {/* Core Line */}
         <motion.path
           d={pathD}
           stroke={stroke}
-          strokeWidth="1.5"
+          strokeWidth="2.5"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: isPowered ? 1 : 0 }}
           transition={{ duration: 1.0, ease: "linear" }}
+          style={{ filter: isPowered ? 'drop-shadow(0 0 4px #FFFFFF)' : 'none' }}
           onAnimationComplete={(definition) => {
             if (isPowered && definition?.pathLength === 1) {
               onPowerReachTop?.();
@@ -725,17 +728,18 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
           }}
         />
 
-        {/* Moving Current Pulse (Circles) */}
+        {/* Moving Current Pulse (Bright White Dots) */}
         {isPowered && (
           <motion.path
             d={pathD}
-            stroke="#FF5A00"
-            strokeWidth="6"
+            stroke="#FFFFFF"
+            strokeWidth="5"
             strokeDasharray="1, 100"
             strokeLinecap="round"
             initial={{ strokeDashoffset: 101 }}
             animate={{ strokeDashoffset: -101 }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+            style={{ filter: 'drop-shadow(0 0 6px #FFFFFF)' }}
           />
         )}
       </svg>
@@ -754,7 +758,7 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
   const boostProgress = useSpring(boostTarget, { stiffness: 30, damping: 25 });
   useEffect(() => {
     boostTarget.set(shouldBoost ? 0.46 : 0);
-  }, [shouldBoost]);
+  }, [shouldBoost, boostTarget]);
   const displayPathLength = useTransform([pathLength, boostProgress], ([p, b]) => Math.max(p, b));
 
   // Fire onReachCenter when scroll crosses 0.995 (line has bent fully right to center)
@@ -822,37 +826,24 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
             opacity: isActivated ? 0.3 : 0
           }}
         />
-        {/* Glow Layer (Pulsing) */}
+        {/* Glow Layer (Intense Lightsaber Blur) */}
         {isActivated && (
           <motion.path 
             d={scaledPathD} 
-            stroke={glow} 
+            stroke="rgba(255,90,0,0.9)" 
             strokeWidth="8"
-            animate={{ opacity: [0.1, 0.5, 0.1] }}
+            style={{ pathLength: displayPathLength, filter: "blur(4px)" }} 
+            animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{ pathLength: displayPathLength }} 
           />
         )}
+        {/* Core Line */}
         <motion.path 
           d={scaledPathD} 
-          stroke={stroke} 
-          strokeWidth="1.5"
-          style={{ pathLength: displayPathLength }} 
+          stroke={isActivated ? '#FFFFFF' : 'rgba(0,0,0,0.12)'} 
+          strokeWidth={isActivated ? "2.5" : "1.5"}
+          style={{ pathLength: displayPathLength, filter: isActivated ? 'drop-shadow(0 0 4px #FFFFFF)' : 'none' }} 
         />
-        
-        {/* Moving Current Pulse (Circles/Electrons) */}
-        {isActivated && (
-          <motion.path
-            d={scaledPathD}
-            stroke="#FF5A00"
-            strokeWidth="5"
-            strokeLinecap="round"
-            strokeDasharray="0 40"
-            animate={{ strokeDashoffset: [40, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-            style={{ pathLength: displayPathLength }}
-          />
-        )}
       </svg>
       {scaledComponents.map((comp, i) => (
         <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}

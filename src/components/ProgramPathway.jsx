@@ -92,7 +92,7 @@ export default function ProgramPathway() {
     <>
       <div className={`font-mono text-xs uppercase tracking-[0.4em] font-bold mb-8 flex items-center justify-center gap-3 transition-all duration-500 ${isEasterEggActive ? 'text-[var(--color-accent)] brightness-150 drop-shadow-[0_0_10px_var(--color-accent)]' : 'text-[var(--color-accent)]'}`}>
         <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
-        {isEasterEggActive ? '// IGNITION: DEPTH & ATTENTION DETECTED...' : '// CORE SYSTEM REACTOR'}
+        {isEasterEggActive ? '// IGNITION: DEPTH & ATTENTION DETECTED...' : '// DEEP INTO THE CORE'}
         <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
       </div>
       <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
@@ -177,9 +177,9 @@ export default function ProgramPathway() {
     </section>
 
     {/* Section 2: Reactor Core and Membership Strip */}
-    <section className="bg-[var(--color-light)] relative font-sans overflow-hidden">
+    <section className="bg-[var(--color-light)] relative font-sans overflow-x-clip">
       <BlueprintGrid opacity={0.4} />
-      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pt-32 md:pt-48 pb-24 md:pb-40">
         {/* The System - Massive Spherical Reactor Core */}
         <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[800px] md:h-[1000px] group/system w-full">
           <motion.div 
@@ -495,23 +495,25 @@ function MechanicalTimeline({ scrollYProgress }) {
 
   return (
     <div className="absolute inset-0 flex flex-col items-center">
-      {/* Top Motor Assembly (mounted at the top of the section) */}
-      <div className="absolute top-0 -mt-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] z-30 flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
-        {/* Motor body casing details */}
-        <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
-        <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
-        
-        {/* Rotating Pulley Wheel */}
-        <motion.div 
-          className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
-          style={{ rotate: motorRotation }}
-        >
-          {/* Pulley Spokes */}
-          <div className="absolute w-full h-1.5 bg-[#666]" />
-          <div className="absolute w-1.5 h-full bg-[#666]" />
-          {/* Glowing Axle Center */}
-          <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
-        </motion.div>
+      {/* Top Motor Assembly (mounted at the top of the section, cut horizontally) */}
+      <div className="absolute top-0 w-32 h-10 overflow-hidden z-30 flex justify-center">
+        <div className="absolute -top-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
+          {/* Motor body casing details */}
+          <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
+          <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
+          
+          {/* Rotating Pulley Wheel */}
+          <motion.div 
+            className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
+            style={{ rotate: motorRotation }}
+          >
+            {/* Pulley Spokes */}
+            <div className="absolute w-full h-1.5 bg-[#666]" />
+            <div className="absolute w-1.5 h-full bg-[#666]" />
+            {/* Glowing Axle Center */}
+            <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
+          </motion.div>
+        </div>
       </div>
 
       {/* Elevator Shaft / Track */}
