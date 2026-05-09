@@ -555,7 +555,7 @@ export const ArcReactorNode = ({ isActive, isHovered, setIsHovered, children, cl
           backgroundColor: '#FFFFFF',
           borderColor: isActive ? 'var(--color-accent)' : 'rgba(0,0,0,0.1)'
         }}
-        className="w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-500 relative overflow-visible"
+        className="w-12 h-12 rounded-full border-[1.5px] flex items-center justify-center transition-all duration-500 relative overflow-visible"
       >
         {/* Reliable HTML Sliding Doors (Left & Right Halves) */}
         <motion.div 
@@ -661,17 +661,22 @@ const CircuitComponent = ({ type, cx, cy, pathLength, threshold, isPowered }) =>
   }, [pathLength, threshold, isPowered]);
 
   return (
-    <motion.g transform={`translate(${cx},${cy})`} style={{ opacity }}>
-      <foreignObject x="-50" y="-50" width="100" height="100" className="pointer-events-none">
-        <div xmlns="http://www.w3.org/1999/xhtml" className="w-full h-full flex items-center justify-center pointer-events-auto">
-          <ArcReactorNode isActive={on} isHovered={isHovered} setIsHovered={setIsHovered}>
-            <svg viewBox="-20 -20 40 40" className="w-8 h-8 pointer-events-none drop-shadow-sm">
-              <Symbol type={type} on={on} />
-            </svg>
-          </ArcReactorNode>
-        </div>
-      </foreignObject>
-    </motion.g>
+    <motion.div 
+      className="absolute pointer-events-auto"
+      style={{ 
+        left: cx, 
+        top: cy, 
+        transform: 'translate(-50%, -50%)', 
+        opacity,
+        zIndex: 50
+      }}
+    >
+      <ArcReactorNode isActive={on} isHovered={isHovered} setIsHovered={setIsHovered}>
+        <svg viewBox="-20 -20 40 40" className="w-8 h-8 pointer-events-none drop-shadow-sm">
+          <Symbol type={type} on={on} />
+        </svg>
+      </ArcReactorNode>
+    </motion.div>
   );
 };
 
@@ -687,25 +692,27 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
   return (
     <div className={`absolute pointer-events-none ${className}`}>
       <svg viewBox={viewBox} fill="none" strokeLinecap="square" strokeLinejoin="miter" className="w-full h-full overflow-visible">
-        <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2.5" />
+        <path d={pathD} stroke="rgba(0,0,0,0.07)" strokeWidth="2" />
         
-        {/* Glow Layer (Safari Safe) */}
+        {/* Glow Layer (Pulsing) */}
         {isPowered && (
           <motion.path
             d={pathD}
             stroke={glow}
-            strokeWidth="10"
+            strokeWidth="8"
             initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.0, ease: "linear" }}
-            style={{ opacity: 0.3 }}
+            animate={{ pathLength: 1, opacity: [0.1, 0.5, 0.1] }}
+            transition={{ 
+              pathLength: { duration: 1.0, ease: "linear" },
+              opacity: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+            }}
           />
         )}
         
         <motion.path
           d={pathD}
           stroke={stroke}
-          strokeWidth="2.5"
+          strokeWidth="1.5"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: isPowered ? 1 : 0 }}
           transition={{ duration: 1.0, ease: "linear" }}
@@ -809,54 +816,48 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
         <motion.path 
           d={scaledPathD} 
           stroke="rgba(0,0,0,0.07)" 
-          strokeWidth="2.5" 
+          strokeWidth="2" 
           style={{ 
             pathLength: isActivated ? maxBackgroundLength : 0,
             opacity: isActivated ? 0.3 : 0
           }}
         />
-        {/* Glow Layer (Safari Safe) */}
+        {/* Glow Layer (Pulsing) */}
         {isActivated && (
           <motion.path 
             d={scaledPathD} 
             stroke={glow} 
-            strokeWidth="10"
-            style={{ pathLength: displayPathLength, opacity: 0.3 }} 
+            strokeWidth="8"
+            animate={{ opacity: [0.1, 0.5, 0.1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            style={{ pathLength: displayPathLength }} 
           />
         )}
         <motion.path 
           d={scaledPathD} 
           stroke={stroke} 
-          strokeWidth="2.5"
+          strokeWidth="1.5"
           style={{ pathLength: displayPathLength }} 
         />
         
-        {/* Solid white glowing core (Lightsaber effect) - perfectly matches pathLength */}
+        {/* Moving Current Pulse (Circles/Electrons) */}
         {isActivated && (
-          <>
-            <motion.path
-              d={scaledPathD}
-              stroke={glow}
-              strokeWidth="12"
-              animate={{ opacity: [0.1, 0.4, 0.1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              style={{ pathLength: displayPathLength }}
-            />
-            <motion.path
-              d={scaledPathD}
-              stroke="white"
-              strokeWidth="4"
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              style={{ pathLength: displayPathLength }}
-            />
-          </>
+          <motion.path
+            d={scaledPathD}
+            stroke="#FF5A00"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray="0 40"
+            animate={{ strokeDashoffset: [40, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            style={{ pathLength: displayPathLength }}
+          />
         )}
-        {scaledComponents.map((comp, i) => (
-          <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}
-            pathLength={displayPathLength} threshold={comp.threshold} isPowered={isActivated} />
-        ))}
       </svg>
+      {scaledComponents.map((comp, i) => (
+        <CircuitComponent key={i} type={comp.type} cx={comp.cx} cy={comp.cy}
+          pathLength={displayPathLength} threshold={comp.threshold} isPowered={isActivated} />
+      ))}
     </div>
   );
 };

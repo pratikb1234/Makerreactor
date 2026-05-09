@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent, useTransform, useInView } from 'framer-motion';
+import MembershipSpecSheet from './MembershipSpecSheet';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, FloatingCodeWidget } from './MakerElements';
 
 import imgTinker from '../assets/tinker.png';
@@ -24,7 +25,7 @@ const levels = [
   {
     id: "02",
     title: "BUILD",
-    image: imgBuild,
+    image: imgEngineer,
     grades: "Grades 4 to 5",
     desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
     grid: {
@@ -37,7 +38,7 @@ const levels = [
   {
     id: "03",
     title: "ENGINEER",
-    image: imgEngineer,
+    image: imgBuild,
     grades: "Grades 6 to 7",
     desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
     grid: {
@@ -63,16 +64,16 @@ const levels = [
 ];
 
 const membershipInclusions = [
-  "Weekly maker studio sessions",
-  "Materials and project work",
-  "Age-appropriate tools and technologies",
-  "Mentor guidance",
-  "Maker Passport progression",
-  "Project portfolio",
-  "Quarterly showcases",
-  "Parent updates",
-  "Community challenges",
-  "Access to advanced pathways"
+  "48 Studio Sessions",
+  "12 Major Projects",
+  "Tangible Deliverables",
+  "Materials Included",
+  "Hardware Provided",
+  "Maker Passport",
+  "Quarterly Showcases",
+  "Parent Updates",
+  "Premium Tools",
+  "Advanced Pathways"
 ];
 
 export default function ProgramPathway() {
@@ -85,6 +86,7 @@ export default function ProgramPathway() {
   });
 
   const [isEasterEggActive, setIsEasterEggActive] = useState(false);
+  const [membershipLayout, setMembershipLayout] = useState('detailed'); // 'simple' or 'detailed'
 
   const textContent = (
     <>
@@ -133,15 +135,15 @@ export default function ProgramPathway() {
 
 
   return (
-    <section ref={sectionRef} className="bg-[var(--color-light)] relative overflow-hidden font-sans border-t border-black/5">
+    <>
+    <section ref={sectionRef} className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10">
       <BlueprintGrid opacity={0.4} />
-
       {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[120px] pointer-events-none z-0 hidden lg:block">
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 -bottom-4 w-[120px] pointer-events-none z-0 hidden lg:block">
         <MechanicalTimeline scrollYProgress={scrollYProgress} />
       </div>
 
-      {/* ── Header Container ── */}
+        {/* ── Header Container ── */}
       <div className="relative pt-24 md:pt-40 pb-24 md:pb-32">
         <div className="max-w-[90rem] mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
@@ -171,10 +173,15 @@ export default function ProgramPathway() {
             ))}
           </div>
         </div>
+      </div>
+    </section>
 
-
+    {/* Section 2: Reactor Core and Membership Strip */}
+    <section className="bg-[var(--color-light)] relative font-sans overflow-hidden">
+      <BlueprintGrid opacity={0.4} />
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
         {/* The System - Massive Spherical Reactor Core */}
-        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-48 relative flex flex-col items-center justify-center min-h-[800px] md:min-h-[1000px] py-32 group/system w-full">
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[800px] md:h-[1000px] group/system w-full">
           <motion.div 
             animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,90,0,0.8)", boxShadow: "0 0 300px rgba(255,90,0,0.6)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
             transition={{ type: "spring", stiffness: 60, damping: 15 }}
@@ -226,36 +233,68 @@ export default function ProgramPathway() {
           </div>
         </motion.div>
 
-        {/* Membership Strip */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-24 border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
-        >
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12">
-            <div>
-              <h4 className="font-display font-bold text-2xl uppercase mb-2">Annual Membership Includes</h4>
-              <p className="text-gray-400 font-mono text-xs uppercase tracking-widest">Premium Makerspace Access</p>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-auto">
-              {membershipInclusions.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3 group/item">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] mt-1.5 flex-shrink-0 group-hover/item:scale-150 transition-transform" />
-                  <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 leading-tight group-hover/item:text-black transition-colors">
-                    {item}
-                  </span>
-                </div>
-              ))}
+        {/* Membership Strip / Spec Sheet Toggle & Content */}
+        <div className="mt-32">
+          {/* Toggle Controls near the section */}
+          <div className="flex justify-center mb-8">
+            <div className="flex bg-white p-1.5 rounded-full border border-black/10 shadow-sm">
+              <button
+                onClick={() => setMembershipLayout('simple')}
+                className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
+                  membershipLayout === 'simple' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:text-black'
+                }`}
+              >
+                Simple Overview
+              </button>
+              <button
+                onClick={() => setMembershipLayout('detailed')}
+                className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
+                  membershipLayout === 'detailed' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:text-black'
+                }`}
+              >
+                Detailed Spec Sheet
+              </button>
             </div>
           </div>
-        </motion.div>
 
-      </div>
+          {membershipLayout === 'simple' ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
+            >
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12">
+                <div>
+                  <h4 className="font-display font-bold text-2xl uppercase mb-2">Annual Membership Includes</h4>
+                  <p className="text-gray-400 font-mono text-xs uppercase tracking-widest">Premium Makerspace Access</p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-auto">
+                  {membershipInclusions.map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 group/item">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] mt-1.5 flex-shrink-0 group-hover/item:scale-150 transition-transform" />
+                      <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 leading-tight group-hover/item:text-black transition-colors">
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
+            >
+              <MembershipSpecSheet />
+            </motion.div>
+          )}
+        </div>
 
-
+      </div> {/* End of max-w container */}
     </section>
+    </>
   );
 }
 
