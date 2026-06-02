@@ -1,54 +1,25 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 
 export default function MembershipSpecSheet() {
-  const [activeTier, setActiveTier] = useState('junior'); // 'junior' or 'senior'
-
-  const isJunior = activeTier === 'junior';
-  const minsPerSession = isJunior ? 60 : 90;
-  const hoursPerYear = isJunior ? 72 : 108;
-
   return (
     <div className="w-full max-w-5xl mx-auto font-sans text-black">
-      {/* Top Toggle */}
+      {/* Top Label */}
       <div className="flex justify-center mb-16">
-        <div className="flex bg-white p-1.5 rounded-full border border-black/10 shadow-sm">
-          <button
-            onClick={() => setActiveTier('junior')}
-            className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
-              isJunior ? 'bg-[var(--color-accent)] text-white shadow-[0_4px_15px_rgba(255,90,0,0.3)]' : 'text-gray-400 hover:text-black'
-            }`}
-          >
-            Tinker & Explore · Gr 1–5
-          </button>
-          <button
-            onClick={() => setActiveTier('senior')}
-            className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
-              !isJunior ? 'bg-[var(--color-accent)] text-white shadow-[0_4px_15px_rgba(255,90,0,0.3)]' : 'text-gray-400 hover:text-black'
-            }`}
-          >
-            Build & Invent · Gr 6–9
-          </button>
+        <div className="inline-flex bg-white px-6 py-3 rounded-full border border-black/10 shadow-sm text-[11px] font-mono font-bold uppercase tracking-widest text-[var(--color-accent)]">
+          Grades K–12 · All Makers
         </div>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
         <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
           <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Sessions / Week</span>
           <span className="text-6xl font-display font-bold tracking-tighter text-black group-hover:scale-105 transition-transform origin-left">2</span>
         </div>
         <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Min / Session</span>
+          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Per Session</span>
           <div className="flex items-baseline gap-3 group-hover:scale-105 transition-transform origin-left">
-            <span className="text-6xl font-display font-bold tracking-tighter text-black">{minsPerSession}</span>
-            <span className="text-xl text-gray-400 font-bold font-mono uppercase tracking-widest">min</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Hours / Year</span>
-          <div className="flex items-baseline gap-3 group-hover:scale-105 transition-transform origin-left">
-            <span className="text-6xl font-display font-bold tracking-tighter text-black">{hoursPerYear}</span>
+            <span className="text-6xl font-display font-bold tracking-tighter text-black">1.5</span>
             <span className="text-xl text-gray-400 font-bold font-mono uppercase tracking-widest">hrs</span>
           </div>
         </div>
@@ -58,10 +29,8 @@ export default function MembershipSpecSheet() {
       <div className="border-t-2 border-black/10">
         <SpecSection title="Schedule">
           <SpecRow label="Sessions per week" value="2" />
-          <SpecRow label="Session duration" value={`${minsPerSession} MIN`} />
-          <SpecRow label="Weeks per year" value="36" />
-          <SpecRow label="Total scheduled hours / year" value={hoursPerYear.toString()} />
-          <SpecRow label="Open studio access" value="BY APPOINTMENT" sub="ADDITIONAL SESSIONS" />
+          <SpecRow label="Session duration" value="1.5 HRS" sub="90 MINUTES" />
+          <SpecRow label="Open studio access" value="WELCOME" sub="BEYOND REGULAR SESSIONS, MAKERS CAN BOOK EXTRA STUDIO TIME" />
         </SpecSection>
 
         <SpecSection title="Instruction">
@@ -76,18 +45,7 @@ export default function MembershipSpecSheet() {
           <SpecRow label="Project materials" value="INCLUDED" sub="UP TO PROJECT BUDGET" />
           <SpecRow label="Excess materials" value="CHARGED AT COST" />
           <SpecRow label="Tools & equipment" value="INCLUDED" />
-          <AnimatePresence mode="popLayout">
-            {!isJunior && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <SpecRow label="3D printing" value="INCLUDED" />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <SpecRow label="3D printing" value="INCLUDED" />
           <SpecRow label="Take-home projects" value="YES" sub="ALL BUILDS KEPT BY MAKER" />
         </SpecSection>
 
