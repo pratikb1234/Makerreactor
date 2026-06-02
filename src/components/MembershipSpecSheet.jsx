@@ -43,15 +43,14 @@ export default function MembershipSpecSheet() {
 
         <SpecSection title="Materials & Tools">
           <SpecRow label="Project materials" value="ALL INCLUDED*" sub="STANDARD MAKER MATERIALS ARE PROVIDED WITHIN THE PROGRAM. SPECIALISED COMPONENTS SPECIFIC TO A PROJECT MAY NEED TO BE SOURCED INDIVIDUALLY." />
-          <SpecRow label="Tools & equipment" value="INCLUDED" />
+          <SpecRow label="Tools & equipment" value="FULL ACCESS" sub="USE OF ALL STUDIO TOOLS & MACHINES DURING SESSIONS" />
           <SpecRow label="3D printing" value="INCLUDED" />
-          <SpecRow label="Take-home projects" value="YES" sub="ALL BUILDS KEPT BY MAKER" />
+          <SpecRow label="Take-home projects" value="ALWAYS" sub="EVERY PROJECT BELONGS TO THE MAKER" />
         </SpecSection>
 
         <SpecSection title="Community">
-          <SpecRow label="Quarterly showcases" value="4 PER YEAR" />
-          <SpecRow label="Monthly build challenges" value="INCLUDED" />
-          <SpecRow label="Competition pathways" value="AVAILABLE" />
+          <SpecRow label="Showcase" value="MAKERFEST" sub="YEAR-END PUBLIC EXHIBITION" />
+          <SpecRow label="Expert sessions, hackathons & competitions" value="INCLUDED" />
           <SpecRow label="Parent Circle access" value="INCLUDED" />
           <SpecRow label="Founding member recognition" value="FOUNDING 150 ONLY" />
         </SpecSection>
