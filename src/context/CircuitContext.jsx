@@ -27,7 +27,14 @@ export function CircuitProvider({ children }) {
   };
 
   useEffect(() => {
-    // Auto-power after 8 seconds of inactivity
+    // On mobile, power on immediately since circuit interactions are hidden
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile) {
+      setIsPowered(true);
+      return;
+    }
+
+    // Auto-power after 8 seconds of inactivity on desktop
     timerRef.current = setTimeout(() => {
       setIsPowered(true);
       timerRef.current = null;

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent } from 'framer-motion';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, Symbol } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
@@ -30,22 +30,31 @@ export default function WhyItWorks() {
     offset: ['start start', 'end start'],
   });
 
+  // Detect mobile to disable cinematic animation
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   // Cinematic → normal: font 9.5vw (full-screen) → 4.5vw, width 100vw → 40vw (column), x -3rem → 0rem
-  // Transition completes at introP=0.85 so headline is settled before first card at introP=1
+  // On mobile, these are bypassed with static values
   const fontSizeVw    = useTransform(introP, [0, 0.15, 0.35, 1], [9.5, 9.5, 4.5, 4.5]);
   const fontSize      = useMotionTemplate`${fontSizeVw}vw`;
   const headlineWidthVw = useTransform(introP, [0, 0.15, 0.35, 1], [100, 100, 40, 40]);
   const headlineWidth = useMotionTemplate`${headlineWidthVw}vw`;
   const headlineX     = useTransform(introP, [0, 0.15, 0.35, 1], ['-3rem', '-3rem', '0rem', '0rem']);
   // Sub-quote: one-way trigger — once visible, never fades out
-  const [showSub, setShowSub] = useState(false);
+  const [showSub, setShowSub] = useState(isMobile ? true : false);
   useMotionValueEvent(introP, 'change', (v) => {
     if (v >= 0.12) setShowSub(true);
   });
   // Sub-quote margin: indented during cinematic hold, flush when settled in left column
   const subMarginLeft = useTransform(introP, [0.15, 0.35], ['2rem', '0rem']);
   // Dark ACTIVE_DIRECTIVE card: one-way trigger to prevent disappearing on scroll up
-  const [showDirective, setShowDirective] = useState(false);
+  const [showDirective, setShowDirective] = useState(isMobile ? true : false);
   useMotionValueEvent(introP, 'change', (v) => {
     if (v >= 0.35) setShowDirective(true);
   });
@@ -83,7 +92,7 @@ export default function WhyItWorks() {
             {/* ── LEFT: sticky headline — cinematic entrance animation ── */}
             <div className="w-full lg:w-[45%] lg:sticky lg:top-12 lg:pr-16 relative z-20">
               <motion.div
-                style={{
+                style={isMobile ? {} : {
                   x: headlineX,
                   transformOrigin: 'left center',
                 }}
@@ -94,7 +103,7 @@ export default function WhyItWorks() {
                 </div>
                 <motion.h2
                   className="font-display font-bold uppercase tracking-tighter leading-[0.88] text-black mb-5"
-                  style={{ fontSize, width: headlineWidth }}
+                  style={isMobile ? { fontSize: 'clamp(2rem, 8vw, 4.5vw)', width: '100%' } : { fontSize, width: headlineWidth }}
                 >
                   THE MOMENT<br />
                   YOUR CHILD BUILDS<br />
@@ -107,7 +116,7 @@ export default function WhyItWorks() {
               <motion.div
                 animate={{ opacity: showSub ? 1 : 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={{ x: headlineX, marginLeft: subMarginLeft }}
+                style={isMobile ? {} : { x: headlineX, marginLeft: subMarginLeft }}
                 className="mt-4 border-l-2 border-[var(--color-accent)]/30 pl-5 space-y-2 max-w-sm"
               >
                 <p className="text-base font-bold text-black leading-snug">
@@ -119,9 +128,9 @@ export default function WhyItWorks() {
                 </p>
               </motion.div>
               <motion.div 
-                animate={{ opacity: showDirective ? 1 : 0, x: 0 }} // x handled by wrapper if needed, or rely on layout
+                animate={{ opacity: showDirective ? 1 : 0, x: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={{ x: headlineX }}
+                style={isMobile ? {} : { x: headlineX }}
                 className="mt-6 bg-[#111] rounded-2xl border border-white/5 p-5 relative overflow-hidden max-w-sm"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent opacity-40" />
