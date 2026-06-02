@@ -52,7 +52,13 @@ export default function MembershipSpecSheet() {
           <SpecRow label="Showcase" value="MAKERFEST" sub="YEAR-END PUBLIC EXHIBITION" />
           <SpecRow label="Expert sessions, hackathons & competitions" value="INCLUDED" />
           <SpecRow label="Parent Circle access" value="INCLUDED" />
-          <SpecRow label="Founding member recognition" value="FOUNDING 150 ONLY" />
+        </SpecSection>
+
+        <SpecSection title="Grade 8+ Advanced Track">
+          <SpecRow label="Sessions per week" value="3" />
+          <SpecRow label="Hours per week" value="6 HRS" />
+          <SpecRow label="FTC Robotics" value="INVITE ONLY" sub="SELECTION BASED ON COMMITMENT & SKILL" />
+          <SpecRow label="Other competitions" value="INCLUDED" sub="HACKATHONS, SCIENCE FAIRS & NATIONAL-LEVEL EVENTS" />
         </SpecSection>
       </div>
     </div>
