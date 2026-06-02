@@ -43,7 +43,7 @@ export default function MembershipSpecSheet() {
 
         <SpecSection title="Materials & Tools">
           <SpecRow label="Project materials" value="ALL INCLUDED*" sub="STANDARD MAKER MATERIALS ARE PROVIDED WITHIN THE PROGRAM. SPECIALISED COMPONENTS SPECIFIC TO A PROJECT MAY NEED TO BE SOURCED INDIVIDUALLY." />
-          <SpecRow label="Tools & equipment" value="FULL ACCESS" sub="USE OF ALL STUDIO TOOLS & MACHINES DURING SESSIONS" />
+          <SpecRow label="Tools & equipment" value="FULL ACCESS" sub="FOR SESSIONS, PERSONAL PROJECTS & BEYOND — AS MANY TIMES AS NEEDED" />
           <SpecRow label="3D printing" value="INCLUDED" />
           <SpecRow label="Take-home projects" value="ALWAYS" sub="EVERY PROJECT BELONGS TO THE MAKER" />
         </SpecSection>
