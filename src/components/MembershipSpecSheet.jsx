@@ -34,10 +34,10 @@ export default function MembershipSpecSheet() {
         </SpecSection>
 
         <SpecSection title="Instruction">
-          <SpecRow label="Mentor : maker ratio" value="1 : 6" />
+          <SpecRow label="Mentor : maker ratio" value="1 : 5" />
           <SpecRow label="Max batch size" value="6 MAKERS" />
           <SpecRow label="Dedicated mentor" value="YES" sub="SAME MENTOR, FULL YEAR" />
-          <SpecRow label="Progress tracking" value="MAKER PASSPORT" />
+
           <SpecRow label="Parent updates" value="QUARTERLY" />
         </SpecSection>
 
