@@ -13,12 +13,14 @@ export default function ExperienceTrial() {
 
   return (
     <section id="experience" className="py-32 bg-black relative text-white overflow-hidden">
-      <ScrollCircuitLine 
-        className="top-0 left-[20%] w-[300px] h-[600px] text-white/10" 
-        pathD="M150 0 V300 H0 V600"
-        viewBox="0 0 300 600"
-      />
-      <LEDIndicator className="top-[300px] left-[calc(20%+150px)]" />
+      <div className="hidden lg:block">
+        <ScrollCircuitLine 
+          className="top-0 left-[20%] w-[300px] h-[600px] text-white/10" 
+          pathD="M150 0 V300 H0 V600"
+          viewBox="0 0 300 600"
+        />
+        <LEDIndicator className="top-[300px] left-[calc(20%+150px)]" />
+      </div>
 
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
         

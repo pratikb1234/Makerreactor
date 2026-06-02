@@ -134,7 +134,7 @@ export default function WhyItWorks() {
             </div>
 
             {/* ── RIGHT: Heading + 3 cards scrolling normally, pushed down to allow cinematic hold ── */}
-            <div className="w-full lg:w-[55%] pt-[160vh] flex flex-col items-end gap-[40vh] relative z-30">
+            <div className="w-full lg:w-[55%] pt-16 lg:pt-[160vh] flex flex-col items-end gap-16 lg:gap-[40vh] relative z-30">
               <HeadingCard isCircuitActive={isHeroBridgeComplete} />
               
               {STEPS.map((step, idx) => (
@@ -154,8 +154,7 @@ export default function WhyItWorks() {
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         
-        {/* Symmetrical Frame Circuit Lines */}
-        <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block">
           <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
           <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
         </div>
@@ -171,7 +170,7 @@ export default function WhyItWorks() {
 
         {/* Universal Footer */}
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6 }}
-          className="relative z-10 flex gap-10 mt-16 text-gray-400 font-mono text-[11px] tracking-widest uppercase font-bold">
+          className="relative z-10 flex flex-wrap justify-center gap-4 md:gap-10 mt-16 text-gray-400 font-mono text-[11px] tracking-widest uppercase font-bold">
           {['SYSTEMS_THINKING', 'APPLIED_ENGINEERING', 'TACTILE_KNOWLEDGE'].map(t => (
             <div key={t} className="flex items-center gap-2"><span className="text-[var(--color-accent)]">#</span>{t}</div>
           ))}

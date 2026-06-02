@@ -117,8 +117,8 @@ circuit.sync(150);
         <motion.div style={{ y: y2, opacity }} className="absolute bottom-[10%] left-[5%] w-[30vw] h-[30vw] rounded-full border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5 blur-2xl" />
       </div>
 
-      {/* PCB Trace — clipped to hero section so it doesn't bleed into next section */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* PCB Trace — hidden on mobile, only visible on desktop */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden lg:block">
         <ScrollCircuitLine
           sectionRef={sectionRef}
           className="top-0 left-0 w-full h-full"
@@ -134,55 +134,60 @@ circuit.sync(150);
         />
       </div>
 
-      {/* Conduit bar — right edge connects to the powerline (x=bx-30), extends leftward */}
-      {isPowered && barTop > 0 && powerLineX > 0 && (
-        <motion.div
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: barWidth, opacity: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          style={{
-            position: 'absolute',
-            right: `${viewW - powerLineX}px`,
-            top: barTop,
-            transform: 'translateY(-50%)',
-            zIndex: 5
-          }}
-          className="h-9 pointer-events-none"
-        >
-          {/* Inner background and clipping container */}
-          <div
-            className="absolute inset-0 bg-black overflow-hidden rounded-l-full"
-            style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+      {/* Conduit bar — hidden on mobile, desktop only */}
+      <div className="hidden lg:block">
+        {isPowered && barTop > 0 && powerLineX > 0 && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: barWidth, opacity: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              right: `${viewW - powerLineX}px`,
+              top: barTop,
+              transform: 'translateY(-50%)',
+              zIndex: 5
+            }}
+            className="h-9 pointer-events-none"
           >
-            {/* Glowing white light packet — MAKERS binary with matrix letter glitches */}
-            {isFutureLineActive && (
-              <motion.div
-                initial={{ left: '100%', x: '0%' }}
-                animate={{ left: '0%', x: '-100%' }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-                className="absolute top-0 bottom-0 bg-white rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] flex items-center justify-center overflow-hidden"
-                style={{ width: 440 }}
-              >
-                <MatrixPacket />
-              </motion.div>
-            )}
-          </div>
+            {/* Inner background and clipping container */}
+            <div
+              className="absolute inset-0 bg-black overflow-hidden rounded-l-full"
+              style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+            >
+              {/* Glowing white light packet — MAKERS binary with matrix letter glitches */}
+              {isFutureLineActive && (
+                <motion.div
+                  initial={{ left: '100%', x: '0%' }}
+                  animate={{ left: '0%', x: '-100%' }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+                  className="absolute top-0 bottom-0 bg-white rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] flex items-center justify-center overflow-hidden"
+                  style={{ width: 440 }}
+                >
+                  <MatrixPacket />
+                </motion.div>
+              )}
+            </div>
 
-          {/* Orange junction dot at RIGHT edge (powerline connection) - Now unclipped! */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-[var(--color-accent)] rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] z-10" />
+            {/* Orange junction dot at RIGHT edge (powerline connection) - Now unclipped! */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-[var(--color-accent)] rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] z-10" />
 
-          <LEDIndicator className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10" />
-        </motion.div>
-      )}
+            <LEDIndicator className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10" />
+          </motion.div>
+        )}
+      </div>
 
-      {flowPath && (
-        <PowerFlowLine
-          className="absolute top-0 left-0 w-full h-screen z-0"
-          pathD={flowPath}
-          viewBox={`0 0 ${viewW} ${viewH}`}
-          onPowerReachTop={() => setIsPowerFlowComplete(true)}
-        />
-      )}
+      {/* Power flow line — hidden on mobile */}
+      <div className="hidden lg:block">
+        {flowPath && (
+          <PowerFlowLine
+            className="absolute top-0 left-0 w-full h-screen z-0"
+            pathD={flowPath}
+            viewBox={`0 0 ${viewW} ${viewH}`}
+            onPowerReachTop={() => setIsPowerFlowComplete(true)}
+          />
+        )}
+      </div>
 
       <div className="max-w-[90rem] w-full mx-auto px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -237,7 +242,7 @@ circuit.sync(150);
                 Become a Founding 150 member.
               </p>
               <motion.a
-                href="#apply"
+                href="#admissions"
                 animate={{
                   backgroundColor: isPowered ? '#FF5A00' : '#000000',
                   boxShadow: isPowered ? '0 0 20px rgba(255,90,0,0.4)' : '0 0 0px rgba(0,0,0,0)'

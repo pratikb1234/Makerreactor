@@ -25,7 +25,7 @@ const timeline = [
 
 export default function AdmissionsTimeline() {
   return (
-    <section className="py-32 bg-[var(--color-light)] relative">
+    <section id="admissions" className="py-32 bg-[var(--color-light)] relative">
       <div className="max-w-[90rem] mx-auto px-6 md:px-12">
         <div className="text-center mb-24">
           <motion.div 

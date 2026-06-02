@@ -95,7 +95,7 @@ export default function ProgramPathway() {
         {isEasterEggActive ? '// IGNITION: DEPTH & ATTENTION DETECTED...' : '// DEEP INTO THE CORE'}
         <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
       </div>
-      <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
+      <h3 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
         Every maker enters at a level. <br/>
         <span className="inline-flex items-center gap-4 flex-wrap justify-center">
           Every level builds new skills.
@@ -176,20 +176,18 @@ export default function ProgramPathway() {
       </div>
     </section>
 
-    {/* Section 2: Reactor Core and Membership Strip */}
     <section className="bg-[var(--color-light)] relative font-sans overflow-x-clip">
       <BlueprintGrid opacity={0.4} />
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pt-32 md:pt-48 pb-24 md:pb-40">
-        {/* The System - Massive Spherical Reactor Core */}
-        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[800px] md:h-[1000px] group/system w-full">
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[500px] md:h-[800px] lg:h-[1000px] group/system w-full">
           <motion.div 
             animate={isEasterEggActive ? { scale: 1.15, borderColor: "rgba(255,90,0,0.8)", boxShadow: "0 0 300px rgba(255,90,0,0.6)" } : { scale: 1, borderColor: "rgba(0,0,0,0.9)", boxShadow: "0 0 150px rgba(255,90,0,0.15)" }}
             transition={{ type: "spring", stiffness: 60, damping: 15 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-[#030303] rounded-full border-4 flex items-center justify-center overflow-hidden"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] md:w-[800px] md:h-[800px] lg:w-[1000px] lg:h-[1000px] bg-[#030303] rounded-full border-4 flex items-center justify-center overflow-hidden"
           >
             <motion.div 
               animate={isEasterEggActive ? { opacity: 0.8, scale: 1.2 } : { opacity: 0.2, scale: 1 }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] blur-[80px] animate-pulse bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)]"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70vw] h-[50vw] md:w-[600px] md:h-[400px] blur-[80px] animate-pulse bg-[radial-gradient(ellipse_at_center,_var(--color-accent)_0%,_transparent_70%)]"
             />
             <div className="absolute w-full h-full pointer-events-none flex items-center justify-center opacity-[0.2] mix-blend-screen transition-opacity duration-1000 z-0">
               {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -338,7 +336,7 @@ function LevelCardBase({ level, index }) {
       </p>
 
       {/* The 2x2 Grid Layout */}
-      <div className="grid grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
         {[
           { label: 'INQUIRE', text: level.grid.inquire },
           { label: 'MAKE', text: level.grid.make },
