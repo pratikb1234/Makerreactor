@@ -6,10 +6,10 @@ export default function Footer() {
           <div className="md:col-span-5">
             <div className="font-display font-bold text-3xl tracking-tighter text-black uppercase flex items-center gap-3 mb-8">
               <div className="w-5 h-5 bg-[var(--color-accent)] rounded-sm transform rotate-45" />
-              FUTURE BUILDERS
+              BITS & STUDIOS
             </div>
             <p className="text-gray-600 font-medium text-lg leading-relaxed max-w-sm">
-              Ahmedabad’s most exclusive academy for young makers, coders, and innovators.
+              Where serious makers do real work. Ahmedabad.
             </p>
           </div>
 
@@ -17,16 +17,18 @@ export default function Footer() {
             <h4 className="font-mono font-bold text-black mb-8 uppercase tracking-widest text-sm">Navigation</h4>
             <ul className="space-y-4 font-medium text-gray-500">
               <li><a href="#programs" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Programs</a></li>
-              <li><a href="#experience" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">The Experience</a></li>
-              <li><a href="#founding150" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Founding 150</a></li>
+              <li><a href="#admissions" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Admissions</a></li>
+              <li><a href="#founding150" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Founding Cohort</a></li>
             </ul>
           </div>
 
           <div className="md:col-span-4">
             <h4 className="font-mono font-bold text-black mb-8 uppercase tracking-widest text-sm">Connect</h4>
             <ul className="space-y-4 font-medium text-gray-500">
-              <li className="cursor-hover hover:text-black transition-colors">hello@futurebuilders.academy</li>
-              <li className="cursor-hover hover:text-black transition-colors">+91 (Placeholder) 000-0000</li>
+              <li className="cursor-hover hover:text-black transition-colors">hello@bitsandstudios.com</li>
+              <li className="cursor-hover hover:text-black transition-colors">+91 95358 62541</li>
+              <li className="cursor-hover hover:text-black transition-colors">+91 97140 00169</li>
+              <li className="text-sm text-gray-400 mt-4 leading-relaxed">204, Alpha Business Park, Judges Bungalow Road, Bodakdev, Ahmedabad</li>
               <li className="cursor-hover hover:text-black transition-colors mt-8 pt-8 border-t border-black/10">Instagram↗</li>
               <li className="cursor-hover hover:text-black transition-colors">LinkedIn↗</li>
             </ul>
@@ -34,7 +36,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-xs uppercase tracking-widest text-gray-400 font-bold">
-          <p>© 2026 FUTURE BUILDERS ACADEMY.</p>
+          <p>© 2026 BITS & STUDIOS.</p>
           <div className="flex gap-8">
             <a href="#" className="hover:text-black transition-colors cursor-hover">Privacy</a>
             <a href="#" className="hover:text-black transition-colors cursor-hover">Terms</a>

@@ -239,7 +239,7 @@ circuit.sync(150);
                 At Bits & Studios, your child joins a makerspace community for K–12 makers who build, solve, compete, fail, fix and grow.
               </p>
               <p className={`text-lg md:text-xl font-bold leading-relaxed transition-colors duration-500 ${isPowered ? 'text-[var(--color-accent)]' : 'text-gray-500'}`}>
-                Become a Founding 150 member.
+                Join the Founding Cohort.
               </p>
               <motion.a
                 href="#admissions"

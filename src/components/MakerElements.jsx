@@ -1019,7 +1019,7 @@ const LINES_ON = [
   [],
   [{ t: 'const ', c: '#C084FC' }, { t: 'power', c: '#60A5FA' }, { t: ' = ', c: '#e5e7eb' }, { t: 'true', c: '#34D399' }],
   [{ t: 'drone', c: '#34D399' }, { t: '.deploy', c: '#FCD34D' }, { t: '({ mode: ', c: '#e5e7eb' }, { t: '"BUILD"', c: '#FF5A00' }, { t: ' })', c: '#e5e7eb' }],
-  [{ t: 'makers', c: '#34D399' }, { t: '.founding', c: '#FCD34D' }, { t: ' = ', c: '#e5e7eb' }, { t: '150', c: '#FF5A00' }],
+  [{ t: 'makers', c: '#34D399' }, { t: '.founding', c: '#FCD34D' }, { t: ' = ', c: '#e5e7eb' }, { t: '"cohort"', c: '#FF5A00' }],
   [{ t: 'future', c: '#34D399' }, { t: '.belongs_to', c: '#FCD34D' }, { t: '(', c: '#e5e7eb' }, { t: '"MAKERS"', c: '#FF5A00' }, { t: ')', c: '#e5e7eb' }],
 ];
 
@@ -1384,7 +1384,7 @@ export const DragToBuildCTA = ({ className = "" }) => {
         </svg>
       </div>
 
-      <motion.a href="#experience"
+      <motion.a href="#admissions"
         animate={{
           boxShadow: complete ? `0 0 60px ${accent}60, 0 0 20px ${accent}40` : '0 0 0px transparent',
           borderColor: complete ? accent : 'rgba(255,255,255,0.2)',

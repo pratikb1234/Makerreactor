@@ -5,7 +5,7 @@ const rituals = [
   { title: "The Maker Wall", desc: "A place of honor for the best student prototypes." },
   { title: "Monthly Builds", desc: "High-energy sprint sessions to solve surprise problems." },
   { title: "Quarterly Showcases", desc: "Demo days where children pitch their creations." },
-  { title: "Founding 150", desc: "Exclusive early-member perks and recognition." },
+  { title: "Founding Cohort", desc: "Be one of the first makers. A small, hand-picked founding group." },
   { title: "Parent Circle", desc: "A community for parents to track progress." }
 ];
 

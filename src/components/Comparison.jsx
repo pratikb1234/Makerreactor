@@ -2,20 +2,24 @@ import { motion } from 'framer-motion';
 
 const comparisons = [
   {
-    not: "A weekend hobby class to kill time.",
-    is: "A structured, premium academy pathway."
+    not: "Teach a skill for a term",
+    is: "A year-long journey that compounds"
   },
   {
-    not: "Following Lego instruction manuals.",
-    is: "Ideating, prototyping, failing, and innovating."
+    not: "Follow instructions to a fixed result",
+    is: "Real problems, with no answer key"
   },
   {
-    not: "A dusty room with old robotics kits.",
-    is: "A state-of-the-art makerspace with 3D printers & AI."
+    not: "Kits and worksheets",
+    is: "Real tools and real materials"
   },
   {
-    not: "Taking home a plastic toy.",
-    is: "Building a portfolio of real-world solutions."
+    not: "A finished toy to take home",
+    is: "A growing body of real work"
+  },
+  {
+    not: "A certificate at the end",
+    is: "A portfolio that speaks for itself"
   }
 ];
 
@@ -38,7 +42,13 @@ export default function Comparison() {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-x-16 gap-y-12 border-t border-black/10 pt-12">
+        {/* Headers */}
+        <div className="hidden md:grid grid-cols-2 gap-16 border-b border-black/10 pb-6 mb-8">
+          <h4 className="font-mono text-sm uppercase tracking-widest text-gray-400 font-bold">Most Programs</h4>
+          <h4 className="font-mono text-sm uppercase tracking-widest text-[var(--color-accent)] font-bold">Bits & Studios</h4>
+        </div>
+
+        <div className="flex flex-col gap-8 md:gap-12">
           {comparisons.map((item, idx) => (
             <motion.div
               key={idx}
@@ -46,12 +56,14 @@ export default function Comparison() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="flex flex-col gap-4 group cursor-hover"
+              className="grid md:grid-cols-2 gap-4 md:gap-16 group cursor-hover border-b border-black/5 pb-8 last:border-0 last:pb-0"
             >
-              <div className="text-xl text-gray-400 line-through decoration-gray-300 font-medium">
+              <div className="text-xl md:text-2xl text-gray-400 font-medium md:flex md:items-center">
+                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Most Programs</span>
                 {item.not}
               </div>
-              <div className="text-2xl md:text-3xl font-display font-bold text-black group-hover:text-[var(--color-accent)] transition-colors">
+              <div className="text-2xl md:text-3xl font-display font-bold text-black group-hover:text-[var(--color-accent)] transition-colors md:flex md:items-center">
+                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-[var(--color-accent)] font-bold block mb-2 mt-4">Bits & Studios</span>
                 {item.is}
               </div>
             </motion.div>

@@ -1,66 +1,157 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const ageGroups = [
+  {
+    id: 'ages-5-9',
+    label: 'Ages 5–9',
+    grades: 'Grades K–3',
+    schedule: {
+      sessionsPerWeek: '2',
+      sessionDuration: '90 MINUTES',
+      hoursPerYear: '~120 HOURS',
+    },
+    instruction: {
+      mentorRatio: '1 : 6',
+    },
+    competitions: 'FIRST FRIENDLY COMPETITIONS FROM GRADE 3',
+  },
+  {
+    id: 'ages-9-11',
+    label: 'Ages 9–11',
+    grades: 'Grades 4–5',
+    schedule: {
+      sessionsPerWeek: '2',
+      sessionDuration: '2 HOURS',
+      hoursPerYear: '~160 HOURS',
+    },
+    instruction: {
+      mentorRatio: '1 : 6',
+    },
+    competitions: 'INCLUDED',
+    competitionsSub: 'HACKATHONS & EVENTS',
+  },
+  {
+    id: 'ages-11-13',
+    label: 'Ages 11–13',
+    grades: 'Grades 6–7',
+    schedule: {
+      sessionsPerWeek: '2',
+      sessionDuration: '2.5 HOURS',
+      hoursPerYear: '~200 HOURS',
+    },
+    instruction: {
+      mentorRatio: '1 : 5',
+    },
+    competitionSeason: 'ADDITIONAL HOURS ON TOP',
+    competitions: 'NATIONAL / INTERNATIONAL INCLUDED',
+    competitionsSub: 'ROBOTICS (FIRST) INVITE ONLY',
+  },
+  {
+    id: 'ages-13-18',
+    label: 'Ages 13–18',
+    grades: 'Grades 8–12',
+    schedule: {
+      sessionsPerWeek: '3',
+      sessionDuration: '2 HOURS',
+      hoursPerYear: '200+ HOURS',
+    },
+    instruction: {
+      mentorRatio: '1 : 5',
+    },
+    competitionSeason: 'ADDITIONAL HOURS ON TOP',
+    competitions: 'NATIONAL / INTERNATIONAL INCLUDED',
+    competitionsSub: 'ROBOTICS (FTC / FRC) INVITE ONLY',
+  },
+];
 
 export default function MembershipSpecSheet() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const group = ageGroups[activeIdx];
+
   return (
     <div className="w-full max-w-5xl mx-auto font-sans text-black">
-      {/* Top Label */}
+      {/* Age Group Toggle */}
       <div className="flex justify-center mb-16">
-        <div className="inline-flex bg-white px-6 py-3 rounded-full border border-black/10 shadow-sm text-[11px] font-mono font-bold uppercase tracking-widest text-[var(--color-accent)]">
-          Grades K–12 · All Makers
+        <div className="flex flex-wrap justify-center bg-white p-1.5 rounded-full border border-black/10 shadow-sm gap-1">
+          {ageGroups.map((g, idx) => (
+            <button
+              key={g.id}
+              onClick={() => setActiveIdx(idx)}
+              className={`px-4 md:px-6 py-3 rounded-full text-[10px] md:text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
+                activeIdx === idx
+                  ? 'bg-[var(--color-accent)] text-white shadow-[0_4px_15px_rgba(255,90,0,0.3)]'
+                  : 'text-gray-400 hover:text-black'
+              }`}
+            >
+              {g.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
-        <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Sessions / Week</span>
-          <span className="text-6xl font-display font-bold tracking-tighter text-black group-hover:scale-105 transition-transform origin-left">2</span>
-        </div>
-        <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Per Session</span>
-          <div className="flex items-baseline gap-3 group-hover:scale-105 transition-transform origin-left">
-            <span className="text-6xl font-display font-bold tracking-tighter text-black">1.5</span>
-            <span className="text-xl text-gray-400 font-bold font-mono uppercase tracking-widest">hrs</span>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={group.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-20">
+            <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Sessions / Week</span>
+              <span className="text-6xl font-display font-bold tracking-tighter text-black group-hover:scale-105 transition-transform origin-left">{group.schedule.sessionsPerWeek}</span>
+            </div>
+            <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Per Session</span>
+              <span className="text-4xl md:text-5xl font-display font-bold tracking-tighter text-black group-hover:scale-105 transition-transform origin-left">{group.schedule.sessionDuration}</span>
+            </div>
+            <div className="bg-white rounded-[2rem] border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-8 md:p-10 flex flex-col justify-between items-start group hover:border-[var(--color-accent)]/30 transition-colors">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-6">Hours / Year</span>
+              <span className="text-4xl md:text-5xl font-display font-bold tracking-tighter text-black group-hover:scale-105 transition-transform origin-left">{group.schedule.hoursPerYear}</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Spec Table */}
-      <div className="border-t-2 border-black/10">
-        <SpecSection title="Schedule">
-          <SpecRow label="Sessions per week" value="2" />
-          <SpecRow label="Session duration" value="1.5 HRS" sub="90 MINUTES" />
-          <SpecRow label="Open studio access" value="WELCOME" sub="BEYOND REGULAR SESSIONS, MAKERS CAN BOOK EXTRA STUDIO TIME" />
-        </SpecSection>
+          {/* Spec Table */}
+          <div className="border-t-2 border-black/10">
+            <SpecSection title="Schedule">
+              <SpecRow label="Sessions per week" value={group.schedule.sessionsPerWeek} />
+              <SpecRow label="Session duration" value={group.schedule.sessionDuration} />
+              <SpecRow label="Hours per year" value={group.schedule.hoursPerYear} />
+              <SpecRow label="Open studio access" value="THE SPACE IS YOURS" sub="STAY AS LONG AS YOU NEED" />
+              {group.competitionSeason && (
+                <SpecRow label="Competition season" value={group.competitionSeason} />
+              )}
+            </SpecSection>
 
-        <SpecSection title="Instruction">
-          <SpecRow label="Mentor : maker ratio" value="1 : 5" />
-          <SpecRow label="Max batch size" value="6 MAKERS" />
-          <SpecRow label="Dedicated mentor" value="YES" sub="SAME MENTOR, FULL YEAR" />
+            <SpecSection title="Instruction">
+              <SpecRow label="Mentor : maker ratio" value={group.instruction.mentorRatio} />
+              <SpecRow label="Dedicated mentor" value="YES" sub="SAME MENTOR, FULL YEAR" />
+              <SpecRow label="Progress tracking" value="MAKER PORTFOLIO & SKILL PASSPORT" />
+              <SpecRow label="Parent updates" value="REGULAR" />
+            </SpecSection>
 
-          <SpecRow label="Parent updates" value="QUARTERLY" />
-        </SpecSection>
+            <SpecSection title="Competitions">
+              <SpecRow label="Competitions" value={group.competitions} sub={group.competitionsSub} />
+              <SpecRow label="CAS activities" value="INCLUDED" />
+            </SpecSection>
 
-        <SpecSection title="Materials & Tools">
-          <SpecRow label="Project materials" value="ALL INCLUDED*" sub="STANDARD MAKER MATERIALS ARE PROVIDED WITHIN THE PROGRAM. SPECIALISED COMPONENTS SPECIFIC TO A PROJECT MAY NEED TO BE SOURCED INDIVIDUALLY." />
-          <SpecRow label="Tools & equipment" value="FULL ACCESS" sub="FOR SESSIONS, PERSONAL PROJECTS & BEYOND — AS MANY TIMES AS NEEDED" />
-          <SpecRow label="3D printing" value="INCLUDED" />
-          <SpecRow label="Take-home projects" value="ALWAYS" sub="EVERY PROJECT BELONGS TO THE MAKER" />
-        </SpecSection>
+            <SpecSection title="Materials & Tools">
+              <SpecRow label="Project materials" value="ALL INCLUDED" />
+              <SpecRow label="Tools & equipment" value="FREE ACCESS FOR PERSONAL USE" />
+              <SpecRow label="3D printing & fabrication" value="INCLUDED" />
+              <SpecRow label="Take-home projects" value="ALWAYS" sub="EVERY BUILD BELONGS TO THE MAKER" />
+            </SpecSection>
 
-        <SpecSection title="Community">
-          <SpecRow label="Showcase" value="MAKERFEST" sub="YEAR-END PUBLIC EXHIBITION" />
-          <SpecRow label="Expert sessions, hackathons & competitions" value="INCLUDED" />
-          <SpecRow label="Parent Circle access" value="INCLUDED" />
-        </SpecSection>
-
-        <SpecSection title="Grade 8+ Advanced Track">
-          <SpecRow label="Sessions per week" value="3" />
-          <SpecRow label="Hours per week" value="6 HRS" />
-          <SpecRow label="FTC Robotics" value="INVITE ONLY" sub="SELECTION BASED ON COMMITMENT & SKILL" />
-          <SpecRow label="Other competitions" value="INCLUDED" sub="HACKATHONS, SCIENCE FAIRS & NATIONAL-LEVEL EVENTS" />
-        </SpecSection>
-      </div>
+            <SpecSection title="Community">
+              <SpecRow label="Showcase" value="MAKERFEST" sub="ANNUAL PUBLIC EXHIBITION" />
+              <SpecRow label="Parent Circle access" value="INCLUDED" />
+            </SpecSection>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

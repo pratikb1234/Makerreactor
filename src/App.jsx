@@ -3,9 +3,10 @@ import CustomCursor from './components/CustomCursor';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import WhyItWorks from './components/WhyItWorks';
-import WhyThisExists from './components/WhyThisExists';
+
 import ProgramPathway from './components/ProgramPathway';
-import ExperienceTrial from './components/ExperienceTrial';
+import FourStudios from './components/FourStudiosDNA';
+
 import Comparison from './components/Comparison';
 import Credibility from './components/Credibility';
 import Community from './components/Community';
@@ -36,8 +37,9 @@ function AppContent() {
         <HeroSection />
         <WhyItWorks />
         <ProgramPathway />
-        <WhyThisExists />
-        <ExperienceTrial />
+        <FourStudios />
+
+
         <Comparison />
         <Credibility />
         <Community />

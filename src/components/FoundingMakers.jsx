@@ -36,7 +36,7 @@ export default function FoundingMakers() {
             </motion.div>
             <h2 className="text-5xl md:text-7xl font-display font-bold mb-8 uppercase tracking-tighter text-black leading-[0.9]">
               Join the <br/>
-              Founding 150.
+              Founding Cohort.
             </h2>
             <p className="text-xl text-gray-600 max-w-md font-medium mb-12">
               This is an exclusive cohort. A community of children who don’t just consume technology, but create with it.
@@ -64,7 +64,7 @@ export default function FoundingMakers() {
               <h3 className="font-mono text-sm uppercase tracking-widest font-bold text-gray-500 mb-6">Current Applications</h3>
               
               <div className="text-[10vw] lg:text-[8vw] font-display font-bold leading-none text-black tracking-tighter mb-8">
-                0<span className="text-gray-300">/150</span>
+                0<span className="text-gray-300">/ ∞</span>
               </div>
               
               <div className="h-4 bg-gray-100 rounded-full overflow-hidden mb-6 relative">

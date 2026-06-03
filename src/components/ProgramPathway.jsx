@@ -13,67 +13,63 @@ const levels = [
     id: "01",
     title: "TINKER",
     image: imgTinker,
-    grades: "Grades 1 to 3",
+    grades: "Ages 5–9 · Grades K–3",
     desc: "Young makers begin with materials, movement, balance, structures and simple mechanisms. They learn to use their hands, make choices, work safely and explain what they created.",
-    grid: {
-      inquire: "Observe materials, ask simple “what if” questions, notice patterns, predict what might happen.",
-      make: "Cutting, joining, folding, assembling, structures, balance, simple machines, movement.",
-      reflect: "What worked? What fell? What changed? What would I try again?",
-      present: "Show-and-tell, naming design choices, explaining how the project works."
+    mtb: {
+      make: "Working models, simple circuits, things that move and respond.",
+      think: "Cause and effect, and how to make things work better.",
+      become: "A problem-solver who tries, fails, and tries again."
     }
   },
   {
     id: "02",
     title: "BUILD",
     image: imgEngineer,
-    grades: "Grades 4 to 5",
+    grades: "Ages 9–11 · Grades 4–5",
     desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
-    grid: {
-      inquire: "Define a problem, compare ideas, plan before building, choose materials with purpose.",
-      make: "Mechanisms, gears, pulleys, levers, circuits, motors, LEDs, switches, sensors, block coding, measurement.",
-      reflect: "Test, debug, improve, notice cause and effect, understand why a system works or fails.",
-      present: "Explain the function, describe improvements, work in teams, present the process."
+    mtb: {
+      make: "Working robots, real circuits, programmed builds that solve problems.",
+      think: "Systems, logic, and how to debug what is not working.",
+      become: "A capable builder who can take an idea to a finished machine."
     }
   },
   {
     id: "03",
     title: "ENGINEER",
     image: imgBuild,
-    grades: "Grades 6 to 7",
+    grades: "Ages 11–13 · Grades 6–7",
     desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
-    grid: {
-      inquire: "Break complex problems into systems, identify inputs and outputs, use data to make decisions.",
-      make: "Robotics, microcontrollers, sensors, actuators, Python, automation, 3D modelling, 3D printing, laser cutting basics, soldering.",
-      reflect: "Calibrate, troubleshoot, document tests, redesign parts, improve reliability and performance.",
-      present: "Technical explanation, system diagrams, engineering notes, demo presentation."
+    mtb: {
+      make: "Competition robots, real engineering builds, working systems.",
+      think: "Engineering trade-offs, debugging, and building to a real standard.",
+      become: "A serious builder who can engineer a real solution."
     }
   },
   {
     id: "04",
     title: "INVENT",
     image: imgInvent,
-    grades: "Grades 8 to 9+",
+    grades: "Ages 13–18 · Grades 8–12",
     desc: "Makers take on original work. They use advanced robotics, CAD, AI, connected devices, electronics and product thinking to build solutions that can be tested, presented and improved in the real world.",
-    grid: {
-      inquire: "Frame real problems, research users, question assumptions, define constraints and success criteria.",
-      make: "Advanced robotics, parametric CAD, fabrication planning, PCB basics, IoT, AI integration, data analysis, UI/UX.",
-      reflect: "Evaluate impact, iterate independently, manage longer projects, document decisions and trade-offs.",
-      present: "Portfolio building, competition presentation, pitch-style demos, leadership, mentoring younger makers."
+    mtb: {
+      make: "Original research, deployed projects, published work, real ventures.",
+      think: "Real problems, real users, and how to take work into the world.",
+      become: "A maker with a body of real work that speaks for itself."
     }
   }
 ];
 
 const membershipInclusions = [
-  "48 Studio Sessions",
-  "12 Major Projects",
-  "Tangible Deliverables",
-  "Materials Included",
-  "Hardware Provided",
-  "Maker Passport",
-  "Quarterly Showcases",
+  "All Materials Included",
+  "Free Tool Access",
+  "Dedicated Mentor",
+  "Maker Portfolio",
+  "MakerFest Showcase",
   "Parent Updates",
-  "Premium Tools",
-  "Advanced Pathways"
+  "Competition Pathways",
+  "3D Printing & Fab",
+  "Take-Home Projects",
+  "CAS Activities"
 ];
 
 export default function ProgramPathway() {
@@ -161,6 +157,19 @@ export default function ProgramPathway() {
             </motion.div>
           </div>
         </div>
+      </div>
+
+      {/* ── Age Group Entry Points ── */}
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-8">
+        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
+          // WHERE YOU BEGIN
+        </motion.div>
+        <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-black uppercase tracking-tighter leading-[0.85] mb-6">
+          FIND YOUR MAKER'S<br/><span className="text-black/20">STARTING POINT.</span>
+        </motion.h2>
+        <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="text-lg text-gray-500 leading-relaxed max-w-2xl mb-16">
+          Makers enter at the group that fits their age. Wherever they start, they work across all four studios and grow from there.
+        </motion.p>
       </div>
 
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pb-24 md:pb-40">
@@ -310,7 +319,7 @@ function LevelCardBase({ level, index }) {
       
       {/* Technical Label */}
       <div className="absolute top-8 right-8 font-mono text-[11px] text-black/20 font-bold uppercase tracking-widest z-20 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
-        LVL_{level.id}_PATH
+        GROUP_{level.id}
       </div>
 
       {/* Hero Image */}
@@ -335,13 +344,12 @@ function LevelCardBase({ level, index }) {
         {level.desc}
       </p>
 
-      {/* The 2x2 Grid Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
+      {/* The MAKE / THINK / BECOME Block */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-8 mt-4 pt-6 border-t border-black/5">
         {[
-          { label: 'INQUIRE', text: level.grid.inquire },
-          { label: 'MAKE', text: level.grid.make },
-          { label: 'REFLECT', text: level.grid.reflect },
-          { label: 'PRESENT', text: level.grid.present }
+          { label: 'THEY MAKE', text: level.mtb.make },
+          { label: 'THEY THINK IN', text: level.mtb.think },
+          { label: 'THEY BECOME', text: level.mtb.become }
         ].map((item, idx) => (
           <div key={idx} className="relative group/grid">
             <div className="absolute left-0 top-0 w-[2px] h-full bg-[var(--color-accent)]/20 group-hover/grid:bg-[var(--color-accent)] transition-colors duration-500" />

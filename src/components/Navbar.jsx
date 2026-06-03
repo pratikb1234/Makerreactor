@@ -24,15 +24,15 @@ export default function Navbar() {
         <div className="max-w-[90rem] mx-auto px-6 md:px-12 flex justify-between items-center">
           <a href="#" className="font-display font-bold text-2xl tracking-tighter text-black flex items-center gap-3 cursor-hover">
             <div className="w-4 h-4 bg-[var(--color-accent)] rounded-sm transform rotate-45" />
-            FUTURE BUILDERS
+            BITS & STUDIOS
           </a>
 
           <div className="hidden md:flex items-center gap-10">
             <a href="#programs" className="text-sm font-mono font-bold hover:text-[var(--color-accent)] transition-colors uppercase tracking-widest cursor-hover">Programs</a>
-            <a href="#experience" className="text-sm font-mono font-bold hover:text-[var(--color-accent)] transition-colors uppercase tracking-widest cursor-hover">Experience</a>
+            <a href="#admissions" className="text-sm font-mono font-bold hover:text-[var(--color-accent)] transition-colors uppercase tracking-widest cursor-hover">Admissions</a>
             <MagneticButton>
               <a href="#founding150" className="px-6 py-3 bg-black text-white rounded-full text-sm font-bold uppercase tracking-wider hover:bg-[var(--color-accent)] transition-colors cursor-hover inline-block">
-                Join 150
+                Founding Cohort
               </a>
             </MagneticButton>
           </div>
@@ -58,8 +58,8 @@ export default function Navbar() {
             </button>
             <div className="flex flex-col gap-8 text-center">
               <a href="#programs" className="text-5xl font-display font-bold text-black hover:text-[var(--color-accent)] transition-colors cursor-hover" onClick={() => setMobileMenuOpen(false)}>Programs</a>
-              <a href="#experience" className="text-5xl font-display font-bold text-black hover:text-[var(--color-accent)] transition-colors cursor-hover" onClick={() => setMobileMenuOpen(false)}>Experience</a>
-              <a href="#founding150" className="text-5xl font-display font-bold text-black hover:text-[var(--color-accent)] transition-colors cursor-hover" onClick={() => setMobileMenuOpen(false)}>Join 150</a>
+              <a href="#admissions" className="text-5xl font-display font-bold text-black hover:text-[var(--color-accent)] transition-colors cursor-hover" onClick={() => setMobileMenuOpen(false)}>Admissions</a>
+              <a href="#founding150" className="text-5xl font-display font-bold text-black hover:text-[var(--color-accent)] transition-colors cursor-hover" onClick={() => setMobileMenuOpen(false)}>Founding Cohort</a>
             </div>
           </motion.div>
         )}
