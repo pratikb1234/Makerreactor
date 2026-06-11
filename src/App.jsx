@@ -1,21 +1,27 @@
+import { lazy, Suspense } from 'react';
 import { useCircuit, CircuitProvider } from './context/CircuitContext';
 import CustomCursor from './components/CustomCursor';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import WhyItWorks from './components/WhyItWorks';
 
-import ProgramPathway from './components/ProgramPathway';
+import ProgramPathway, { NotAClass } from './components/ProgramPathway';
 import FourStudios from './components/FourStudiosDNA';
 
 import Comparison from './components/Comparison';
-import Credibility from './components/Credibility';
 import Community from './components/Community';
+import MakerVoice from './components/MakerVoice';
 import ParentPromise from './components/ParentPromise';
-import Testimonials from './components/Testimonials';
 import AdmissionsTimeline from './components/AdmissionsTimeline';
+import FAQ from './components/FAQ';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
+import StickyCTA from './components/StickyCTA';
 import { motion } from 'framer-motion';
+
+// Credibility carries the whole Three.js stack — split it out of the main
+// bundle so first paint doesn't pay for a section 15,000px below the fold.
+const Credibility = lazy(() => import('./components/Credibility'));
 
 function AppContent() {
   const { isPowered, setIsHeroBridgeComplete } = useCircuit();
@@ -23,6 +29,7 @@ function AppContent() {
   return (
     <>
       <CustomCursor />
+      <Navbar />
       <motion.div 
         className="min-h-screen bg-[var(--color-light)] text-[var(--color-text-dark)] selection:bg-[var(--color-accent)] selection:text-white"
         animate={{ 
@@ -32,23 +39,25 @@ function AppContent() {
         }}
         transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
       >
-      <Navbar />
       <main>
         <HeroSection />
         <WhyItWorks />
-        <ProgramPathway />
+        <NotAClass />
         <FourStudios />
-
-
+        <ProgramPathway />
         <Comparison />
-        <Credibility />
+        <Suspense fallback={<div className="min-h-[60vh] bg-[var(--color-light)]" />}>
+          <Credibility />
+        </Suspense>
         <Community />
+        <MakerVoice />
         <ParentPromise />
-        <Testimonials />
         <AdmissionsTimeline />
+        <FAQ />
         <FinalCTA />
       </main>
       <Footer />
+      <StickyCTA />
     </motion.div>
     </>
   );

@@ -25,7 +25,7 @@ const comparisons = [
 
 export default function Comparison() {
   return (
-    <section className="py-32 bg-[var(--color-light)] relative">
+    <section className="py-32 bg-[#F5F0E8] relative">
       <div className="max-w-[90rem] mx-auto px-6 md:px-12">
         <div className="mb-20">
           <motion.div 
@@ -44,8 +44,8 @@ export default function Comparison() {
 
         {/* Headers */}
         <div className="hidden md:grid grid-cols-2 gap-16 border-b border-black/10 pb-6 mb-8">
-          <h4 className="font-mono text-sm uppercase tracking-widest text-gray-400 font-bold">Most Programs</h4>
-          <h4 className="font-mono text-sm uppercase tracking-widest text-[var(--color-accent)] font-bold">Bits & Studios</h4>
+          <h4 className="font-mono text-sm uppercase tracking-widest text-black/40 font-bold">Most Programs</h4>
+          <h4 className="font-mono text-sm uppercase tracking-widest text-black/70 font-bold">Bits &amp; Studios</h4>
         </div>
 
         <div className="flex flex-col gap-8 md:gap-12">
@@ -56,14 +56,14 @@ export default function Comparison() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="grid md:grid-cols-2 gap-4 md:gap-16 group cursor-hover border-b border-black/5 pb-8 last:border-0 last:pb-0"
+              className="grid md:grid-cols-2 gap-4 md:gap-16 group cursor-hover border-b border-black/8 pb-8 last:border-0 last:pb-0"
             >
-              <div className="text-xl md:text-2xl text-gray-400 font-medium md:flex md:items-center">
-                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-gray-400 font-bold block mb-2">Most Programs</span>
+              <div className="text-xl md:text-2xl text-black/35 font-medium md:flex md:items-center">
+                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-black/40 font-bold block mb-2">Most Programs</span>
                 {item.not}
               </div>
               <div className="text-2xl md:text-3xl font-display font-bold text-black group-hover:text-[var(--color-accent)] transition-colors md:flex md:items-center">
-                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-[var(--color-accent)] font-bold block mb-2 mt-4">Bits & Studios</span>
+                <span className="md:hidden font-mono text-[10px] uppercase tracking-widest text-black/60 font-bold block mb-2 mt-4">Bits &amp; Studios</span>
                 {item.is}
               </div>
             </motion.div>

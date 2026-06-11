@@ -1,13 +1,85 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script>
+  function showFallbackError() {
+    if (document.getElementById('fallback-error-ui')) return;
+    var ui = document.createElement('div');
+    ui.id = 'fallback-error-ui';
+    ui.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#F5F0E8;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:center;padding:20px;box-sizing:border-box;';
+    ui.innerHTML = `
+      <div style="background:white;padding:40px;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,0.08);max-width:400px;border:1px solid rgba(0,0,0,0.05);width:100%;">
+        <div style="width:64px;height:64px;background:rgba(255,90,0,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <svg style="width:32px;height:32px;color:#FF5A00;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;margin:0 0 12px;color:#000;">Oops... Something snapped.</h2>
+        <p style="color:#666;font-size:15px;line-height:1.6;margin:0 0 24px;">We blew a fuse trying to load this experience. If a quick reload doesn't jumpstart it, try viewing it on another browser.</p>
+        <button onclick="window.location.reload()" style="background:#FF5A00;color:white;border:none;padding:14px 24px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;width:100%;transition:opacity 0.2s;">Reload Page</button>
+      </div>
+    `;
+    document.body.appendChild(ui);
+  }
+  // Only show the full-screen fallback if the app genuinely failed to mount —
+  // a stray runtime error on a working page should never blank the site.
+  function maybeShowFallback() {
+    var root = document.getElementById('root');
+    if (!root || root.childElementCount === 0) showFallbackError();
+  }
+  window.addEventListener('error', maybeShowFallback);
+  window.addEventListener('unhandledrejection', maybeShowFallback);
+</script>
+
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light only">
+    <meta name="theme-color" content="#F5F0E8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <title>Bits & Studios — Where Serious Makers Do Real Work</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Bits & Studios is Ahmedabad's makerspace for kids ages 5–18. Real tools, real problems, real work — a year-long maker journey across Tech, Design, Expression and Entrepreneurship. Book a studio visit in Bodakdev." />
+    <link rel="canonical" href="https://bitsandstudios.com/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (WhatsApp / LinkedIn / Facebook shares) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bitsandstudios.com/" />
+    <meta property="og:title" content="Bits & Studios — Where Serious Makers Do Real Work" />
+    <meta property="og:description" content="A makerspace for K–12 in Bodakdev, Ahmedabad. Real tools, real problems, a portfolio that speaks for itself. Founding cohort now forming." />
+    <meta property="og:site_name" content="Bits & Studios" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Bits & Studios — Where Serious Makers Do Real Work" />
+    <meta name="twitter:description" content="A makerspace for K–12 in Bodakdev, Ahmedabad. Real tools, real problems, a portfolio that speaks for itself." />
+
+    <!-- Local business structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Bits & Studios",
+      "description": "A makerspace for K–12 makers in Ahmedabad. Year-long maker journeys across Tech, Design, Expression and Entrepreneurship studios.",
+      "url": "https://bitsandstudios.com/",
+      "email": "info@bitsandstudios.com",
+      "telephone": "+919535862541",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "204, Alpha Business Park, Judges Bungalow Road, Bodakdev",
+        "addressLocality": "Ahmedabad",
+        "addressRegion": "Gujarat",
+        "postalCode": "380054",
+        "addressCountry": "IN"
+      },
+      "sameAs": []
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

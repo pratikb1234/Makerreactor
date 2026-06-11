@@ -45,7 +45,7 @@ export default function FoundingMakers() {
             <div className="flex gap-6">
               <MagneticButton>
                 <button className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg uppercase tracking-wider hover:bg-[var(--color-accent)] transition-colors cursor-hover">
-                  Apply Now
+                  Enquire Now
                 </button>
               </MagneticButton>
             </div>

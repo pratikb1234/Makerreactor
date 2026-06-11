@@ -3,14 +3,13 @@ import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, Symbol } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
 
-import img1 from '../assets/card1.jpeg';
-import img2 from '../assets/card2.png';
-import img3 from '../assets/card3.png';
+import MakerArt from './ArtisticVisuals';
+import Tilt3D from './Tilt3D';
 
 const STEPS = [
-  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", image: img1, threshold: 0.15 },
-  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', image: img2, threshold: 0.50 },
-  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', image: img3, threshold: 0.85 },
+  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", art: 'environment', threshold: 0.15 },
+  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', art: 'culture', threshold: 0.50 },
+  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', art: 'outcomes', threshold: 0.85 },
 ];
 
 export default function WhyItWorks() {
@@ -80,19 +79,50 @@ export default function WhyItWorks() {
             className="top-0 left-0 w-full h-full"
             pathD="M 40 0 V 1000"
             viewBox="0 0 80 1000"
-            scrollOffset={['start center', 'end center']}
+            scrollOffset={['start center', 'end 0.88']}
             isActivated={isHeroBridgeComplete}
             components={[]}
           />
         </div>
 
         <div className="max-w-[95rem] mx-auto px-6 md:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-0">
+        <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-0">
 
-            {/* ── LEFT: sticky headline — cinematic entrance animation ── */}
-            <div className="w-full lg:w-[45%] lg:sticky lg:top-12 lg:pr-16 relative z-20">
+            {/* ── MOBILE: Inline header above cards ── */}
+            <div className="lg:hidden mb-8">
+              <div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-4 bg-black/5 px-4 py-2 rounded-full border border-black/10">
+                <div className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
+                SYSTEM.ROOT // WHY_IT_WORKS
+              </div>
+              <h2 className="font-display font-bold uppercase tracking-tighter leading-[0.88] text-black mb-5" style={{ fontSize: 'clamp(2rem, 10vw, 3.5rem)' }}>
+                THE MOMENT<br />
+                YOUR CHILD BUILDS<br />
+                SOMETHING REAL —<br />
+                <span className="text-[var(--color-accent)]">THEY CHANGE.</span>
+              </h2>
+              <div className="border-l-2 border-[var(--color-accent)]/30 pl-5 space-y-2 max-w-sm">
+                <p className="text-base font-bold text-black leading-snug">
+                  Not the project. Not the robot. Not the code.{' '}
+                  <span className="text-[var(--color-accent)]">Them.</span>
+                </p>
+                <p className="font-mono text-[11px] uppercase tracking-widest text-gray-400 leading-relaxed">
+                  Science. Math. Engineering. Not as subjects — as tools they now know how to wield.
+                </p>
+              </div>
+              <div className="mt-6 bg-[#111] rounded-2xl border border-white/5 p-5 relative overflow-hidden max-w-sm">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent opacity-40" />
+                <p className="font-mono text-[11px] text-gray-500 mb-2 tracking-widest">// ACTIVE_DIRECTIVE</p>
+                <p className="text-base font-bold text-white font-display uppercase tracking-wide leading-snug">
+                  Projects are not the end goal.<br />
+                  <span className="text-[var(--color-accent)]">They are the method.</span>
+                </p>
+              </div>
+            </div>
+
+            {/* ── DESKTOP: sticky headline column ── */}
+            <div className="hidden lg:block w-full lg:w-[45%] lg:sticky lg:top-12 lg:pr-16 relative z-20">
               <motion.div
-                style={isMobile ? {} : {
+                style={{
                   x: headlineX,
                   transformOrigin: 'left center',
                 }}
@@ -103,7 +133,7 @@ export default function WhyItWorks() {
                 </div>
                 <motion.h2
                   className="font-display font-bold uppercase tracking-tighter leading-[0.88] text-black mb-5"
-                  style={isMobile ? { fontSize: 'clamp(2rem, 8vw, 4.5vw)', width: '100%' } : { fontSize, width: headlineWidth }}
+                  style={{ fontSize, width: headlineWidth }}
                 >
                   THE MOMENT<br />
                   YOUR CHILD BUILDS<br />
@@ -112,11 +142,10 @@ export default function WhyItWorks() {
                 </motion.h2>
               </motion.div>
 
-              {/* Sub-quote — independent of headline scale/x, fades in during hold */}
               <motion.div
                 animate={{ opacity: showSub ? 1 : 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={isMobile ? {} : { x: headlineX, marginLeft: subMarginLeft }}
+                style={{ x: headlineX, marginLeft: subMarginLeft }}
                 className="mt-4 border-l-2 border-[var(--color-accent)]/30 pl-5 space-y-2 max-w-sm"
               >
                 <p className="text-base font-bold text-black leading-snug">
@@ -130,7 +159,7 @@ export default function WhyItWorks() {
               <motion.div 
                 animate={{ opacity: showDirective ? 1 : 0, x: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={isMobile ? {} : { x: headlineX }}
+                style={{ x: headlineX }}
                 className="mt-6 bg-[#111] rounded-2xl border border-white/5 p-5 relative overflow-hidden max-w-sm"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent opacity-40" />
@@ -142,8 +171,8 @@ export default function WhyItWorks() {
               </motion.div>
             </div>
 
-            {/* ── RIGHT: Heading + 3 cards scrolling normally, pushed down to allow cinematic hold ── */}
-            <div className="w-full lg:w-[55%] pt-16 lg:pt-[160vh] flex flex-col items-end gap-16 lg:gap-[40vh] relative z-30">
+            {/* ── RIGHT / MOBILE: cards ── */}
+            <div className="w-full lg:w-[55%] pt-0 lg:pt-[160vh] flex flex-col items-end gap-16 lg:gap-[40vh] relative z-30">
               <HeadingCard isCircuitActive={isHeroBridgeComplete} />
               
               {STEPS.map((step, idx) => (
@@ -163,9 +192,12 @@ export default function WhyItWorks() {
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         
-        <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block">
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
+        <div className="absolute inset-0 pointer-events-none z-0">
+          {/* Box draws purely with scroll, starting the moment the spine above touches
+              this section's top edge (both keyed to the boundary crossing 88% of the
+              viewport) — visible handoff, and it never races ahead of the reader. */}
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start 0.88", "end center"]} />
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start 0.88", "end center"]} />
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative z-10 font-mono text-xs uppercase tracking-[0.3em] text-gray-500 font-bold mb-12 flex items-center gap-3">
@@ -180,8 +212,8 @@ export default function WhyItWorks() {
         {/* Universal Footer */}
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6 }}
           className="relative z-10 flex flex-wrap justify-center gap-4 md:gap-10 mt-16 text-gray-400 font-mono text-[11px] tracking-widest uppercase font-bold">
-          {['SYSTEMS_THINKING', 'APPLIED_ENGINEERING', 'TACTILE_KNOWLEDGE'].map(t => (
-            <div key={t} className="flex items-center gap-2"><span className="text-[var(--color-accent)]">#</span>{t}</div>
+          {['DESIGN THINKING', 'REAL-WORLD EXPERIENCES', 'LIFE SKILLS'].map(t => (
+            <div key={t} className="flex items-center gap-2"><span className="text-[var(--color-accent)]">#</span>{t.replace(/ /g, '_')}</div>
           ))}
         </motion.div>
       </section>
@@ -204,7 +236,7 @@ function HeadingCard({ isCircuitActive }) {
   useMotionValueEvent(activeP, "change", (latest) => setIsActive(latest > 0.5));
 
   return (
-    <motion.div ref={cardRef} className="relative w-full max-w-[460px] mb-[-10vh]" style={{ opacity: cardOpacity }}>
+    <motion.div ref={cardRef} className="relative w-full max-w-[460px] mb-12 lg:mb-[-10vh]" style={{ opacity: cardOpacity }}>
       {/* Branch wire connecting card to central line */}
       <motion.div className="absolute top-[1.5rem] right-full hidden lg:block h-px pointer-events-none"
         style={{ width: 'min(252px, calc(50vw - 508px))', opacity: branchOp, backgroundColor: '#FF5A00', boxShadow: '0 0 8px #FF5A00' }} />
@@ -278,13 +310,18 @@ function StepCard({ step, isCircuitActive }) {
       </motion.div>
 
       <motion.div className="bg-transparent max-w-[460px] relative font-sans group">
-        <div className="relative h-[320px] overflow-hidden mb-8 shadow-xl">
-          <motion.img src={step.image} alt={step.title} style={{ filter: imgFilter }} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+        <Tilt3D max={5} radiusClass="rounded-3xl">
+        <div className="relative h-[320px] overflow-hidden mb-8 shadow-xl rounded-3xl border border-black/5">
+          <motion.div style={{ filter: imgFilter }} className="w-full h-full transition-transform duration-1000 scale-[1.08] group-hover:scale-[1.15]">
+            <MakerArt variant={step.art} />
+          </motion.div>
+
           <div className="absolute top-6 left-6 bg-white/90 backdrop-blur px-4 py-2 rounded-none font-mono text-[10px] tracking-widest font-bold shadow-lg flex items-center gap-2 border border-black/10">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
             <motion.span style={{ color: numColor }}>SYS // {step.title.split(' ')[1] || step.title}</motion.span>
           </div>
         </div>
+        </Tilt3D>
         <motion.h3 style={{ color: titleColor }} className="text-4xl font-display font-bold uppercase tracking-tight mb-4">{step.title}</motion.h3>
         <p className="text-gray-600 text-lg leading-relaxed">{step.desc}</p>
       </motion.div>

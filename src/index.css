@@ -66,3 +66,15 @@
   animation: scan 3s linear infinite;
 }
 
+
+/* ── Depth system: extruded dimensional headlines ── */
+.text-extrude {
+  text-shadow:
+    0 1px 0 #d9cdb5, 0 2px 0 #cfc2a7, 0 3px 0 #c4b699,
+    0 4px 0 #b9aa8c, 0 7px 18px rgba(26, 20, 13, 0.22);
+}
+.text-extrude-dark {
+  text-shadow:
+    0 1px 0 #5a3415, 0 2px 0 #4a2a10, 0 3px 0 #3a200c,
+    0 4px 0 #2a1708, 0 8px 24px rgba(255, 90, 0, 0.28);
+}

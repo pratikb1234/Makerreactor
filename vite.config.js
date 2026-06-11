@@ -1,9 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import legacy from '@vitejs/plugin-legacy'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/Makerreactor/',
-  plugins: [react(), tailwindcss()],
+  base: '/',
+  plugins: [
+    react(), 
+    tailwindcss(),
+    legacy({
+      targets: ['defaults', 'not IE 11', 'iOS >= 11', 'Safari >= 11'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime']
+    })
+  ],
 })

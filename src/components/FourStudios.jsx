@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 const studios = [
   { num: '01', title: 'TECH', desc: 'Engineering, electronics, and code. Building things that work.' },
   { num: '02', title: 'DESIGN', desc: 'Form, craft, and iteration. Building things well.' },
-  { num: '03', title: 'PRESENTATION', desc: 'Demos, writing, and speaking. Making work understood.' },
+  { num: '03', title: 'EXPRESSION', desc: 'Demos, writing, and speaking. Making work understood.' },
   { num: '04', title: 'ENTREPRENEURSHIP', desc: 'Solving real problems. Building things that matter.' },
 ];
 

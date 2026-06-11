@@ -1,18 +1,45 @@
-import { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useMotionValueEvent, useTransform, useInView } from 'framer-motion';
-import MembershipSpecSheet from './MembershipSpecSheet';
-import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, FloatingCodeWidget } from './MakerElements';
+import { useRef, useState, useEffect, lazy, Suspense } from 'react';
+import { motion, useScroll, useMotionValueEvent, useSpring } from 'framer-motion';
+import { BlueprintGrid } from './MakerElements';
+import MakerArt from './ArtisticVisuals';
+import Tilt3D from './Tilt3D';
 
-import imgTinker from '../assets/tinker.png';
-import imgBuild from '../assets/builder.png';
-import imgEngineer from '../assets/engineer.png';
-import imgInvent from '../assets/inventor.png';
+// 3D rail (gears + capsule) — Three.js chunk loads only when the section nears
+const Rail3D = lazy(() => import('./Rail3D'));
+
+function RailShowcase({ progress }) {
+  const ref = useRef(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    if (near) return;
+    const inRange = () =>
+      ref.current && ref.current.getBoundingClientRect().top < window.innerHeight + 900;
+    if (inRange()) { setNear(true); return; }
+    const onScroll = () => { if (inRange()) setNear(true); };
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setNear(true); },
+      { rootMargin: '900px' }
+    );
+    obs.observe(ref.current);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll); };
+  }, [near]);
+  return (
+    <div ref={ref} className="w-full h-full">
+      {near && (
+        <Suspense fallback={null}>
+          <Rail3D progress={progress} />
+        </Suspense>
+      )}
+    </div>
+  );
+}
 
 const levels = [
   {
     id: "01",
     title: "TINKER",
-    image: imgTinker,
+    art: "tinker",
     grades: "Ages 5–9 · Grades K–3",
     desc: "Young makers begin with materials, movement, balance, structures and simple mechanisms. They learn to use their hands, make choices, work safely and explain what they created.",
     mtb: {
@@ -24,7 +51,7 @@ const levels = [
   {
     id: "02",
     title: "BUILD",
-    image: imgEngineer,
+    art: "build",
     grades: "Ages 9–11 · Grades 4–5",
     desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
     mtb: {
@@ -36,7 +63,7 @@ const levels = [
   {
     id: "03",
     title: "ENGINEER",
-    image: imgBuild,
+    art: "engineer",
     grades: "Ages 11–13 · Grades 6–7",
     desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
     mtb: {
@@ -48,7 +75,7 @@ const levels = [
   {
     id: "04",
     title: "INVENT",
-    image: imgInvent,
+    art: "invent",
     grades: "Ages 13–18 · Grades 8–12",
     desc: "Makers take on original work. They use advanced robotics, CAD, AI, connected devices, electronics and product thinking to build solutions that can be tested, presented and improved in the real world.",
     mtb: {
@@ -72,6 +99,57 @@ const membershipInclusions = [
   "CAS Activities"
 ];
 
+export function NotAClass() {
+  return (
+    <section className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pt-24 md:pt-40 pb-24 md:pb-32 z-10 overflow-hidden">
+      <BlueprintGrid opacity={0.4} />
+
+      {/* Cyclic rhythm track — represents the yearly cycle */}
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-black/8 pointer-events-none z-0 hidden lg:block">
+        {/* Looping dot that travels up and down */}
+        <div className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[var(--color-accent)] shadow-[0_0_14px_5px_rgba(255,90,0,0.4)]" 
+          style={{ animation: 'cycleUpDown 4s ease-in-out infinite', top: '10%' }} />
+        {/* Second dot offset by half phase */}
+        <div className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[var(--color-accent)]/40" 
+          style={{ animation: 'cycleUpDown 4s ease-in-out infinite reverse', top: '50%' }} />
+      </div>
+
+      {/* Mobile: left-edge cyclic track */}
+      <div className="absolute left-5 top-0 bottom-0 w-px bg-black/8 pointer-events-none z-0 lg:hidden">
+        <div className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_4px_rgba(255,90,0,0.4)]"
+          style={{ animation: 'cycleUpDown 4s ease-in-out infinite', top: '10%' }} />
+      </div>
+
+      <style>{`
+        @keyframes cycleUpDown {
+          0%   { top: 8%;  opacity: 1; }
+          45%  { top: 88%; opacity: 1; }
+          50%  { top: 88%; opacity: 0.3; }
+          95%  { top: 8%;  opacity: 1; }
+          100% { top: 8%;  opacity: 1; }
+        }
+      `}</style>
+
+      <div className="max-w-[90rem] mx-auto px-6 relative z-10">
+        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
+          THE PROGRAM
+        </motion.div>
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
+          <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-black uppercase tracking-tighter leading-[0.85] lg:w-1/2">
+            <span className="text-extrude">NOT A CLASS.</span><br/><span className="text-black/20">A YEARLY MAKER JOURNEY.</span>
+          </motion.h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:w-1/2 space-y-6">
+            <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs stop at teaching a skill.</p>
+            <p className="text-lg text-gray-500 leading-relaxed max-w-xl">At Bits &amp; Studios, makers grow through a year-long pathway of projects, tools, challenges and showcases.</p>
+            <p className="text-lg text-gray-500 leading-relaxed max-w-xl">The work becomes deeper.<br/>The tools become more serious.<br/>The thinking becomes more independent.</p>
+            <p className="text-lg text-gray-500 leading-relaxed max-w-xl">By the end, makers have more than finished projects.<br/>They have confidence, capability and proof of how they think.</p>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function ProgramPathway() {
   const sectionRef = useRef(null);
   const [coreDesign, setCoreDesign] = useState(2); // Default to Sphere
@@ -81,8 +159,11 @@ export default function ProgramPathway() {
     offset: ["start end", "end start"]
   });
 
+  // Spring-smoothed progress: the elevator glides instead of tracking raw wheel ticks.
+  // Shared with the card collision logic so gears still fire when the capsule touches them.
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 55, damping: 20, mass: 0.6 });
+
   const [isEasterEggActive, setIsEasterEggActive] = useState(false);
-  const [membershipLayout, setMembershipLayout] = useState('detailed'); // 'simple' or 'detailed'
 
   const textContent = (
     <>
@@ -91,38 +172,39 @@ export default function ProgramPathway() {
         {isEasterEggActive ? '// IGNITION: DEPTH & ATTENTION DETECTED...' : '// DEEP INTO THE CORE'}
         <div className={`w-8 h-px transition-colors duration-500 ${isEasterEggActive ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-accent)]/50'}`} />
       </div>
-      <h3 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] mb-12 drop-shadow-xl text-white">
-        Every maker enters at a level. <br/>
-        <span className="inline-flex items-center gap-4 flex-wrap justify-center">
-          Every level builds new skills.
+      <h3 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tighter leading-[1.1] drop-shadow-xl text-white flex flex-col items-center justify-center gap-6 md:gap-10 w-full px-4">
+        <span className="text-center">Every maker enters at a level.</span>
+        <span className="text-center">Every level builds new skills.</span>
+        
+        {/* Centered Circle Icon */}
+        <span 
+          className={`pointer-events-none relative flex items-center justify-center rounded-full transition-all duration-300 ${
+            isEasterEggActive 
+              ? 'w-10 h-10 border-4 border-[var(--color-accent)] shadow-[0_0_30px_rgba(255,90,0,0.6)]' 
+              : 'w-6 h-6 md:w-8 md:h-8 border-2 border-[var(--color-accent)]'
+          }`}
+        >
+          {/* The Tiny Hitbox for precise activation */}
           <span 
-            className={`pointer-events-none hidden md:inline-flex relative -top-1 items-center justify-center rounded-full transition-all duration-300 ${
-              isEasterEggActive 
-                ? 'w-10 h-10 border-4 border-[var(--color-accent)] shadow-[0_0_30px_rgba(255,90,0,0.6)]' 
-                : 'w-6 h-6 border-2 border-[var(--color-accent)]'
-            }`}
-          >
-            {/* The Tiny Hitbox for precise activation (Inner Dot Alignment) */}
-            <span 
-              onMouseEnter={() => setIsEasterEggActive(true)}
-              onMouseLeave={() => setIsEasterEggActive(false)}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-auto z-50 cursor-crosshair"
-            />
-            {/* Visual Rings */}
-            <span className={`absolute rounded-full border-[3px] border-[var(--color-accent)] transition-all duration-300 ${
-              isEasterEggActive ? 'w-6 h-6 opacity-100' : 'w-2 h-2 opacity-0'
-            }`} />
-            <span className={`rounded-full bg-[var(--color-accent)] transition-all duration-300 pointer-events-none ${
-              isEasterEggActive 
-                ? 'w-2.5 h-2.5 shadow-[0_0_15px_var(--color-accent)] brightness-150' 
-                : 'w-2 h-2 shadow-[0_0_10px_var(--color-accent)] animate-pulse'
-            }`} />
-          </span>
-        </span> <br/>
-        Every project creates evidence of growth. <br/>
-        Every showcase builds confidence.
+            onMouseEnter={() => setIsEasterEggActive(true)}
+            onMouseLeave={() => setIsEasterEggActive(false)}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-12 md:h-12 rounded-full pointer-events-auto z-50 cursor-crosshair"
+          />
+          {/* Visual Rings */}
+          <span className={`absolute rounded-full border-[3px] border-[var(--color-accent)] transition-all duration-300 ${
+            isEasterEggActive ? 'w-6 h-6 opacity-100' : 'w-2 h-2 opacity-0'
+          }`} />
+          <span className={`rounded-full bg-[var(--color-accent)] transition-all duration-300 pointer-events-none ${
+            isEasterEggActive 
+              ? 'w-2.5 h-2.5 shadow-[0_0_15px_var(--color-accent)] brightness-150' 
+              : 'w-2 h-2 shadow-[0_0_10px_var(--color-accent)] animate-pulse'
+          }`} />
+        </span>
+
+        <span className="text-center">Every project creates evidence of growth.</span>
+        <span className="text-white/40 text-center">Together, they form a system.</span>
       </h3>
-      <p className={`text-2xl font-display italic transition-all duration-500 ${isEasterEggActive ? 'text-[var(--color-accent)] brightness-150 drop-shadow-[0_0_10px_var(--color-accent)]' : 'text-[var(--color-accent)] drop-shadow-md'}`}>
+      <p className={`text-xl md:text-2xl font-display italic transition-all duration-500 ${isEasterEggActive ? 'text-[var(--color-accent)] brightness-150 drop-shadow-[0_0_10px_var(--color-accent)]' : 'text-[var(--color-accent)] drop-shadow-md'}`}>
         Nobody stays where they started.
       </p>
     </>
@@ -132,30 +214,12 @@ export default function ProgramPathway() {
 
   return (
     <>
-    <section ref={sectionRef} className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10">
+    <section ref={sectionRef} className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10 pt-24 md:pt-40">
       <BlueprintGrid opacity={0.4} />
       {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 -bottom-4 w-[120px] pointer-events-none z-0 hidden lg:block">
-        <MechanicalTimeline scrollYProgress={scrollYProgress} />
-      </div>
-
-        {/* ── Header Container ── */}
-      <div className="relative pt-24 md:pt-40 pb-24 md:pb-32">
-        <div className="max-w-[90rem] mx-auto px-6 relative z-10">
-          <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
-            THE PROGRAM
-          </motion.div>
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
-            <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-black uppercase tracking-tighter leading-[0.85] lg:w-1/2">
-              NOT A CLASS.<br/><span className="text-black/20">A YEARLY MAKER JOURNEY.</span>
-            </motion.h2>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:w-1/2 space-y-6">
-              <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs stop at teaching a skill.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">At Bits & Studios, makers grow through a year-long pathway of projects, tools, challenges and showcases.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">The work becomes deeper.<br/>The tools become more serious.<br/>The thinking becomes more independent.</p>
-              <p className="text-lg text-gray-500 leading-relaxed max-w-xl">By the end, makers have more than finished projects.<br/>They have confidence, capability and proof of how they think.</p>
-            </motion.div>
-          </div>
+      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-0 -bottom-[500px] md:-bottom-[850px] lg:-bottom-[1000px] w-[160px] pointer-events-none z-0 [--rail-overhang:500px] md:[--rail-overhang:850px] lg:[--rail-overhang:1000px]">
+        <div className="sticky top-0 h-screen">
+          <RailShowcase progress={smoothProgress} />
         </div>
       </div>
 
@@ -164,7 +228,7 @@ export default function ProgramPathway() {
         <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="font-mono text-sm uppercase tracking-[0.4em] font-bold text-[var(--color-accent)] mb-6">
           // WHERE YOU BEGIN
         </motion.div>
-        <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-black uppercase tracking-tighter leading-[0.85] mb-6">
+        <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-7xl lg:w-[48%] lg:pr-10 font-display font-bold text-black uppercase tracking-tighter leading-[0.85] mb-6 relative z-20">
           FIND YOUR MAKER'S<br/><span className="text-black/20">STARTING POINT.</span>
         </motion.h2>
         <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="text-lg text-gray-500 leading-relaxed max-w-2xl mb-16">
@@ -178,15 +242,26 @@ export default function ProgramPathway() {
         <div className="relative">
           <div className="space-y-32 relative">
             {levels.map((level, idx) => (
-              <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
+              <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={smoothProgress} />
             ))}
           </div>
         </div>
       </div>
     </section>
 
-    <section className="bg-[var(--color-light)] relative font-sans overflow-x-clip">
+    <section className="bg-[var(--color-light)] relative font-sans overflow-x-clip z-20">
       <BlueprintGrid opacity={0.4} />
+      {/* Rail continuation — carries the elevator shaft from the section boundary
+          down into the core sphere's glow, dissolving as it arrives */}
+      <div
+        className="absolute top-0 left-6 lg:left-1/2 -translate-x-1/2 w-12 h-[360px] bg-[#ebebeb] border-x border-black/10 pointer-events-none"
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 45%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 45%, transparent 100%)',
+        }}
+      >
+        <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-2 bg-black/5" />
+      </div>
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pt-32 md:pt-48 pb-24 md:pb-40">
         <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[500px] md:h-[800px] lg:h-[1000px] group/system w-full">
           <motion.div 
@@ -240,68 +315,126 @@ export default function ProgramPathway() {
           </div>
         </motion.div>
 
-        {/* Membership Strip / Spec Sheet Toggle & Content */}
+        {/* Membership Strip */}
         <div className="mt-32">
-          {/* Toggle Controls near the section */}
-          <div className="flex justify-center mb-8">
-            <div className="flex bg-white p-1.5 rounded-full border border-black/10 shadow-sm">
-              <button
-                onClick={() => setMembershipLayout('simple')}
-                className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
-                  membershipLayout === 'simple' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:text-black'
-                }`}
-              >
-                Simple Overview
-              </button>
-              <button
-                onClick={() => setMembershipLayout('detailed')}
-                className={`px-6 py-3 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest transition-all ${
-                  membershipLayout === 'detailed' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:text-black'
-                }`}
-              >
-                Detailed Spec Sheet
-              </button>
-            </div>
-          </div>
-
-          {membershipLayout === 'simple' ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
-            >
-              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12">
-                <div>
-                  <h4 className="font-display font-bold text-2xl uppercase mb-2">Annual Membership Includes</h4>
-                  <p className="text-gray-400 font-mono text-xs uppercase tracking-widest">Premium Makerspace Access</p>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-auto">
-                  {membershipInclusions.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3 group/item">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] mt-1.5 flex-shrink-0 group-hover/item:scale-150 transition-transform" />
-                      <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 leading-tight group-hover/item:text-black transition-colors">
-                        {item}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
+          >
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12">
+              <div>
+                <h4 className="font-display font-bold text-2xl uppercase mb-2">Annual Membership Includes</h4>
+                <p className="text-gray-400 font-mono text-xs uppercase tracking-widest">Premium Makerspace Access</p>
               </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="border border-black/10 rounded-[2rem] p-8 md:p-12 bg-white shadow-sm"
-            >
-              <MembershipSpecSheet />
-            </motion.div>
-          )}
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-auto">
+                {membershipInclusions.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 group/item">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] mt-1.5 flex-shrink-0 group-hover/item:scale-150 transition-transform" />
+                    <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 leading-tight group-hover/item:text-black transition-colors">
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
 
       </div> {/* End of max-w container */}
     </section>
     </>
+  );
+}
+
+// ── Interactive Hero Image with Easter Egg ──
+function InteractiveHeroImage({ level }) {
+  const containerRef = useRef(null);
+  const [isActive, setIsActive] = useState(false);
+  const [ringCenter, setRingCenter] = useState({ x: 0, y: 0 });
+
+  // For the Engineer image (id: "03"), the orange circle is at these percentages
+  const targetX = 0.619;
+  const targetY = 0.7905;
+  const imgW = 1448;
+  const imgH = 1086;
+
+  useEffect(() => {
+    if (level.id !== "03") return;
+    const calculate = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const contW = rect.width;
+      const contH = rect.height;
+      const S = Math.max(contW / imgW, contH / imgH);
+      const rw = imgW * S;
+      const rh = imgH * S;
+      const ox = (contW - rw) / 2;
+      const oy = (contH - rh) / 2;
+      setRingCenter({ x: ox + targetX * rw, y: oy + targetY * rh });
+    };
+    calculate();
+    const obs = new ResizeObserver(calculate);
+    obs.observe(containerRef.current);
+    return () => obs.disconnect();
+  }, [level.id]);
+
+  const handleMouseMove = (e) => {
+    if (level.id !== "03") return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const dist = Math.sqrt((x - ringCenter.x) ** 2 + (y - ringCenter.y) ** 2);
+    // Active if within 50px of the center
+    setIsActive(dist < 50);
+  };
+
+  return (
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setIsActive(false)}
+      className="relative -mx-8 md:-mx-12 -mt-8 md:-mt-12 mb-8 h-48 sm:h-64 overflow-hidden rounded-t-[2.5rem] border-b border-black/5"
+    >
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none" />
+      <div className="w-full h-full transition-transform duration-1000 ease-out group-hover:scale-105">
+        <MakerArt variant={level.art} />
+      </div>
+      
+      {/* Easter Egg Triggered Effect */}
+      {level.id === "03" && isActive && (
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          {/* Darken background slightly */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+          
+          {/* Target Reticle Locked onto the Ring */}
+          <motion.div 
+            initial={{ scale: 2, opacity: 0, rotate: -90 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="absolute -ml-12 -mt-12 w-24 h-24 border-2 border-[var(--color-accent)] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,90,0,0.6)]"
+            style={{ left: ringCenter.x, top: ringCenter.y }}
+          >
+            <div className="absolute w-32 h-px bg-[var(--color-accent)]/50" />
+            <div className="absolute h-32 w-px bg-[var(--color-accent)]/50" />
+            <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]" />
+          </motion.div>
+
+          {/* Glitchy Tech Text */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-6 left-6 font-mono text-xs md:text-sm text-[var(--color-accent)] font-bold tracking-[0.2em] uppercase"
+          >
+            {'>'} ALIGNMENT_LOCKED <br/>
+            {'>'} SYSTEM_READY
+          </motion.div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -323,16 +456,7 @@ function LevelCardBase({ level, index }) {
       </div>
 
       {/* Hero Image */}
-      {level.image && (
-        <div className="relative -mx-8 md:-mx-12 -mt-8 md:-mt-12 mb-8 h-48 sm:h-64 overflow-hidden rounded-t-[2.5rem] border-b border-black/5">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
-          <img 
-            src={level.image} 
-            alt={level.title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
-          />
-        </div>
-      )}
+      {level.art && <InteractiveHeroImage level={level} />}
 
       <div className="mb-10 relative">
         <div className="font-mono text-4xl font-bold text-black/5 mb-2 leading-none">{level.id}</div>
@@ -367,6 +491,7 @@ function LevelCardBase({ level, index }) {
   );
 }
 
+
 // ── Layout 1: The Original Timeline Wrapper ──
 function LevelCardTimeline({ level, index, scrollYProgress }) {
   const isEven = index % 2 === 0;
@@ -378,6 +503,15 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   const [isActive, setIsActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1023px)');
+    setIsMobile(mql.matches);
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
   useEffect(() => {
     if (!cardRef.current) return;
     const section = cardRef.current.closest('section');
@@ -392,10 +526,14 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
       }
       
       const gearCenter = offsetTop + cardRef.current.offsetHeight / 2;
-      const sectionHeight = section.offsetHeight;
+      
+      // The mechanical rail container extends below the section to reach the core sphere
+      // (must match the -bottom-[...] values on the timeline container)
+      const extraBottom = window.innerWidth >= 1024 ? 1000 : (window.innerWidth >= 768 ? 850 : 500);
+      const containerHeight = section.offsetHeight + extraBottom;
       
       // Physical Collision Math:
-      // The payload drops linearly. Its center is at `scrollYProgress * sectionHeight`.
+      // The payload drops linearly. Its center is at `scrollYProgress * containerHeight`.
       // Payload extends 56px UP (to the hook) and 40px DOWN.
       // Gear extends 60px UP and 60px DOWN.
       
@@ -404,12 +542,10 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
       const startPixel = gearCenter - 100;
       
       // Keep it active until the payload drops completely past the bottom of the card
-      // Card bottom is `offsetTop + cardRef.current.offsetHeight`.
-      // The payload center leaves the card bottom when `payloadCenter > cardBottom`.
       const endPixel = offsetTop + cardRef.current.offsetHeight;
       
-      setActivationStart(startPixel / sectionHeight);
-      setActivationEnd(endPixel / sectionHeight);
+      setActivationStart(startPixel / containerHeight);
+      setActivationEnd(endPixel / containerHeight);
     };
 
     calculate();
@@ -427,178 +563,30 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   return (
     <div ref={cardRef} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
-      {/* Visual Marker on central line */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center z-30">
-        <MechanicalLinkageNode isActive={isActive || isHovered} />
+      {/* Anchor for the 3D gear on the central rail (measured by Rail3D) */}
+      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
+        <div className="rail-node-anchor w-20 h-20 lg:w-32 lg:h-32" />
       </div>
 
       {/* Level Card Base Content - Wrapped in a jolt animation */}
       <motion.div 
-        className="w-full lg:w-[45%] relative z-10" 
+        className="w-full lg:w-[45%] relative z-10 pl-16 lg:pl-0" 
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
-        animate={(isActive || isHovered) ? { x: isEven ? -15 : 15 } : { x: 0 }}
+        animate={(isActive || isHovered) ? (isMobile ? { y: 15, x: 0 } : { x: isEven ? -15 : 15, y: 0 }) : { x: 0, y: 0 }}
         transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
       >
         {/* Pass isActive down so the card can light up when punched */}
-        <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
-          <LevelCardBase level={level} index={index} />
-        </div>
+        <Tilt3D max={4} radiusClass="rounded-[2.5rem]">
+          <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
+            <LevelCardBase level={level} index={index} />
+          </div>
+        </Tilt3D>
       </motion.div>
 
-      {/* Decorative Mechanical Linkage Piston Arm - LG only */}
-      <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 w-[5%] h-8 z-20 ${isEven ? 'left-[45%]' : 'right-[45%]'}`}>
-        <PistonArm isActive={isActive || isHovered} isEven={isEven} />
-      </div>
-      
       {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
     </div>
   );
 }
 
-function PistonArm({ isActive, isEven }) {
-  // Piston pushes OUT from the center towards the card.
-  // Center is at the right for isEven, left for !isEven.
-  return (
-    <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Outer Cylinder (attached to center) */}
-      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
-         {/* Decorative cylinder stripes */}
-         <div className="w-full h-[2px] bg-black/20" />
-      </div>
-
-      {/* Inner Rod (shoots out to the card) */}
-      <motion.div 
-        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
-        initial={{ width: '10%' }}
-        animate={{ width: isActive ? '100%' : '10%' }}
-        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
-      >
-        {/* Plunger Head hitting the card */}
-        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
-          {/* Spark effect when hitting */}
-          {isActive && (
-            <motion.div 
-              initial={{ scale: 0, opacity: 1 }}
-              animate={{ scale: 2.5, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
-            />
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-// ── Mechanical Contraption Components ──
-
-function MechanicalTimeline({ scrollYProgress }) {
-  const payloadY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  // The motor rotation is directly proportional to scroll
-  const motorRotation = useTransform(scrollYProgress, [0, 1], [0, 1440]); // 4 full spins
-
-  return (
-    <div className="absolute inset-0 flex flex-col items-center">
-      {/* Top Motor Assembly (mounted at the top of the section, cut horizontally) */}
-      <div className="absolute top-0 w-32 h-10 overflow-hidden z-30 flex justify-center">
-        <div className="absolute -top-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
-          {/* Motor body casing details */}
-          <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
-          <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
-          
-          {/* Rotating Pulley Wheel */}
-          <motion.div 
-            className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
-            style={{ rotate: motorRotation }}
-          >
-            {/* Pulley Spokes */}
-            <div className="absolute w-full h-1.5 bg-[#666]" />
-            <div className="absolute w-1.5 h-full bg-[#666]" />
-            {/* Glowing Axle Center */}
-            <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Elevator Shaft / Track */}
-      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-b-[1rem] border-x border-b border-black/10 flex justify-center shadow-inner overflow-hidden">
-        {/* Inner track rail */}
-        <div className="absolute top-0 bottom-0 w-2 bg-black/5" />
-      </div>
-
-      {/* The Rope (connecting motor to capsule) */}
-      <motion.div 
-        className="absolute top-0 w-1.5 bg-[#555] z-10 flex justify-center overflow-hidden"
-        style={{ height: payloadY }}
-      >
-        {/* Rope Texture */}
-        <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, black 2px, black 4px)' }} />
-      </motion.div>
-
-      {/* The Elevator Capsule (Payload) */}
-      <motion.div 
-        className="absolute top-0 w-16 h-20 bg-white rounded-xl border-[3px] border-[var(--color-accent)] shadow-[0_10px_30px_rgba(255,90,0,0.4)] flex flex-col items-center justify-center z-20"
-        style={{ top: payloadY, y: "-50%" }}
-      >
-        {/* Hook attaching capsule to rope */}
-        <div id="elevator-hook" className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
-           <div className="w-1.5 h-1.5 bg-[#555] rounded-full mt-1" />
-        </div>
-
-        <div className="w-8 h-2 bg-black/10 rounded-full mb-2" />
-        <div className="w-6 h-6 bg-[var(--color-accent)] rounded-full animate-pulse shadow-[inset_0_0_10px_white]" />
-        <div className="w-8 h-2 bg-black/10 rounded-full mt-2" />
-      </motion.div>
-    </div>
-  );
-}
-
-function MechanicalLinkageNode({ isActive }) {
-  return (
-    <div className="relative flex items-center justify-center w-32 h-32 group">
-      {/* Background large gear */}
-      <motion.div 
-        animate={{ rotate: isActive ? 360 : 0 }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-black/10'}`}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Inner medium gear (spins opposite) */}
-      <motion.div 
-        animate={{ rotate: isActive ? -360 : 0 }} 
-        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-black' : 'text-black/5'}`}
-        style={{ padding: '20%' }}
-      >
-        <GearSVG width="100%" height="100%" />
-      </motion.div>
-      {/* Center pivot */}
-      <div className={`w-6 h-6 rounded-full border-4 transition-all duration-500 z-10 ${isActive ? 'border-[var(--color-accent)] bg-white shadow-[0_0_20px_var(--color-accent)]' : 'border-black/20 bg-white'}`} />
-    </div>
-  );
-}
-
-function GearSVG({ width = "100", height = "100" }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 120 120" fill="currentColor">
-      {/* 12 Teeth */}
-      {[...Array(12)].map((_, i) => (
-        <rect key={i} x="52" y="2" width="16" height="116" rx="4" transform={`rotate(${i * 30} 60 60)`} />
-      ))}
-      
-      {/* Main Outer Ring (with cutout) */}
-      <path fillRule="evenodd" clipRule="evenodd" d="M60 14a46 46 0 1 0 0 92 46 46 0 0 0 0-92zm0 14a32 32 0 1 1 0 64 32 32 0 0 1 0-64z" />
-      
-      {/* Inner Hub (with cutout) */}
-      <path fillRule="evenodd" clipRule="evenodd" d="M60 40a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 12a8 8 0 1 1 0 16 8 8 0 0 1 0-16z" />
-      
-      {/* Spokes connecting hub to ring */}
-      {[...Array(4)].map((_, i) => (
-        <rect key={i} x="56" y="28" width="8" height="64" transform={`rotate(${i * 45} 60 60)`} />
-      ))}
-    </svg>
-  );
-}

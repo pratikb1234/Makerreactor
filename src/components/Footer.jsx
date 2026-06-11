@@ -1,3 +1,5 @@
+import Logo from './Logo';
+
 export default function Footer() {
   return (
     <footer className="bg-white pt-32 pb-12 relative z-10 overflow-hidden">
@@ -5,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
           <div className="md:col-span-5">
             <div className="font-display font-bold text-3xl tracking-tighter text-black uppercase flex items-center gap-3 mb-8">
-              <div className="w-5 h-5 bg-[var(--color-accent)] rounded-sm transform rotate-45" />
+              <Logo className="w-10 h-10" color="black" />
               BITS & STUDIOS
             </div>
             <p className="text-gray-600 font-medium text-lg leading-relaxed max-w-sm">
@@ -17,7 +19,6 @@ export default function Footer() {
             <h4 className="font-mono font-bold text-black mb-8 uppercase tracking-widest text-sm">Navigation</h4>
             <ul className="space-y-4 font-medium text-gray-500">
               <li><a href="#programs" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Programs</a></li>
-              <li><a href="#admissions" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Admissions</a></li>
               <li><a href="#founding150" className="hover:text-[var(--color-accent)] transition-colors cursor-hover">Founding Cohort</a></li>
             </ul>
           </div>
@@ -25,12 +26,18 @@ export default function Footer() {
           <div className="md:col-span-4">
             <h4 className="font-mono font-bold text-black mb-8 uppercase tracking-widest text-sm">Connect</h4>
             <ul className="space-y-4 font-medium text-gray-500">
-              <li className="cursor-hover hover:text-black transition-colors">hello@bitsandstudios.com</li>
+              <li>
+                <a href="mailto:info@bitsandstudios.com" className="cursor-hover hover:text-black transition-colors">info@bitsandstudios.com</a>
+              </li>
               <li className="cursor-hover hover:text-black transition-colors">+91 95358 62541</li>
               <li className="cursor-hover hover:text-black transition-colors">+91 97140 00169</li>
               <li className="text-sm text-gray-400 mt-4 leading-relaxed">204, Alpha Business Park, Judges Bungalow Road, Bodakdev, Ahmedabad</li>
-              <li className="cursor-hover hover:text-black transition-colors mt-8 pt-8 border-t border-black/10">Instagram↗</li>
-              <li className="cursor-hover hover:text-black transition-colors">LinkedIn↗</li>
+              <li className="mt-8 pt-8 border-t border-black/10">
+                <a href="https://www.instagram.com/bitsandstudios?igsh=MW15aXFlNzUzdzMwNw==" target="_blank" rel="noopener noreferrer" className="cursor-hover hover:text-black transition-colors">Instagram↗</a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/company/bitsandstudios" target="_blank" rel="noopener noreferrer" className="cursor-hover hover:text-black transition-colors">LinkedIn↗</a>
+              </li>
             </ul>
           </div>
         </div>

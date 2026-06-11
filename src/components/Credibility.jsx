@@ -1,36 +1,125 @@
-import { useRef, Suspense, useState } from 'react';
+import { useRef, Suspense, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Html, ContactShadows, Float, PresentationControls, Image, useVideoTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const team = [
-  { id: "01", name: "Pratik Bhatt", role: "Maker-in-Chief", bio: "Hand him anything complicated and he will light up taking it apart. For Pratik, the fun starts when things stop working.", image: "./pratik.jpg" },
-  { id: "02", name: "Anjalee Bhatt", role: "Designer-in-Chief", bio: "A designer at heart and a teacher by calling. Trained at CEPT, Anjalee has spent a decade preparing learners for university and for life. She is endlessly curious, deeply empathetic, and happiest helping a young maker find their voice.", image: "./anjalee.jpg" },
-  { id: "03", name: "Mohit Ahuja", role: "Senior Educator", bio: "A maker who genuinely wears many hats, science one day, design the next. A B.Sc. gold medalist and formerly of Riverside, Mohit brings range, rigour, and real warmth to the studio." },
-  { id: "04", name: "Aryan Parmar", role: "Robotics Educator & Coach", bio: "The one you want in your corner on competition day. With a Master's in Computer Science, Aryan coaches our teams and helps makers turn rough ideas into machines that win." },
-  { id: "05", name: "Mantasha Sheikh", role: "Educator", bio: "She makes code click for makers who thought it wasn't for them. A B.Tech in Computer Science, she loves teaching coding and digital design." },
-  { id: "06", name: "Foram Mendha", role: "Educator", bio: "Patient, precise, and endlessly encouraging, Foram has a gift for meeting makers exactly where they are. B.Tech, Computer Science." },
-  { id: "07", name: "Sohil Sheikh", role: "Educator", bio: "The steady hand in the room, Sohil keeps every build moving and every maker unstuck. B.Tech, Computer Science." }
+  { id: "01", name: "Pratik Bhatt", role: "Maker-in-Chief", bio: "Hand him anything complicated and he will light up taking it apart. For Pratik, the fun starts when things stop working.", image: "/pratik.jpg" },
+  { id: "02", name: "Anjalee Bhatt", role: "Designer-in-Chief", bio: "A designer at heart and a teacher by calling. Trained at CEPT, Anjalee has spent a decade preparing learners for university and for life. She is endlessly curious, deeply empathetic, and happiest helping a young maker find their voice.", image: "/anjalee.jpg" },
+  { id: "03", name: "Mohit Ahuja", role: "Senior Educator", bio: "A maker who genuinely wears many hats, science one day, design the next. With a track record spanning Riverside, NID, VASCSC and CEPT, he brings range, rigour, and real warmth to the studio-proving daily that engineering is just magic with a datasheet.", image: "/mohit.jpg" },
+  { id: "04", name: "Mantasha Sheikh", role: "Educator", bio: "She makes code click for makers who thought it wasn't for them. A B.Tech in Computer Science, she loves teaching coding and digital design.", image: "/mantasha.jpg" },
+  { id: "05", name: "Aryan Parmar", role: "Robotics Educator & Coach", bio: "The one you want in your corner on competition day. With a Master's in Computer Science, Aryan coaches our teams and helps makers turn rough ideas into machines that win.", image: "/aryan.jpg" },
+  { id: "06", name: "Sohil Sheikh", role: "Educator", bio: "The steady hand in the room, Sohil keeps every build moving and every maker unstuck. B.Tech, Computer Science.", image: "/sohil.jpg" },
+  { id: "07", name: "Foram Mendha", role: "Educator", bio: "Patient, precise, and endlessly encouraging, Foram has a gift for meeting makers exactly where they are. B.Tech, Computer Science.", image: "/foram.jpg" }
 ];
 
 const VIDEO_URLS = [
   "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
 ];
 
-function VideoAvatar({ index }) {
+function VideoAvatar({ index, size = 2.5 }) {
   const url = VIDEO_URLS[index % VIDEO_URLS.length];
   // useVideoTexture auto-plays and loops by default, but MUST be muted to bypass browser autoplay blocks!
   const texture = useVideoTexture(url, { crossOrigin: 'Anonymous', muted: true });
   
   return (
     <mesh>
-      <planeGeometry args={[2.5, 2.5]} />
+      <planeGeometry args={[size, size]} />
       <meshBasicMaterial map={texture} toneMapped={false} side={THREE.DoubleSide} />
     </mesh>
   );
 }
 
-function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode }) {
+function AnimatedTubeConnection({ start, end, mid, color, opacity, speed, offset, isDark }) {
+  const meshRef = useRef();
+  
+  const geometry = useMemo(() => {
+    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+    // Create a 3D tube geometry for rock-solid native WebGL rendering (avoids buggy line materials)
+    return new THREE.TubeGeometry(curve, 30, 0.04, 8, false);
+  }, [start, end, mid]);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      // Create a pulsing 'energy flow' effect that pulses along the saber
+      const time = state.clock.elapsedTime * speed + offset;
+      const intensity = (Math.sin(time) + 1) / 2; // 0 to 1
+      meshRef.current.material.opacity = opacity * (0.3 + 0.7 * intensity);
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} geometry={geometry}>
+      <meshBasicMaterial 
+        color={color} 
+        transparent 
+        opacity={opacity} 
+        depthWrite={false}
+        blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
+      />
+    </mesh>
+  );
+}
+
+function NetworkConnections({ team, isDark }) {
+  const radius = 6.5;
+  const lines = [];
+  
+  for (let i = 0; i < team.length; i++) {
+    const angle1 = (i / team.length) * Math.PI * 2;
+    const start = new THREE.Vector3(Math.sin(angle1) * radius, 0, Math.cos(angle1) * radius);
+    
+    // Connect to adjacent node
+    const nextIndex = (i + 1) % team.length;
+    const angle2 = (nextIndex / team.length) * Math.PI * 2;
+    const end1 = new THREE.Vector3(Math.sin(angle2) * radius, 0, Math.cos(angle2) * radius);
+    
+    // Connect to across node to form a complex network
+    const acrossIndex = (i + 2) % team.length;
+    const angle3 = (acrossIndex / team.length) * Math.PI * 2;
+    const end2 = new THREE.Vector3(Math.sin(angle3) * radius, 0, Math.cos(angle3) * radius);
+
+    // Parabolic mid points (curving upwards into the center)
+    const mid1 = new THREE.Vector3((start.x + end1.x) / 2, 2.5, (start.z + end1.z) / 2);
+    const mid2 = new THREE.Vector3((start.x + end2.x) / 2, 4.5, (start.z + end2.z) / 2);
+
+    // Primary connection
+    lines.push(
+      <AnimatedTubeConnection 
+        key={`tube1-${i}`}
+        start={start} 
+        end={end1} 
+        mid={mid1} 
+        color="#FF5A00" 
+        speed={3.0}
+        offset={i * 0.5}
+        opacity={isDark ? 0.8 : 1}
+        isDark={isDark}
+      />
+    );
+    
+    // Secondary connection
+    lines.push(
+      <AnimatedTubeConnection 
+        key={`tube2-${i}`}
+        start={start} 
+        end={end2} 
+        mid={mid2} 
+        color={isDark ? "#ffffff" : "#FF5A00"} 
+        speed={2.0}
+        offset={i * 0.8}
+        opacity={isDark ? 0.3 : 0.5}
+        isDark={isDark}
+      />
+    );
+  }
+  
+  return <group>{lines}</group>;
+}
+
+function TeamMember3D({ member, index, position, rotation }) {
+  let scaleFactor = 0.75; // medium
   const groupRef = useRef();
   const htmlContainerRef = useRef();
 
@@ -65,10 +154,11 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
     }
   };
 
-  const isDark = themeMode === 'dark';
+  const isDark = false;
+  const mediaMode = 'picture';
 
   return (
-    <group position={position} rotation={rotation} ref={groupRef}>
+    <group position={position} rotation={rotation} ref={groupRef} scale={[scaleFactor, scaleFactor, scaleFactor]}>
       
       {/* ==================================================== */}
       {/* 3D AVATAR, PHOTO, OR VIDEO */}
@@ -85,8 +175,18 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
           </Float>
         ) : member.image ? (
           <Float speed={2} rotationIntensity={0.2} floatIntensity={0.2}>
-            {/* The Image plane itself */}
-            <Image url={member.image} scale={[2.5, 2.5]} transparent radius={0.1} side={THREE.DoubleSide} />
+            {/* The Image plane itself — a failed photo degrades to a brand tile
+                instead of crashing the whole section */}
+            <ErrorBoundary
+              fallback={
+                <mesh>
+                  <planeGeometry args={[2.5, 2.5]} />
+                  <meshBasicMaterial color="#FF5A00" transparent opacity={0.2} side={THREE.DoubleSide} />
+                </mesh>
+              }
+            >
+              <Image url={member.image} scale={[2.5, 2.5]} transparent radius={0.1} side={THREE.DoubleSide} />
+            </ErrorBoundary>
             {/* Subtle glow/border behind the image */}
             <mesh position={[0, 0, -0.05]}>
               <planeGeometry args={[2.6, 2.6]} />
@@ -94,7 +194,7 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
             </mesh>
           </Float>
         ) : (
-          <>
+          <group>
             {/* Bright, friendly Inner Body */}
             <mesh castShadow receiveShadow>
               {renderAvatarShape()}
@@ -106,7 +206,7 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
               {renderAvatarShape()}
               <meshBasicMaterial color="#FF5A00" wireframe transparent opacity={0.15} />
             </mesh>
-          </>
+          </group>
         )}
       </group>
 
@@ -119,7 +219,7 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
           <h3 className={`text-3xl font-display font-bold uppercase mb-3 leading-tight ${isDark ? 'text-white' : 'text-black'}`}>
             {member.name}
           </h3>
-          <p className={`text-sm leading-relaxed line-clamp-3 font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          <p className={`text-[13px] font-sans leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
             {member.bio}
           </p>
         </div>
@@ -129,60 +229,34 @@ function TeamMember3D({ member, index, position, rotation, mediaMode, themeMode 
 }
 
 export default function Credibility() {
-  const [mediaMode, setMediaMode] = useState('picture');
-  const [themeMode, setThemeMode] = useState('dark');
-
-  const isDark = themeMode === 'dark';
+  const isDark = false;
+  const mediaMode = 'picture';
   const bgColor = isDark ? '#141414' : '#f5f5f5';
 
   return (
-    <section className={`h-screen min-h-[900px] relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-[#0a0a0a] text-white border-white/5' : 'bg-[#e8e8e8] text-black border-black/5'} border-t`}>
+    <ErrorBoundary
+      fallback={
+        <section className="py-32 bg-[#e8e8e8] border-t border-black/5 text-center px-6">
+          <div className="font-mono text-sm uppercase tracking-widest text-[var(--color-accent)] font-bold mb-4">The Mentors</div>
+          <h2 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter text-black mb-4">Makers behind MakerSpace.</h2>
+          <p className="text-gray-500 max-w-md mx-auto">Seven educators from CEPT, NID and beyond. Meet them in person at your studio visit.</p>
+        </section>
+      }
+    >
+      <section className={`h-screen min-h-[900px] relative overflow-hidden transition-colors duration-700 ${isDark ? 'bg-[#0a0a0a] text-white border-white/5' : 'bg-[#e8e8e8] text-black border-black/5'} border-t`}>
       
       {/* UI Overlay */}
       <div className="absolute top-12 left-12 z-20 pointer-events-none">
         <div className="font-mono text-sm uppercase tracking-widest text-[var(--color-accent)] font-bold mb-4 flex items-center gap-3">
           <div className="w-8 h-px bg-[var(--color-accent)]" />
-          The People
+          The Mentors
         </div>
         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold uppercase tracking-tighter leading-[0.9] max-w-2xl">
-          Meet the <br/>Network.
+          Makers behind <br/>MakerSpace.
         </h2>
       </div>
 
-      {/* Control Toggles */}
-      <div className="absolute top-12 right-12 z-30 flex flex-col gap-3 items-end">
-        {/* Media Mode Toggle */}
-        <div className={`flex items-center gap-2 backdrop-blur-md p-1.5 rounded-full border transition-colors ${isDark ? 'bg-white/10 border-white/20' : 'bg-white/50 border-black/10'}`}>
-          <button 
-            onClick={() => setMediaMode('picture')}
-            className={`px-4 py-2 rounded-full font-mono text-xs uppercase tracking-widest transition-all duration-300 ${mediaMode === 'picture' ? 'bg-[var(--color-accent)] text-black font-bold' : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black')}`}
-          >
-            Picture
-          </button>
-          <button 
-            onClick={() => setMediaMode('video')}
-            className={`px-4 py-2 rounded-full font-mono text-xs uppercase tracking-widest transition-all duration-300 ${mediaMode === 'video' ? 'bg-[var(--color-accent)] text-black font-bold' : (isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black')}`}
-          >
-            Video
-          </button>
-        </div>
-
-        {/* Theme Mode Toggle */}
-        <div className={`flex items-center gap-2 backdrop-blur-md p-1.5 rounded-full border transition-colors ${isDark ? 'bg-white/10 border-white/20' : 'bg-white/50 border-black/10'}`}>
-          <button 
-            onClick={() => setThemeMode('dark')}
-            className={`px-4 py-2 rounded-full font-mono text-xs uppercase tracking-widest transition-all duration-300 ${isDark ? 'bg-[var(--color-accent)] text-black font-bold' : 'text-gray-500 hover:text-black'}`}
-          >
-            Dark
-          </button>
-          <button 
-            onClick={() => setThemeMode('light')}
-            className={`px-4 py-2 rounded-full font-mono text-xs uppercase tracking-widest transition-all duration-300 ${!isDark ? 'bg-[var(--color-accent)] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-          >
-            Light
-          </button>
-        </div>
-      </div>
+      {/* Control Toggles Removed */}
 
       <div className="absolute inset-0 cursor-grab active:cursor-grabbing z-10">
         <Canvas camera={{ position: [0, 1, 14], fov: 45 }} shadows dpr={[1, 2]}>
@@ -196,20 +270,18 @@ export default function Credibility() {
             
             <PresentationControls 
               global 
+              speed={3}
               zoom={0.8} 
-              rotation={[0, -Math.PI / 4, 0]} 
+              rotation={[0, 0, 0]} 
               polar={[-0.15, 0.15]} 
               azimuth={[-Infinity, Infinity]}
-              config={{ mass: 2, tension: 400 }}
+              config={{ mass: 1, tension: 120, friction: 14 }}
             >
               <group position={[0, -0.5, 0]}>
-                {/* Central Core */}
-                <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-                  <mesh position={[0, 0, 0]}>
-                    <icosahedronGeometry args={[2.5, 1]} />
-                    <meshBasicMaterial color={isDark ? "#ffffff" : "#000000"} wireframe transparent opacity={0.1} />
-                  </mesh>
-                </Float>
+                {/* Network Connections connecting the team */}
+                <group position={[0, -1, 0]}>
+                  <NetworkConnections team={team} isDark={isDark} />
+                </group>
 
                 {/* Orbiting Team Avatars */}
                 {team.map((member, i) => {
@@ -224,8 +296,6 @@ export default function Credibility() {
                         index={i}
                         position={[x, 0, z]} 
                         rotation={[0, angle, 0]} 
-                        mediaMode={mediaMode}
-                        themeMode={themeMode}
                       />
                     </Float>
                   );
@@ -240,5 +310,6 @@ export default function Credibility() {
         </Canvas>
       </div>
     </section>
+    </ErrorBoundary>
   );
 }

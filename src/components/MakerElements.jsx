@@ -945,50 +945,27 @@ export const HeroBridge = ({ onBridgeComplete }) => {
   );
 };
 
-// ─── Power Switch ─────────────────────────────────────────────────────────────
 export const PowerSwitch = ({ className = "" }) => {
   const { isPowered, togglePower } = useCircuit();
 
   return (
     <div className={`relative ${className}`}>
-      {/* Attention pulse when NOT powered */}
-      {!isPowered && (
-        <>
-          <motion.div
-            initial={{ scale: 1, opacity: 0.7 }}
-            animate={{ scale: 2.2, opacity: 0 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-            className="absolute inset-0 rounded-xl z-0"
-            style={{ backgroundColor: '#7B2CBF' }}
-          />
-          <motion.div
-            initial={{ scale: 1, opacity: 0.5 }}
-            animate={{ scale: 1.8, opacity: 0 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
-            className="absolute inset-0 rounded-xl z-0"
-            style={{ backgroundColor: '#7B2CBF' }}
-          />
-        </>
-      )}
-
-      <motion.button onClick={togglePower} whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.03 }}
-        className={`relative flex items-center gap-3 pl-4 pr-6 py-3 rounded-full border-2 cursor-pointer overflow-hidden transition-all duration-500 z-20 font-mono text-sm font-bold uppercase tracking-widest ${isPowered
-            ? 'border-[var(--color-accent)] text-[var(--color-accent)] shadow-[0_0_35px_rgba(255,90,0,0.4)]'
-            : 'border-black/40 text-black hover:border-black bg-white/80 backdrop-blur-sm'
+      <motion.button id="power-switch-btn" onClick={togglePower} whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }}
+        className={`relative flex items-center gap-2 px-4 py-2 rounded-full border cursor-pointer transition-all duration-500 z-20 font-mono text-[10px] font-bold uppercase tracking-widest ${isPowered
+            ? 'border-[var(--color-accent)]/30 text-[var(--color-accent)] bg-[var(--color-accent)]/5 shadow-[0_0_15px_rgba(255,90,0,0.1)]'
+            : 'border-[var(--color-accent)]/50 text-black/60 hover:text-black/80 hover:border-[var(--color-accent)] bg-transparent'
           }`}
       >
-        <motion.div className="absolute inset-0 bg-[var(--color-accent)]/8 pointer-events-none"
-          animate={{ opacity: isPowered ? 1 : 0 }} transition={{ duration: 0.4 }} />
-        {/* Battery icon */}
-        <svg width="34" height="17" viewBox="0 0 34 17" fill="none" className="relative z-10 flex-shrink-0">
-          <rect x="0.5" y="0.5" width="28" height="16" rx="3" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill="none" />
-          <path d="M29.5 5.5 H32 V11.5 H29.5" stroke={isPowered ? '#FF5A00' : 'currentColor'} strokeWidth="1.5" fill={isPowered ? '#FF5A00' : 'currentColor'} />
-          <motion.rect x="3" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0 }} />
-          <motion.rect x="11" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.3 }} transition={{ delay: 0.1 }} />
-          <motion.rect x="19" y="4" width="6" height="9" rx="1.5" animate={{ fill: isPowered ? '#FF5A00' : '#ccc', opacity: isPowered ? 1 : 0.2 }} transition={{ delay: 0.2 }} />
-        </svg>
-        <span className="relative z-10 whitespace-nowrap">
-          {isPowered ? '⚡ Maker Mindset On' : 'Power your creativity'}
+        {!isPowered && (
+          <motion.div 
+            className="absolute inset-0 rounded-full border border-[var(--color-accent)] pointer-events-none"
+            animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+          />
+        )}
+        <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${isPowered ? 'bg-[var(--color-accent)] shadow-[0_0_5px_var(--color-accent)]' : 'bg-[var(--color-accent)] animate-pulse'}`} />
+        <span className="relative z-10 whitespace-nowrap pt-px">
+          {isPowered ? 'Maker Mindset On' : 'Power Creativity'}
         </span>
       </motion.button>
     </div>
@@ -1278,83 +1255,120 @@ export const MultimeterStat = ({ value, unit, label, delay = 0, className = "" }
   );
 };
 
-// ─── Drag-to-Build CTA (Closed Loop SVG) ──────────────────────────────────────
+// ─── Interactive Circuit Puzzle (Tap-to-Place) ──────────────────────────────────
 const SVG_COMPONENTS = {
-  led: (
+  battery: (
     <g>
-      <polygon points="-9,-7 -9,7 7,0" fill="#FF5A00" />
-      <line x1="7" y1="-7" x2="7" y2="7" stroke="#FF5A00" strokeWidth="2.5" />
-      <line x1="-15" y1="0" x2="-9" y2="0" stroke="#FF5A00" strokeWidth="2" />
-      <line x1="7" y1="0" x2="15" y2="0" stroke="#FF5A00" strokeWidth="2" />
+      <line x1="-15" y1="0" x2="-5" y2="0" stroke="white" strokeWidth="2" />
+      <line x1="-5" y1="-10" x2="-5" y2="10" stroke="white" strokeWidth="2" />
+      <line x1="5" y1="-18" x2="5" y2="18" stroke="white" strokeWidth="2" />
+      <line x1="5" y1="0" x2="15" y2="0" stroke="white" strokeWidth="2" />
+      <text x="12" y="-8" fill="white" fontSize="8" fontWeight="bold">+</text>
+      <text x="-12" y="-8" fill="white" fontSize="8" fontWeight="bold">-</text>
+    </g>
+  ),
+  switch: (
+    <g>
+      <line x1="-15" y1="0" x2="-8" y2="0" stroke="white" strokeWidth="2" />
+      <circle cx="-8" cy="0" r="2" fill="white" />
+      <line x1="-8" y1="0" x2="6" y2="-6" stroke="white" strokeWidth="2" />
+      <circle cx="8" cy="0" r="2" fill="white" />
+      <line x1="8" y1="0" x2="15" y2="0" stroke="white" strokeWidth="2" />
     </g>
   ),
   resistor: (
     <g>
-      <line x1="-18" y1="0" x2="-10" y2="0" stroke="#FFB347" strokeWidth="2" />
-      <rect x="-10" y="-6" width="20" height="12" rx="2" fill="none" stroke="#FFB347" strokeWidth="2" />
-      <line x1="-5" y1="-6" x2="-5" y2="6" stroke="#FFB347" strokeWidth="2.5" />
-      <line x1="0" y1="-6" x2="0" y2="6" stroke="#FFB347" strokeWidth="2.5" />
-      <line x1="5" y1="-6" x2="5" y2="6" stroke="#FFB347" strokeWidth="2.5" />
-      <line x1="10" y1="0" x2="18" y2="0" stroke="#FFB347" strokeWidth="2" />
+      <line x1="-18" y1="0" x2="-10" y2="0" stroke="white" strokeWidth="2" />
+      <rect x="-10" y="-6" width="20" height="12" rx="2" fill="none" stroke="white" strokeWidth="2" />
+      <line x1="-5" y1="-6" x2="-5" y2="6" stroke="white" strokeWidth="2.5" />
+      <line x1="0" y1="-6" x2="0" y2="6" stroke="white" strokeWidth="2.5" />
+      <line x1="5" y1="-6" x2="5" y2="6" stroke="white" strokeWidth="2.5" />
+      <line x1="10" y1="0" x2="18" y2="0" stroke="white" strokeWidth="2" />
     </g>
   ),
-  capacitor: (
+  led: (
     <g>
-      <line x1="-18" y1="0" x2="-4" y2="0" stroke="#60A5FA" strokeWidth="2" />
-      <line x1="-4" y1="-9" x2="-4" y2="9" stroke="#60A5FA" strokeWidth="3" />
-      <line x1="4" y1="-9" x2="4" y2="9" stroke="#60A5FA" strokeWidth="3" />
-      <line x1="4" y1="0" x2="18" y2="0" stroke="#60A5FA" strokeWidth="2" />
+      <polygon points="-9,-7 -9,7 7,0" fill="transparent" stroke="white" strokeWidth="2" />
+      <line x1="7" y1="-7" x2="7" y2="7" stroke="white" strokeWidth="2" />
+      <line x1="-15" y1="0" x2="-9" y2="0" stroke="white" strokeWidth="2" />
+      <line x1="7" y1="0" x2="15" y2="0" stroke="white" strokeWidth="2" />
+      <line x1="-3" y1="-10" x2="2" y2="-15" stroke="white" strokeWidth="1.5" />
+      <line x1="3" y1="-8" x2="8" y2="-13" stroke="white" strokeWidth="1.5" />
     </g>
   )
 };
 
-const SNAP_ITEMS = [
-  { id: 'led', label: 'LED', color: '#FF5A00' },
-  { id: 'resistor', label: '220Ω', color: '#FFB347' },
-  { id: 'capacitor', label: '10µF', color: '#60A5FA' },
+const BANK_ITEMS = [
+  { id: 'battery', label: 'POWER' },
+  { id: 'switch', label: 'SWITCH' },
+  { id: 'resistor', label: '220Ω' },
+  { id: 'led', label: 'LED' },
 ];
 
 export const DragToBuildCTA = ({ className = "" }) => {
-  const { isPowered } = useCircuit();
-  const [filled, setFilled] = useState({ led: false, resistor: false, capacitor: false });
-  const [dragging, setDragging] = useState(null);
+  const [slots, setSlots] = useState([null, null, null, null]);
+  const complete = slots.every(slot => slot !== null);
+  const accent = '#FF5A00';
 
-  const complete = filled.led && filled.resistor && filled.capacitor;
-  const accent = isPowered ? '#FF5A00' : '#6366f1';
-
-  const handleDrop = (e, id) => {
-    e.preventDefault();
-    if (dragging === id) setFilled(prev => ({ ...prev, [id]: true }));
-    setDragging(null);
+  const handleBankClick = (id) => {
+    if (slots.includes(id)) return; // Already placed
+    const emptyIndex = slots.findIndex(s => s === null);
+    if (emptyIndex !== -1) {
+      const newSlots = [...slots];
+      newSlots[emptyIndex] = id;
+      setSlots(newSlots);
+    }
   };
+
+  const handleSlotClick = (index) => {
+    if (slots[index]) {
+      const newSlots = [...slots];
+      newSlots[index] = null;
+      setSlots(newSlots);
+    }
+  };
+
+  const slotTransforms = [
+    "translate(150, 20)",           // Top
+    "translate(280, 80) rotate(90)", // Right
+    "translate(150, 140) rotate(180)", // Bottom
+    "translate(20, 80) rotate(270)"  // Left
+  ];
 
   return (
     <div className={`${className} flex flex-col items-center gap-12`}>
-      <p className="font-mono text-sm uppercase tracking-widest text-white/40 text-center">
-        {complete ? '⚡ Circuit closed — system ready' : 'Complete the circuit to continue'}
+      <p className="font-mono text-xs uppercase tracking-widest text-white/40 text-center">
+        {complete ? '⚡ Circuit closed — system ready' : 'Tap components to place them in the loop'}
       </p>
 
-      <div className="flex gap-8">
-        {SNAP_ITEMS.map(comp => !filled[comp.id] && (
-          <motion.div key={comp.id}
-            draggable
-            onDragStart={() => setDragging(comp.id)}
-            onDragEnd={() => setDragging(null)}
-            whileHover={{ scale: 1.1, y: -4 }}
-            className="flex flex-col items-center gap-3 cursor-grab select-none"
-          >
-            <svg width="40" height="40" viewBox="-20 -20 40 40">
-              {SVG_COMPONENTS[comp.id]}
-            </svg>
-            <span className="text-[10px] font-mono text-white/40 tracking-wider">{comp.label}</span>
-          </motion.div>
-        ))}
+      {/* Component Bank */}
+      <div className="flex gap-4 md:gap-8">
+        {BANK_ITEMS.map(comp => {
+          const isPlaced = slots.includes(comp.id);
+          return (
+            <motion.div key={comp.id}
+              onClick={() => handleBankClick(comp.id)}
+              whileHover={!isPlaced ? { scale: 1.1, y: -4 } : {}}
+              className={`flex flex-col items-center gap-3 transition-opacity ${isPlaced ? 'opacity-20 pointer-events-none' : 'cursor-pointer'}`}
+            >
+              <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                <svg width="40" height="40" viewBox="-20 -20 40 40">
+                  {SVG_COMPONENTS[comp.id]}
+                </svg>
+              </div>
+              <span className="text-[10px] font-mono text-white/40 tracking-wider">{comp.label}</span>
+            </motion.div>
+          );
+        })}
       </div>
 
+      {/* Circuit Board */}
       <div className="relative w-full max-w-sm" style={{ height: '160px' }}>
         <svg width="100%" height="100%" viewBox="0 0 300 160" className="overflow-visible">
-          <rect x="20" y="20" width="260" height="120" rx="10" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="4 4" />
+          {/* Base Track */}
+          <rect x="20" y="20" width="260" height="120" rx="10" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
 
+          {/* Animated Glow Track when complete */}
           <motion.rect x="20" y="20" width="260" height="120" rx="10" fill="none" stroke={accent} strokeWidth="3"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: complete ? 1 : 0, opacity: complete ? 1 : 0 }}
@@ -1362,39 +1376,34 @@ export const DragToBuildCTA = ({ className = "" }) => {
             style={{ filter: `drop-shadow(0 0 6px ${accent})` }}
           />
 
-          <g transform="translate(150, 20)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'led')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
-            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.led ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
-            {filled.led && SVG_COMPONENTS.led}
-          </g>
-
-          <g transform="translate(280, 80) rotate(90)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'resistor')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
-            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.resistor ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
-            {filled.resistor && SVG_COMPONENTS.resistor}
-          </g>
-
-          <g transform="translate(20, 80) rotate(90)" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'capacitor')} style={{ cursor: 'pointer', pointerEvents: 'all' }}>
-            <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={filled.capacitor ? 'transparent' : 'rgba(255,255,255,0.2)'} strokeWidth="1" strokeDasharray="2 2" />
-            {filled.capacitor && SVG_COMPONENTS.capacitor}
-          </g>
-
-          <g transform="translate(150, 140)">
-            <circle cx="0" cy="0" r="12" fill={complete ? accent : "rgba(255,255,255,0.1)"} />
-            <text x="0" y="3" textAnchor="middle" fontSize="10" fill="black" fontWeight="bold">PWR</text>
-          </g>
+          {/* Slots */}
+          {slots.map((compId, idx) => (
+            <g key={idx} transform={slotTransforms[idx]} onClick={() => handleSlotClick(idx)} style={{ cursor: compId ? 'pointer' : 'default', pointerEvents: 'all' }}>
+              <rect x="-30" y="-15" width="60" height="30" fill="black" stroke={compId ? 'transparent' : 'rgba(255,255,255,0.1)'} strokeWidth="1" strokeDasharray="2 2" rx="4" />
+              {compId && SVG_COMPONENTS[compId]}
+              {complete && compId === 'led' && (
+                <circle cx="0" cy="0" r="15" fill={accent} opacity="0.3" filter="blur(5px)" />
+              )}
+            </g>
+          ))}
         </svg>
       </div>
 
       <motion.a href="#admissions"
-        animate={{
-          boxShadow: complete ? `0 0 60px ${accent}60, 0 0 20px ${accent}40` : '0 0 0px transparent',
-          borderColor: complete ? accent : 'rgba(255,255,255,0.2)',
-          color: complete ? accent : 'white',
+        animate={complete ? {
+          boxShadow: `0 0 60px ${accent}60, 0 0 20px ${accent}40`,
+          borderColor: accent,
+          color: accent,
+        } : {
+          boxShadow: ["0 0 0px transparent", `0 0 20px rgba(255,90,0,0.4)`, "0 0 0px transparent"],
+          borderColor: ["rgba(255,255,255,0.2)", "rgba(255,90,0,0.5)", "rgba(255,255,255,0.2)"],
+          color: 'white',
         }}
-        transition={{ duration: 0.5 }}
-        className="px-12 py-5 rounded-full border-2 font-bold text-lg uppercase tracking-widest transition-colors duration-300 cursor-hover z-10"
-        style={{ background: complete ? accent + '15' : 'transparent', pointerEvents: complete ? 'all' : 'none', opacity: complete ? 1 : 0.4 }}
+        transition={complete ? { duration: 0.5 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="px-12 py-5 rounded-full border-2 font-bold text-sm md:text-lg uppercase tracking-widest transition-colors duration-300 cursor-hover z-10"
+        style={{ background: complete ? accent + '15' : 'transparent', pointerEvents: complete ? 'all' : 'none', opacity: complete ? 1 : 0.8 }}
       >
-        {complete ? '⚡ Apply For 2026' : 'Circuit Open'}
+        {complete ? '⚡ Unlock Admissions' : 'Power Your Curiosity'}
       </motion.a>
     </div>
   );
