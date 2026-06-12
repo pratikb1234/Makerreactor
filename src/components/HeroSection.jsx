@@ -138,8 +138,11 @@ export default function HeroSection() {
     if (v > 0.02 && !isPowered) togglePower();
     if (v > 0.04) setIsPowerFlowComplete(true);
     if (v > 0.86) setIsHeroBridgeComplete(true);
-    const idx = Math.floor(((v - 0.08) / 0.8) * JOURNEY.length);
-    setActiveStep(v < 0.08 ? -1 : v > 0.88 ? JOURNEY.length - 1 : Math.min(Math.max(idx, 0), JOURNEY.length - 1));
+    // Captions flip exactly when the spark ARRIVES at a station (dwell pacing:
+    // it rests at each station from 30% before to 30% after the leg boundary).
+    const seg = Math.min(Math.max((v - 0.08) / 0.8, 0), 1) * (JOURNEY.length - 1);
+    const idx = seg < 0.7 ? 0 : Math.min(JOURNEY.length - 1, Math.floor(seg + 0.3));
+    setActiveStep(v < 0.08 ? -1 : idx);
   });
 
   // Intro lockup
@@ -173,7 +176,7 @@ export default function HeroSection() {
 
         {/* System status — top left, under the navbar */}
         <div className="absolute top-20 left-6 md:top-24 md:left-12 z-30 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-black/40">
-          <LEDIndicator />
+          <span className="inline-flex w-5 justify-center flex-none"><LEDIndicator /></span>
           <span>
             {activeStep < 0 ? 'SYS // STANDBY' : `SYS // STAGE_${JOURNEY[activeStep].num}: ${JOURNEY[activeStep].tag.toUpperCase()}`}
           </span>

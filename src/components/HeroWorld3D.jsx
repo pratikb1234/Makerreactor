@@ -1,6 +1,7 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 // ── The trailblazing journey of a maker — blueprint → built ──────────────────
 // Ten scenes, age 5 → a built life. Each stands in the world as a glowing
@@ -27,22 +28,37 @@ const STATIONS = [
 const N = STATIONS.length;
 const ST = (i) => i / (N - 1);
 
-const mat = (color, extra = {}) =>
-  new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0.02, ...extra });
-
+// Photoreal pass: PBR materials — painted plastic, wood, anodized metal,
+// glossy product-orange — lit by an environment map and a shadow-casting sun.
 const M = {
-  cream: mat(CREAM),
-  cream2: mat(CREAM_2),
-  cream3: mat(CREAM_3),
-  ink: mat(INK, { roughness: 0.6 }),
-  accent: mat(ACCENT, { roughness: 0.5, emissive: ACCENT, emissiveIntensity: 0.2 }),
+  cream: new THREE.MeshPhysicalMaterial({ color: '#F5EFE2', roughness: 0.5, clearcoat: 0.25, clearcoatRoughness: 0.5 }),
+  cream2: new THREE.MeshPhysicalMaterial({ color: '#E7DDC6', roughness: 0.62 }),
+  cream3: new THREE.MeshPhysicalMaterial({ color: '#B68B5E', roughness: 0.55, clearcoat: 0.12, clearcoatRoughness: 0.6 }), // worked wood
+  ink: new THREE.MeshPhysicalMaterial({ color: '#2E2A26', roughness: 0.35, metalness: 0.72 }), // anodized metal
+  accent: new THREE.MeshPhysicalMaterial({ color: ACCENT, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15, emissive: ACCENT, emissiveIntensity: 0.06 }),
   glow: new THREE.MeshBasicMaterial({ color: ACCENT }),
-  screen: new THREE.MeshBasicMaterial({ color: '#EFE7D6' }),
+  screen: new THREE.MeshBasicMaterial({ color: '#FFF2E2' }),
+  trunk: new THREE.MeshPhysicalMaterial({ color: '#6E4F33', roughness: 0.8 }),
+  leaf: new THREE.MeshPhysicalMaterial({ color: '#6B8456', roughness: 0.7 }),
 };
 
 const WIRE = new THREE.MeshBasicMaterial({ color: ACCENT, wireframe: true, transparent: true, opacity: 0.22 });
 
 const ease = (k) => k * k * (3 - 2 * k);
+
+// Dwell pacing: the spark rests at each station for the last 30% of the leg
+// before it and the first 30% of the leg after it — a centered pause at every
+// scene, including the first and the last. Travel happens in the middle 40%.
+const rawToT = (raw) => THREE.MathUtils.clamp((raw - 0.08) / 0.8, 0, 1);
+const dwellT = (t) => {
+  const seg = t * (N - 1);
+  const i = Math.min(Math.floor(seg), N - 2);
+  const f = seg - i;
+  const travel = f < 0.3 ? 0 : f > 0.7 ? 1 : ease((f - 0.3) / 0.4);
+  return (i + travel) / (N - 1);
+};
+// Scroll-segment at which the spark arrives at station idx
+const arrivalSeg = (idx) => (idx === 0 ? 0 : idx - 0.3);
 const backOut = (k) => {
   const c = 1.70158;
   const x = k - 1;
@@ -60,9 +76,8 @@ function Box({ p, s, m = M.cream, r = 0, rx = 0, rz = 0 }) {
 function useActivation(progress, idx) {
   const ref = useRef(0);
   useFrame(() => {
-    const raw = progress.get();
-    const t = THREE.MathUtils.clamp((raw - 0.08) / 0.8, 0, 1);
-    ref.current = ease(THREE.MathUtils.clamp((t - ST(idx) + 0.055) / 0.055, 0, 1));
+    const seg = rawToT(progress.get()) * (N - 1);
+    ref.current = ease(THREE.MathUtils.clamp((seg - arrivalSeg(idx)) / 0.28, 0, 1));
   });
   return ref;
 }
@@ -526,22 +541,22 @@ function LifeScene({ kidMat, progress, idx }) {
   });
   return (
     <group>
-      {/* the life he built: home + studio of his own */}
-      <group position={[-1.3, 0, -0.7]}>
+      {/* the life he built: home + studio of his own (life-scale, not dollhouse) */}
+      <group position={[-1.9, 0, -1]} scale={1.5}>
         <Box p={[0, 0.55, 0]} s={[1.5, 1.1, 1.2]} m={M.cream} />
         <mesh position={[0, 1.35, 0]} rotation={[0, Math.PI / 4, 0]} material={M.cream2}>
           <coneGeometry args={[1.25, 0.7, 4]} />
         </mesh>
         <Box p={[0.35, 0.35, 0.62]} s={[0.34, 0.7, 0.06]} m={M.accent} />
       </group>
-      <group position={[1.5, 0, -1]}>
+      <group position={[2, 0, -1.3]} scale={1.45}>
         <Box p={[0, 0.5, 0]} s={[1.3, 1, 1]} m={M.cream3} />
         <Box p={[0, 1.08, 0]} s={[1.45, 0.12, 1.15]} m={M.cream2} />
         <Box p={[0, 0.78, 0.52]} s={[0.8, 0.3, 0.05]} m={M.accent} />
       </group>
       <group position={[2.4, 0, 0.4]}>
-        <mesh position={[0, 0.5, 0]} material={M.ink}><cylinderGeometry args={[0.07, 0.1, 1, 6]} /></mesh>
-        <mesh position={[0, 1.3, 0]} material={M.cream3}><coneGeometry args={[0.5, 1.3, 6]} /></mesh>
+        <mesh position={[0, 0.5, 0]} material={M.trunk}><cylinderGeometry args={[0.07, 0.1, 1, 6]} /></mesh>
+        <mesh position={[0, 1.3, 0]} material={M.leaf}><coneGeometry args={[0.5, 1.3, 6]} /></mesh>
       </group>
       {/* him, grown — handing the spark to the next kid */}
       <Kid p={[-0.45, 0, 0.55]} scale={1.08} rotY={Math.PI / 2.6} pose="give" kidMat={kidMat} />
@@ -574,10 +589,10 @@ function Scenery() {
     <group>
       {items.map(([x, z, s], i) => (
         <group key={i} position={[x, 0, z]} scale={s}>
-          <mesh position={[0, 0.5, 0]} material={M.ink}>
+          <mesh position={[0, 0.5, 0]} material={M.trunk}>
             <cylinderGeometry args={[0.07, 0.1, 1, 6]} />
           </mesh>
-          <mesh position={[0, 1.35, 0]} material={M.cream3}>
+          <mesh position={[0, 1.35, 0]} material={M.leaf}>
             <coneGeometry args={[0.55, 1.5, 6]} />
           </mesh>
         </group>
@@ -604,8 +619,7 @@ function Trail({ progress }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   useFrame(() => {
-    const raw = progress.get();
-    const t = THREE.MathUtils.clamp((raw - 0.08) / 0.8, 0, 1);
+    const t = dwellT(rawToT(progress.get()));
     if (dotsRef.current) {
       for (let i = 0; i < DOTS; i++) {
         const ti = i / (DOTS - 1);
@@ -640,31 +654,92 @@ function Trail({ progress }) {
   );
 }
 
-function IsoCamera({ progress }) {
-  const { camera, size } = useThree();
+// Cinematic perspective camera + a sun that travels with the story so every
+// scene gets crisp local shadows from a tight shadow frustum.
+function CameraRig({ progress }) {
+  const { camera, size, scene } = useThree();
   const curve = useTrailCurve();
   const target = useRef(STATIONS[0].clone());
+  const sun = useRef();
+  const sunTarget = useMemo(() => new THREE.Object3D(), []);
+
+  useEffect(() => {
+    scene.add(sunTarget);
+    if (sun.current) sun.current.target = sunTarget;
+    return () => scene.remove(sunTarget);
+  }, [scene, sunTarget]);
 
   useFrame(() => {
     const raw = progress.get();
-    const t = THREE.MathUtils.clamp((raw - 0.08) / 0.8, 0, 1);
+    const t = dwellT(rawToT(raw));
     const pt = curve.getPointAt(t);
-    target.current.lerp(new THREE.Vector3(pt.x + 1, 0, pt.z), 0.07);
-    camera.position.set(target.current.x + 14, 14, target.current.z + 14);
-    camera.lookAt(target.current);
-    const z = size.width < 768 ? 34 : size.width < 1280 ? 44 : 52;
-    if (camera.zoom !== z) {
-      camera.zoom = z;
-      camera.updateProjectionMatrix();
+    // intro: pull wide and frame the world beside the headline, then dive in
+    const wideK = 1 - THREE.MathUtils.clamp((raw - 0.04) / 0.05, 0, 1);
+    target.current.lerp(new THREE.Vector3(pt.x + 0.8 + wideK * 2.6, 0, pt.z + wideK * 2), 0.07);
+    const base = size.width < 768 ? 24 : size.width < 1280 ? 19 : 16.5;
+    const d = base * (1 + wideK * 0.3);
+    camera.position.set(target.current.x + d * 0.52, d * 0.6, target.current.z + d * 0.8);
+    camera.lookAt(target.current.x, 0.7, target.current.z);
+    if (sun.current) {
+      sun.current.position.set(target.current.x + 6, 11, target.current.z + 5);
+      sunTarget.position.set(target.current.x, 0, target.current.z);
     }
   });
+
+  return (
+    <directionalLight
+      ref={sun}
+      castShadow
+      intensity={2.4}
+      color="#FFF1DA"
+      shadow-mapSize-width={2048}
+      shadow-mapSize-height={2048}
+      shadow-camera-left={-10}
+      shadow-camera-right={10}
+      shadow-camera-top={10}
+      shadow-camera-bottom={-10}
+      shadow-camera-near={1}
+      shadow-camera-far={40}
+      shadow-bias={-0.0004}
+    />
+  );
+}
+
+// Everything solid casts and catches light — set once after the world mounts
+function EnableShadows() {
+  const { scene } = useThree();
+  useEffect(() => {
+    scene.traverse((o) => {
+      if (o.isMesh && !o.isInstancedMesh && o.material !== M.glow && o.material !== WIRE && o.material !== M.screen) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+  return null;
+}
+
+// Image-based lighting so the PBR materials have something to reflect
+function PhotoEnvironment() {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl);
+    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = env;
+    scene.environmentIntensity = 0.55;
+    return () => {
+      scene.environment = null;
+      env.dispose();
+      pmrem.dispose();
+    };
+  }, [gl, scene]);
   return null;
 }
 
 function WorldFog() {
   const { scene } = useThree();
   useEffect(() => {
-    scene.fog = new THREE.Fog('#F5F0E8', 17, 32);
+    scene.fog = new THREE.Fog('#F5F0E8', 21, 44);
     return () => { scene.fog = null; };
   }, [scene]);
   return null;
@@ -672,17 +747,16 @@ function WorldFog() {
 
 function useKidMats(progress) {
   const mats = useMemo(
-    () => STATIONS.map(() => new THREE.MeshStandardMaterial({ color: KID_GREY, roughness: 0.6, emissive: ACCENT, emissiveIntensity: 0 })),
+    () => STATIONS.map(() => new THREE.MeshPhysicalMaterial({ color: KID_GREY, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.3, emissive: ACCENT, emissiveIntensity: 0 })),
     []
   );
   const grey = useMemo(() => new THREE.Color(KID_GREY), []);
   const warm = useMemo(() => new THREE.Color(KID_WARM), []);
   const tmp = useMemo(() => new THREE.Color(), []);
   useFrame(() => {
-    const raw = progress.get();
-    const t = THREE.MathUtils.clamp((raw - 0.08) / 0.8, 0, 1);
+    const seg = rawToT(progress.get()) * (N - 1);
     mats.forEach((m, i) => {
-      const k = THREE.MathUtils.clamp((t - ST(i) + 0.05) / 0.05, 0, 1);
+      const k = THREE.MathUtils.clamp((seg - arrivalSeg(i)) / 0.2, 0, 1);
       tmp.copy(grey).lerp(warm, k);
       m.color.copy(tmp);
       m.emissiveIntensity = k * 0.32;
@@ -713,22 +787,28 @@ function World({ progress }) {
 export default function HeroWorld3D({ progress }) {
   return (
     <Canvas
-      orthographic
-      camera={{ position: [0, 14, 14], zoom: 52, near: -80, far: 160 }}
+      shadows
+      camera={{ fov: 34, position: [9, 10, 14], near: 0.5, far: 220 }}
       dpr={[1, 1.6]}
       gl={{ alpha: true, antialias: true }}
+      onCreated={({ gl }) => {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.05;
+        gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      }}
       style={{ pointerEvents: 'none' }}
     >
-      <ambientLight intensity={0.85} />
-      <directionalLight position={[6, 12, 4]} intensity={1.05} color="#FFF6E8" />
-      <directionalLight position={[-8, 6, -6]} intensity={0.35} color="#FFE3CC" />
+      <hemisphereLight args={['#FFEFD8', '#C9B896', 0.55]} />
+      <ambientLight intensity={0.18} />
       <WorldFog />
-      <IsoCamera progress={progress} />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <CameraRig progress={progress} />
+      <PhotoEnvironment />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
         <planeGeometry args={[300, 160]} />
-        <meshStandardMaterial color={GROUND} roughness={1} />
+        <meshStandardMaterial color="#DCD1B8" roughness={0.95} />
       </mesh>
       <World progress={progress} />
+      <EnableShadows />
     </Canvas>
   );
 }
