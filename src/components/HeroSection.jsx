@@ -170,9 +170,8 @@ export default function HeroSection() {
             <HeroWorld3D progress={p} />
           </Suspense>
         </div>
-        {/* readability washes */}
-        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[var(--color-light)] to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--color-light)]/80 to-transparent z-[1] pointer-events-none" />
+        {/* readability wash — whisper-thin, no exposure blowout */}
+        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[var(--color-light)]/35 to-transparent z-[1] pointer-events-none" />
 
         {/* System status — top left, under the navbar */}
         <div className="absolute top-20 left-6 md:top-24 md:left-12 z-30 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-black/40">
