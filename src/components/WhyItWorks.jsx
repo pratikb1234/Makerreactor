@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, Symbol } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
 
@@ -30,33 +30,12 @@ export default function WhyItWorks() {
     offset: ['start start', 'end start'],
   });
 
-  // Detect mobile to disable cinematic animation
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  // Cinematic → normal: font 9.5vw (full-screen) → 4.5vw, width 100vw → 40vw (column), x -3rem → 0rem
-  // On mobile, these are bypassed with static values
-  const fontSizeVw    = useTransform(introP, [0, 0.15, 0.35, 1], [9.5, 9.5, 4.5, 4.5]);
-  const fontSize      = useMotionTemplate`${fontSizeVw}vw`;
-  const headlineWidthVw = useTransform(introP, [0, 0.15, 0.35, 1], [100, 100, 40, 40]);
-  const headlineWidth = useMotionTemplate`${headlineWidthVw}vw`;
-  const headlineX     = useTransform(introP, [0, 0.15, 0.35, 1], ['-3rem', '-3rem', '0rem', '0rem']);
-  // Sub-quote: one-way trigger — once visible, never fades out
-  const [showSub, setShowSub] = useState(isMobile ? true : false);
+  // Sub-quote and directive card fade in once the section starts scrolling (one-way, never fade back out)
+  const [showSub, setShowSub] = useState(false);
+  const [showDirective, setShowDirective] = useState(false);
   useMotionValueEvent(introP, 'change', (v) => {
-    if (v >= 0.12) setShowSub(true);
-  });
-  // Sub-quote margin: indented during cinematic hold, flush when settled in left column
-  const subMarginLeft = useTransform(introP, [0.15, 0.35], ['2rem', '0rem']);
-  // Dark ACTIVE_DIRECTIVE card: one-way trigger to prevent disappearing on scroll up
-  const [showDirective, setShowDirective] = useState(isMobile ? true : false);
-  useMotionValueEvent(introP, 'change', (v) => {
-    if (v >= 0.35) setShowDirective(true);
+    if (v >= 0.05) setShowSub(true);
+    if (v >= 0.15) setShowDirective(true);
   });
 
   return (
@@ -67,7 +46,7 @@ export default function WhyItWorks() {
         className="pb-24 md:pb-40 bg-[var(--color-light)] relative border-b border-black/10 overflow-visible font-sans"
       >
         {/* Invisible tracker for the first 180vh of scroll */}
-        <div ref={introTrackRef} className="absolute top-0 left-0 w-full h-[180vh]" />
+        <div ref={introTrackRef} className="absolute top-0 left-0 w-full h-[40vh]" />
         <BlueprintGrid />
 
         {/* Central circuit line */}
@@ -90,33 +69,28 @@ export default function WhyItWorks() {
           <div className="flex flex-col lg:flex-row items-start gap-16 lg:gap-0">
 
             {/* ── LEFT: sticky headline — cinematic entrance animation ── */}
-            <div className="w-full lg:w-[45%] lg:sticky lg:top-12 lg:pr-16 relative z-20">
-              <motion.div
-                style={isMobile ? {} : {
-                  x: headlineX,
-                  transformOrigin: 'left center',
-                }}
-              >
+            <div className="w-full lg:w-[45%] lg:sticky lg:top-28 lg:pr-16 relative z-20">
+              <div>
                 <div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-4 bg-black/5 px-4 py-2 rounded-full border border-black/10">
                   <div className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
-                  SYSTEM.ROOT // WHY_IT_WORKS
+                  Why it works
                 </div>
                 <motion.h2
                   className="font-display font-bold uppercase tracking-tighter leading-[0.88] text-black mb-5"
-                  style={isMobile ? { fontSize: 'clamp(2rem, 8vw, 4.5vw)', width: '100%' } : { fontSize, width: headlineWidth }}
+                  style={{ fontSize: 'clamp(2rem, 8vw, 4.5vw)' }}
                 >
                   THE MOMENT<br />
                   YOUR CHILD BUILDS<br />
                   SOMETHING REAL —<br />
                   <span className="text-[var(--color-accent)]">THEY CHANGE.</span>
                 </motion.h2>
-              </motion.div>
+              </div>
 
               {/* Sub-quote — independent of headline scale/x, fades in during hold */}
               <motion.div
                 animate={{ opacity: showSub ? 1 : 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={isMobile ? {} : { x: headlineX, marginLeft: subMarginLeft }}
+                
                 className="mt-4 border-l-2 border-[var(--color-accent)]/30 pl-5 space-y-2 max-w-sm"
               >
                 <p className="text-base font-bold text-black leading-snug">
@@ -130,7 +104,7 @@ export default function WhyItWorks() {
               <motion.div 
                 animate={{ opacity: showDirective ? 1 : 0, x: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
-                style={isMobile ? {} : { x: headlineX }}
+                
                 className="mt-6 bg-[#111] rounded-2xl border border-white/5 p-5 relative overflow-hidden max-w-sm"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent opacity-40" />
@@ -143,14 +117,13 @@ export default function WhyItWorks() {
             </div>
 
             {/* ── RIGHT: Heading + 3 cards scrolling normally, pushed down to allow cinematic hold ── */}
-            <div className="w-full lg:w-[55%] pt-16 lg:pt-[160vh] flex flex-col items-end gap-16 lg:gap-[40vh] relative z-30">
-              <HeadingCard isCircuitActive={isHeroBridgeComplete} />
+            <div className="w-full lg:w-[55%] pt-16 lg:pt-[30vh] flex flex-col items-end gap-16 lg:gap-[22vh] relative z-30">
+              <HeadingCard />
               
               {STEPS.map((step, idx) => (
                 <StepCard
                   key={idx}
                   step={step}
-                  isCircuitActive={isHeroBridgeComplete}
                 />
               ))}
             </div>
@@ -190,10 +163,10 @@ export default function WhyItWorks() {
 }
 
 // ── Heading Card: Explains what the cue cards are about ──────────────
-function HeadingCard({ isCircuitActive }) {
+function HeadingCard() {
   const cardRef = useRef(null);
   const { scrollYProgress: cp } = useScroll({ target: cardRef, offset: ['start 55%', 'start 50%'] });
-  const activeP = useTransform(cp, (v) => isCircuitActive ? v : 0);
+  const activeP = cp;
   const cardOpacity = useTransform(activeP, [0, 1], [0.4, 1]);
   const branchOp = useTransform(activeP, [0, 1], [0, 1]);
   const titleColor = useTransform(activeP, [0, 1], ['#111', '#FF5A00']);
@@ -231,7 +204,7 @@ function HeadingCard({ isCircuitActive }) {
 }
 
 // ── Card: invisible until it reaches screen center, then fades in sharply ──────────────
-function StepCard({ step, isCircuitActive }) {
+function StepCard({ step }) {
   const cardRef = useRef(null);
 
   // Tracks this specific card crossing the vertical center of the viewport
@@ -242,11 +215,9 @@ function StepCard({ step, isCircuitActive }) {
   });
 
   // Only animate if the circuit is active, otherwise stay invisible
-  const activeP = useTransform(cp, (v) => isCircuitActive ? v : 0);
+  const activeP = cp;
 
   const cardOpacity = useTransform(activeP, [0, 1], [0.4, 1]);
-  const blurVal = useTransform(activeP, [0, 1], [0, 0]);
-  const cardFilter = useMotionTemplate`blur(${blurVal}px)`;
   const cardScale = useTransform(activeP, [0, 1], [0.98, 1]);
 
   const branchOp = useTransform(activeP, [0, 1], [0, 1]);
@@ -259,7 +230,7 @@ function StepCard({ step, isCircuitActive }) {
   useMotionValueEvent(activeP, "change", (latest) => setIsActive(latest > 0.5));
 
   return (
-    <motion.div ref={cardRef} className="relative group" style={{ opacity: cardOpacity, scale: cardScale, filter: cardFilter }}>
+    <motion.div ref={cardRef} className="relative group" style={{ opacity: cardOpacity, scale: cardScale }}>
       {/* Branch wire connecting card to central line */}
       <motion.div className="absolute top-[3rem] right-full hidden lg:block h-px pointer-events-none"
         style={{ width: 'min(252px, calc(50vw - 508px))', opacity: branchOp, backgroundColor: '#FF5A00', boxShadow: '0 0 8px #FF5A00' }} />

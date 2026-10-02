@@ -1056,7 +1056,7 @@ export const FloatingCodeWidget = ({ className = "" }) => {
           <div key={`${isPowered}-${i}`} className="flex gap-3">
             <span className="text-gray-600 w-3 text-right select-none">{i + 1}</span>
             <span className="flex flex-wrap items-center">
-              {line.map((tok, j) => <span key={j} style={{ color: tok.c }}>{tok.t}</span>)}
+              {line.map((tok, j) => <span key={j} className="whitespace-pre" style={{ color: tok.c }}>{tok.t}</span>)}
               {i === shown - 1 && shown < lines.length && (
                 <motion.span animate={{ opacity: [1, 0] }} transition={{ duration: 0.5, repeat: Infinity }}
                   className="inline-block w-[6px] h-3 bg-[var(--color-accent)] ml-0.5" />

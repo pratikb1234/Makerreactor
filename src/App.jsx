@@ -1,5 +1,4 @@
-import { useCircuit, CircuitProvider } from './context/CircuitContext';
-import CustomCursor from './components/CustomCursor';
+import { CircuitProvider } from './context/CircuitContext';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import WhyItWorks from './components/WhyItWorks';
@@ -8,40 +7,26 @@ import ProgramPathway from './components/ProgramPathway';
 import FourStudios from './components/FourStudiosDNA';
 
 import Comparison from './components/Comparison';
-import Credibility from './components/Credibility';
+import Team from './components/Team';
 import Community from './components/Community';
 import ParentPromise from './components/ParentPromise';
 import Testimonials from './components/Testimonials';
 import AdmissionsTimeline from './components/AdmissionsTimeline';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
-import { motion } from 'framer-motion';
+import MobileCTABar from './components/MobileCTABar';
 
 function AppContent() {
-  const { isPowered, setIsHeroBridgeComplete } = useCircuit();
-
   return (
-    <>
-      <CustomCursor />
-      <motion.div 
-        className="min-h-screen bg-[var(--color-light)] text-[var(--color-text-dark)] selection:bg-[var(--color-accent)] selection:text-white"
-        animate={{ 
-          filter: isPowered 
-            ? 'saturate(1) brightness(1)' 
-            : 'saturate(0.15) brightness(0.92)'
-        }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-      >
+    <div className="min-h-screen bg-[var(--color-light)] text-[var(--color-text-dark)] selection:bg-[var(--color-accent)] selection:text-white">
       <Navbar />
       <main>
         <HeroSection />
         <WhyItWorks />
         <ProgramPathway />
         <FourStudios />
-
-
         <Comparison />
-        <Credibility />
+        <Team />
         <Community />
         <ParentPromise />
         <Testimonials />
@@ -49,8 +34,8 @@ function AppContent() {
         <FinalCTA />
       </main>
       <Footer />
-    </motion.div>
-    </>
+      <MobileCTABar />
+    </div>
   );
 }
 
