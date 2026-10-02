@@ -137,8 +137,8 @@ export default function WhyItWorks() {
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         
         <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block">
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start 80%", "center center"]} />
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start center", "end center"]} />
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={isHeroBridgeComplete} scrollOffset={["start center", "end center"]} />
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative z-10 font-mono text-xs uppercase tracking-[0.3em] text-gray-500 font-bold mb-12 flex items-center gap-3">

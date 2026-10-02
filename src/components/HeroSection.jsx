@@ -126,6 +126,7 @@ circuit.sync(150);
           viewBox="0 0 1000 1000"
           scrollOffset={["start center", "end center"]}
           onReachCenter={setIsHeroBridgeComplete}
+          alwaysFull
           components={[
             { type: 'led', cx: 20, cy: 125, threshold: 0.10 },
             { type: 'car', cx: 80, cy: 425, threshold: 0.48 },
@@ -181,7 +182,7 @@ circuit.sync(150);
       <div className="hidden lg:block">
         {flowPath && (
           <PowerFlowLine
-            className="absolute top-0 left-0 w-full h-screen z-0"
+            className="absolute top-0 left-0 w-full h-full z-0"
             pathD={flowPath}
             viewBox={`0 0 ${viewW} ${viewH}`}
             onPowerReachTop={() => setIsPowerFlowComplete(true)}
@@ -209,7 +210,7 @@ circuit.sync(150);
                 opacity: isPowered ? 1 : 0.8
               }}
               transition={{ duration: 0.8 }}
-              className="text-[8vw] sm:text-[7vw] lg:text-[5.5vw] font-display font-bold leading-[0.9] tracking-tighter uppercase max-w-4xl"
+              className="text-[8vw] sm:text-[7vw] lg:text-[min(5vw,4rem)] font-display font-bold leading-[0.9] tracking-tighter uppercase max-w-5xl"
             >
               {isPowered ? (
                 <>
