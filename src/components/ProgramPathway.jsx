@@ -1,45 +1,17 @@
-import { useRef, useState, useEffect, lazy, Suspense } from 'react';
-import { motion, useScroll, useMotionValueEvent, useSpring } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
 import { BlueprintGrid } from './MakerElements';
-import MakerArt from './ArtisticVisuals';
-import Tilt3D from './Tilt3D';
+import imgTinker from '../assets/tinker.png';
+import imgBuild from '../assets/builder.png';
+import imgEngineer from '../assets/engineer.png';
+import imgInvent from '../assets/inventor.png';
 
 // 3D rail (gears + capsule) — Three.js chunk loads only when the section nears
-const Rail3D = lazy(() => import('./Rail3D'));
-
-function RailShowcase({ progress }) {
-  const ref = useRef(null);
-  const [near, setNear] = useState(false);
-  useEffect(() => {
-    if (near) return;
-    const inRange = () =>
-      ref.current && ref.current.getBoundingClientRect().top < window.innerHeight + 900;
-    if (inRange()) { setNear(true); return; }
-    const onScroll = () => { if (inRange()) setNear(true); };
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setNear(true); },
-      { rootMargin: '900px' }
-    );
-    obs.observe(ref.current);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll); };
-  }, [near]);
-  return (
-    <div ref={ref} className="w-full h-full">
-      {near && (
-        <Suspense fallback={null}>
-          <Rail3D progress={progress} />
-        </Suspense>
-      )}
-    </div>
-  );
-}
-
 const levels = [
   {
     id: "01",
     title: "TINKER",
-    art: "tinker",
+    image: imgTinker,
     grades: "Ages 5–9 · Grades K–3",
     desc: "Young makers begin with materials, movement, balance, structures and simple mechanisms. They learn to use their hands, make choices, work safely and explain what they created.",
     mtb: {
@@ -51,7 +23,7 @@ const levels = [
   {
     id: "02",
     title: "BUILD",
-    art: "build",
+    image: imgEngineer,
     grades: "Ages 9–11 · Grades 4–5",
     desc: "Makers move from playful making to purposeful prototypes. They combine mechanisms, electronics, measurement and block coding to build projects that move, light up, respond or solve a small problem.",
     mtb: {
@@ -63,7 +35,7 @@ const levels = [
   {
     id: "03",
     title: "ENGINEER",
-    art: "engineer",
+    image: imgBuild,
     grades: "Ages 11–13 · Grades 6–7",
     desc: "Makers start thinking in systems. Robotics, microcontrollers, sensors, fabrication, Python and AI tools come together in functional builds where hardware, software and design must work together.",
     mtb: {
@@ -75,7 +47,7 @@ const levels = [
   {
     id: "04",
     title: "INVENT",
-    art: "invent",
+    image: imgInvent,
     grades: "Ages 13–18 · Grades 8–12",
     desc: "Makers take on original work. They use advanced robotics, CAD, AI, connected devices, electronics and product thinking to build solutions that can be tested, presented and improved in the real world.",
     mtb: {
@@ -136,7 +108,7 @@ export function NotAClass() {
         </motion.div>
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
           <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-black uppercase tracking-tighter leading-[0.85] lg:w-1/2">
-            <span className="text-extrude">NOT A CLASS.</span><br/><span className="text-black/20">A YEARLY MAKER JOURNEY.</span>
+            NOT A CLASS.<br/><span className="text-black/20">A YEARLY MAKER JOURNEY.</span>
           </motion.h2>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:w-1/2 space-y-6">
             <p className="text-xl md:text-2xl text-gray-800 font-medium leading-tight">Most programs stop at teaching a skill.</p>
@@ -158,10 +130,6 @@ export default function ProgramPathway() {
     target: sectionRef,
     offset: ["start end", "end start"]
   });
-
-  // Spring-smoothed progress: the elevator glides instead of tracking raw wheel ticks.
-  // Shared with the card collision logic so gears still fire when the capsule touches them.
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 55, damping: 20, mass: 0.6 });
 
   const [isEasterEggActive, setIsEasterEggActive] = useState(false);
 
@@ -217,10 +185,8 @@ export default function ProgramPathway() {
     <section ref={sectionRef} className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10 pt-24 md:pt-40">
       <BlueprintGrid opacity={0.4} />
       {/* ── Mechanical Contraption Timeline ── */}
-      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-0 -bottom-[500px] md:-bottom-[850px] lg:-bottom-[1000px] w-[160px] pointer-events-none z-0 [--rail-overhang:500px] md:[--rail-overhang:850px] lg:[--rail-overhang:1000px]">
-        <div className="sticky top-0 h-screen">
-          <RailShowcase progress={smoothProgress} />
-        </div>
+      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-0 -bottom-[350px] md:-bottom-[550px] lg:-bottom-[650px] w-[120px] pointer-events-none z-0">
+        <MechanicalTimeline scrollYProgress={scrollYProgress} />
       </div>
 
       {/* ── Age Group Entry Points ── */}
@@ -242,7 +208,7 @@ export default function ProgramPathway() {
         <div className="relative">
           <div className="space-y-32 relative">
             {levels.map((level, idx) => (
-              <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={smoothProgress} />
+              <LevelCardTimeline key={level.id} level={level} index={idx} scrollYProgress={scrollYProgress} />
             ))}
           </div>
         </div>
@@ -251,17 +217,6 @@ export default function ProgramPathway() {
 
     <section className="bg-[var(--color-light)] relative font-sans overflow-x-clip z-20">
       <BlueprintGrid opacity={0.4} />
-      {/* Rail continuation — carries the elevator shaft from the section boundary
-          down into the core sphere's glow, dissolving as it arrives */}
-      <div
-        className="absolute top-0 left-6 lg:left-1/2 -translate-x-1/2 w-12 h-[360px] bg-[#ebebeb] border-x border-black/10 pointer-events-none"
-        style={{
-          maskImage: 'linear-gradient(to bottom, black 45%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 45%, transparent 100%)',
-        }}
-      >
-        <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-2 bg-black/5" />
-      </div>
       <div className="max-w-[90rem] mx-auto px-6 relative z-10 pt-32 md:pt-48 pb-24 md:pb-40">
         <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative flex flex-col items-center justify-center h-[500px] md:h-[800px] lg:h-[1000px] group/system w-full">
           <motion.div 
@@ -310,7 +265,7 @@ export default function ProgramPathway() {
               className="absolute w-[15%] h-[15%] bg-black rounded-full z-10" 
             />
           </motion.div>
-          <div className="relative z-10 max-w-4xl flex flex-col items-center text-center mx-auto px-6 mt-16 pointer-events-auto">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] md:w-[800px] md:h-[800px] lg:w-[1000px] lg:h-[1000px] flex flex-col items-center justify-center text-center px-6 md:px-16 z-10 pointer-events-auto">
             {textContent}
           </div>
         </motion.div>
@@ -400,9 +355,7 @@ function InteractiveHeroImage({ level }) {
       className="relative -mx-8 md:-mx-12 -mt-8 md:-mt-12 mb-8 h-48 sm:h-64 overflow-hidden rounded-t-[2.5rem] border-b border-black/5"
     >
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none" />
-      <div className="w-full h-full transition-transform duration-1000 ease-out group-hover:scale-105">
-        <MakerArt variant={level.art} />
-      </div>
+      <img src={level.image} alt={level.title} className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105" />
       
       {/* Easter Egg Triggered Effect */}
       {level.id === "03" && isActive && (
@@ -456,7 +409,7 @@ function LevelCardBase({ level, index }) {
       </div>
 
       {/* Hero Image */}
-      {level.art && <InteractiveHeroImage level={level} />}
+      {level.image && <InteractiveHeroImage level={level} />}
 
       <div className="mb-10 relative">
         <div className="font-mono text-4xl font-bold text-black/5 mb-2 leading-none">{level.id}</div>
@@ -529,7 +482,7 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
       
       // The mechanical rail container extends below the section to reach the core sphere
       // (must match the -bottom-[...] values on the timeline container)
-      const extraBottom = window.innerWidth >= 1024 ? 1000 : (window.innerWidth >= 768 ? 850 : 500);
+      const extraBottom = window.innerWidth >= 1024 ? 650 : (window.innerWidth >= 768 ? 550 : 350);
       const containerHeight = section.offsetHeight + extraBottom;
       
       // Physical Collision Math:
@@ -563,9 +516,9 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   return (
     <div ref={cardRef} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-24 relative`}>
       
-      {/* Anchor for the 3D gear on the central rail (measured by Rail3D) */}
-      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
-        <div className="rail-node-anchor w-20 h-20 lg:w-32 lg:h-32" />
+      {/* Central Mechanical Gear */}
+      <div className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center justify-center z-30 pointer-events-none">
+        <MechanicalLinkageNode isActive={isActive || isHovered} />
       </div>
 
       {/* Level Card Base Content - Wrapped in a jolt animation */}
@@ -577,12 +530,15 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
         transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
       >
         {/* Pass isActive down so the card can light up when punched */}
-        <Tilt3D max={4} radiusClass="rounded-[2.5rem]">
-          <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
-            <LevelCardBase level={level} index={index} />
-          </div>
-        </Tilt3D>
+        <div className={`transition-all duration-500 rounded-[2.5rem] ${isActive || isHovered ? 'shadow-[0_0_40px_rgba(255,90,0,0.15)] ring-2 ring-[var(--color-accent)]' : ''}`}>
+          <LevelCardBase level={level} index={index} />
+        </div>
       </motion.div>
+
+      {/* Piston Arm (extends from the central gear to the card) */}
+      <div className={`absolute top-1/2 -translate-y-1/2 h-8 z-20 w-12 lg:w-[5%] left-[40px] ${isEven ? 'lg:left-[45%]' : 'lg:right-[45%] lg:left-auto'} pointer-events-none`}>
+        <PistonArm isActive={isActive || isHovered} isEven={isMobile ? false : isEven} />
+      </div>
 
       {/* Empty space on opposite side */}
       <div className="hidden lg:block lg:w-[45%]" />
@@ -590,3 +546,148 @@ function LevelCardTimeline({ level, index, scrollYProgress }) {
   );
 }
 
+function PistonArm({ isActive, isEven }) {
+  // Piston pushes OUT from the center towards the card.
+  // Center is at the right for isEven, left for !isEven.
+  return (
+    <div className={`w-full h-full relative flex items-center ${isEven ? 'flex-row-reverse' : 'flex-row'}`}>
+      {/* Outer Cylinder (attached to center) */}
+      <div className="w-1/2 h-6 bg-[#d4d4d4] border-y-2 border-x border-[#999] rounded-sm relative z-10 flex items-center justify-center shadow-md">
+         {/* Decorative cylinder stripes */}
+         <div className="w-full h-[2px] bg-black/20" />
+      </div>
+
+      {/* Inner Rod (shoots out to the card) */}
+      <motion.div 
+        className="h-3 bg-[#444] border-y border-black relative z-0 origin-center"
+        initial={{ width: '10%' }}
+        animate={{ width: isActive ? '100%' : '10%' }}
+        transition={{ type: "spring", stiffness: 400, damping: 15, mass: 1 }}
+      >
+        {/* Plunger Head hitting the card */}
+        <div className={`absolute top-1/2 -translate-y-1/2 w-4 h-10 rounded-sm shadow-[0_0_15px_var(--color-accent)] transition-colors duration-200 ${isActive ? 'bg-[var(--color-accent)]' : 'bg-[#666]'} ${isEven ? '-left-2' : '-right-2'}`}>
+          {/* Spark effect when hitting */}
+          {isActive && (
+            <motion.div 
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full ${isEven ? '-left-2' : '-right-2'}`}
+            />
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Mechanical Contraption Components ──
+
+function MechanicalTimeline({ scrollYProgress }) {
+  const payloadY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  // The motor rotation is directly proportional to scroll
+  const motorRotation = useTransform(scrollYProgress, [0, 1], [0, 1440]); // 4 full spins
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center">
+      {/* Top Motor Assembly (mounted at the top of the section, cut horizontally) */}
+      <div className="absolute top-0 w-32 h-10 overflow-hidden z-30 flex justify-center">
+        <div className="absolute -top-10 w-32 h-20 bg-[#d4d4d4] rounded-[1rem] border-2 border-[#999] flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,0,0.15)]">
+          {/* Motor body casing details */}
+          <div className="absolute inset-x-4 top-2 h-4 bg-black/10 rounded-full" />
+          <div className="absolute inset-x-4 bottom-2 h-2 bg-black/10 rounded-full" />
+          
+          {/* Rotating Pulley Wheel */}
+          <motion.div 
+            className="relative w-16 h-16 rounded-full border-[6px] border-[#666] bg-[#ccc] flex items-center justify-center shadow-inner"
+            style={{ rotate: motorRotation }}
+          >
+            {/* Pulley Spokes */}
+            <div className="absolute w-full h-1.5 bg-[#666]" />
+            <div className="absolute w-1.5 h-full bg-[#666]" />
+            {/* Glowing Axle Center */}
+            <div className="w-4 h-4 bg-[var(--color-accent)] rounded-full z-10 shadow-[0_0_15px_var(--color-accent)]" />
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Elevator Shaft / Track */}
+      <div className="absolute top-0 bottom-0 w-12 bg-[#ebebeb] rounded-b-[1rem] border-x border-b border-black/10 flex justify-center shadow-inner overflow-hidden">
+        {/* Inner track rail */}
+        <div className="absolute top-0 bottom-0 w-2 bg-black/5" />
+      </div>
+
+      {/* The Rope (connecting motor to capsule) */}
+      <motion.div 
+        className="absolute top-0 w-1.5 bg-[#555] z-10 flex justify-center overflow-hidden"
+        style={{ height: payloadY }}
+      >
+        {/* Rope Texture */}
+        <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, black 2px, black 4px)' }} />
+      </motion.div>
+
+      {/* The Elevator Capsule (Payload) */}
+      <motion.div 
+        className="absolute w-16 h-20 bg-white rounded-xl border-[3px] border-[var(--color-accent)] shadow-[0_10px_30px_rgba(255,90,0,0.4)] flex flex-col items-center justify-center z-20"
+        style={{ top: payloadY, y: "-50%" }}
+      >
+        {/* Hook attaching capsule to rope */}
+        <div id="elevator-hook" className="absolute -top-4 w-6 h-4 rounded-t-full border-2 border-b-0 border-[#555] bg-white flex items-center justify-center">
+           <div className="w-1.5 h-1.5 bg-[#555] rounded-full mt-1" />
+        </div>
+
+        <div className="w-8 h-2 bg-black/10 rounded-full mb-2" />
+        <div className="w-6 h-6 bg-[var(--color-accent)] rounded-full animate-pulse shadow-[inset_0_0_10px_white]" />
+        <div className="w-8 h-2 bg-black/10 rounded-full mt-2" />
+      </motion.div>
+    </div>
+  );
+}
+
+function MechanicalLinkageNode({ isActive }) {
+  return (
+    <div className="relative flex items-center justify-center w-20 h-20 lg:w-32 lg:h-32 group">
+      {/* Background large gear */}
+      <motion.div 
+        animate={{ rotate: isActive ? 360 : 0 }} 
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-black/10'}`}
+      >
+        <GearSVG width="100%" height="100%" />
+      </motion.div>
+      {/* Inner medium gear (spins opposite) */}
+      <motion.div 
+        animate={{ rotate: isActive ? -360 : 0 }} 
+        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        className={`absolute inset-0 flex items-center justify-center transition-colors duration-500 ${isActive ? 'text-black' : 'text-black/5'}`}
+        style={{ padding: '20%' }}
+      >
+        <GearSVG width="100%" height="100%" />
+      </motion.div>
+      {/* Center pivot */}
+      <div className={`w-4 h-4 lg:w-6 lg:h-6 rounded-full border-[3px] lg:border-4 transition-all duration-500 z-10 ${isActive ? 'border-[var(--color-accent)] bg-white shadow-[0_0_20px_var(--color-accent)]' : 'border-black/20 bg-white'}`} />
+    </div>
+  );
+}
+
+function GearSVG({ width = "100", height = "100" }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 120 120" fill="currentColor">
+      {/* 12 Teeth */}
+      {[...Array(12)].map((_, i) => (
+        <rect key={i} x="52" y="2" width="16" height="116" rx="4" transform={`rotate(${i * 30} 60 60)`} />
+      ))}
+      
+      {/* Main Outer Ring (with cutout) */}
+      <path fillRule="evenodd" clipRule="evenodd" d="M60 14a46 46 0 1 0 0 92 46 46 0 0 0 0-92zm0 14a32 32 0 1 1 0 64 32 32 0 0 1 0-64z" />
+      
+      {/* Inner Hub (with cutout) */}
+      <path fillRule="evenodd" clipRule="evenodd" d="M60 40a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 12a8 8 0 1 1 0 16 8 8 0 0 1 0-16z" />
+      
+      {/* Spokes connecting hub to ring */}
+      {[...Array(4)].map((_, i) => (
+        <rect key={i} x="56" y="28" width="8" height="64" transform={`rotate(${i * 45} 60 60)`} />
+      ))}
+    </svg>
+  );
+}

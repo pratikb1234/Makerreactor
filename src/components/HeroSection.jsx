@@ -1,250 +1,279 @@
-import { useRef, useState, lazy, Suspense } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion';
-import { PowerSwitch, LEDIndicator } from './MakerElements';
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { BlueprintGrid, ScrollCircuitLine, PowerFlowLine, LEDIndicator, PowerSwitch, FloatingCodeWidget } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
-import { waLink, VISIT_MESSAGE } from './StickyCTA';
 
-// Isometric world carries Three.js — loads as its own chunk after first paint
-const HeroWorld3D = lazy(() => import('./HeroWorld3D'));
-
-// ── The maker transformation — eight stations across the years ──────────────
-// Each stage names the skill being built and the belief it installs.
-// This is the education: why making matters, year by year.
-const JOURNEY = [
-  {
-    num: '01', tag: 'Age 5 · Wonder', title: 'The first tower',
-    belief: '“I can try.”',
-    body: 'Blocks fall. They rebuild. Making starts with hands, not screens — balance, patience, and the courage to try again.',
-  },
-  {
-    num: '02', tag: 'Age 7 · Curiosity', title: 'How things work',
-    belief: '“Things can be understood.”',
-    body: 'The toy comes apart. The mechanism makes sense. Curiosity becomes a method: look inside, ask why.',
-  },
-  {
-    num: '03', tag: 'Age 8 · First circuit', title: 'Making it light up',
-    belief: '“I can make it work.”',
-    body: 'A battery, a wire, an LED — and light. The moment a child stops consuming technology and starts commanding it.',
-  },
-  {
-    num: '04', tag: 'Age 10 · Code', title: 'Teaching machines',
-    belief: '“I can teach a machine.”',
-    body: 'Logic, loops, debugging. Code stops being magic and becomes a language they speak — and a robot that listens.',
-  },
-  {
-    num: '05', tag: 'Age 12 · Real tools', title: 'Trusted with fire',
-    belief: '“I’m trusted with real things.”',
-    body: 'Soldering irons. Real materials. Safety earned, not assumed. Trust builds responsibility — and responsibility builds confidence.',
-  },
-  {
-    num: '06', tag: 'Age 13 · Design', title: 'Imagine, then make',
-    belief: '“If I can draw it, I can build it.”',
-    body: 'From sketch to CAD to a printed object in their hands. The gap between idea and reality closes for good.',
-  },
-  {
-    num: '07', tag: 'Age 15 · The team', title: 'Harder, together',
-    belief: '“We can solve hard problems.”',
-    body: 'Competition robots. Deadlines. Teammates. Failure on a public field — and the comeback after it.',
-  },
-  {
-    num: '08', tag: 'Age 18 · College', title: 'The door opens',
-    belief: '“My work opened the door.”',
-    body: 'A portfolio that speaks louder than marks. The cap goes up — and the making goes with him.',
-  },
-  {
-    num: '09', tag: 'Age 22 · His own thing', title: 'Still building',
-    belief: '“I don’t wait for permission.”',
-    body: 'His own bench, his own shelves, his own product lifting off the pad. Shipping things that matter.',
-  },
-  {
-    num: '10', tag: 'An amazing life', title: 'The spark passes on',
-    belief: '“A life, built by hand.”',
-    body: 'A home, a studio, work he is proud of — and a new kid reaching for the spark. The trail begins again.',
-  },
+// Each byte in the packet is the binary encoding of a MAKERS letter
+const MAKERS_BYTES = [
+  { letter: 'M', bin: '01001101' },
+  { letter: 'A', bin: '01000001' },
+  { letter: 'K', bin: '01001011' },
+  { letter: 'E', bin: '01000101' },
+  { letter: 'R', bin: '01010010' },
+  { letter: 'S', bin: '01010011' },
 ];
 
-const MAKERS_BYTES = ['01001101', '01000001', '01001011', '01000101', '01010010', '01010011'];
-
-function CTAs({ className = '' }) {
+// White traveling packet — silently carries MAKERS encoded in binary (easter egg)
+function MatrixPacket() {
   return (
-    <div className={`flex flex-wrap items-center gap-4 ${className}`}>
-      <a
-        href={waLink(VISIT_MESSAGE)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block px-7 py-3 bg-[var(--color-accent)] text-white font-mono text-sm uppercase tracking-widest font-bold rounded-full shadow-[0_0_24px_rgba(255,90,0,0.35)] transition-transform duration-300 hover:scale-105 cursor-hover"
-      >
-        BOOK A STUDIO VISIT →
-      </a>
-      <a
-        href="#admissions"
-        className="font-mono text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[var(--color-accent)] transition-colors cursor-hover underline decoration-black/20 underline-offset-4"
-      >
-        How admissions work
-      </a>
-    </div>
+    <span className="font-mono whitespace-nowrap font-bold px-3 select-none flex items-center gap-[6px]" style={{ fontSize: 11 }}>
+      {MAKERS_BYTES.map(({ bin }, i) => (
+        <span key={i} className="inline-block w-[58px] text-center text-black/75">{bin}</span>
+      ))}
+    </span>
   );
 }
 
-// Show, don't tell: the scene does the talking — one quiet caption underneath.
-// A mono age-tag, the stage's belief in display type, and a thin progress strip.
-function SceneCaption({ activeStep }) {
-  return (
-    <div className="flex flex-col items-center text-center gap-3">
-      <AnimatePresence mode="wait">
-        {activeStep >= 0 && (
-          <motion.div
-            key={activeStep}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center gap-2"
-          >
-            <div className="font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-accent)]">
-              {JOURNEY[activeStep].tag}
-            </div>
-            <div className="font-display font-bold tracking-tight text-black text-2xl md:text-4xl">
-              {JOURNEY[activeStep].belief}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* eight quiet ticks — where you are in the years */}
-      <div className="flex items-center gap-1.5 mt-1">
-        {JOURNEY.map((s, i) => (
-          <span
-            key={s.num}
-            className={`h-1 rounded-full transition-all duration-500 ${
-              i === activeStep ? 'w-7 bg-[var(--color-accent)]' : i < activeStep ? 'w-2.5 bg-[var(--color-accent)]/40' : 'w-2.5 bg-black/10'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function HeroSection() {
-  const trackRef = useRef(null);
-  const { isPowered, togglePower, setIsPowerFlowComplete, setIsHeroBridgeComplete } = useCircuit();
-  const [activeStep, setActiveStep] = useState(-1);
+  const { isPowered, setIsPowerFlowComplete, isPowerFlowComplete, setGlobalCircuitX, setIsHeroBridgeComplete } = useCircuit();
+  const sectionRef = useRef(null);
+  const buttonWrapRef = useRef(null);
+  const makersRef = useRef(null);
+  const [barTop, setBarTop] = useState(0);
+  const codeSnippet = `// ─── Maker Machine v2.0 ───
+machine.ignite();
+circuit.sync(150);
+`;
+  const [flowPath, setFlowPath] = useState('');
+  const [viewW, setViewW] = useState(1400);
+  const [viewH, setViewH] = useState(1000);
+  const [powerLineX, setPowerLineX] = useState(0);
+  const [barWidth, setBarWidth] = useState(0);
 
-  const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
-  const p = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 });
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
+  const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
-  // One-way circuit triggers: first scroll ignites the system, journey's end arms the bridge
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    if (v > 0.02 && !isPowered) togglePower();
-    if (v > 0.04) setIsPowerFlowComplete(true);
-    if (v > 0.86) setIsHeroBridgeComplete(true);
-    const idx = Math.floor(((v - 0.08) / 0.8) * JOURNEY.length);
-    setActiveStep(v < 0.08 ? -1 : v > 0.88 ? JOURNEY.length - 1 : Math.min(Math.max(idx, 0), JOURNEY.length - 1));
-  });
+  // Track when the power trail has reached the top of the path
+  const [isFutureLineActive, setIsFutureLineActive] = useState(false);
 
-  // Intro lockup
-  const introOpacity = useTransform(p, [0, 0.07, 0.12], [1, 1, 0]);
-  const introY = useTransform(p, [0, 0.12], [0, -60]);
-  const introPE = useTransform(scrollYProgress, (v) => (v > 0.1 ? 'none' : 'auto'));
+  // Reset when power goes off
+  useEffect(() => {
+    if (!isPowered) {
+      setIsFutureLineActive(false);
+    } else {
+      const t = setTimeout(() => setIsFutureLineActive(true), 250);
+      return () => clearTimeout(t);
+    }
+  }, [isPowered]);
 
-  // Journey overlay (step list)
-  const journeyOpacity = useTransform(p, [0.1, 0.15, 0.85, 0.9], [0, 1, 1, 0]);
+  // Measure positions for SVG path and conduit bar dynamically
+  useEffect(() => {
+    const measure = () => {
+      if (!buttonWrapRef.current || !sectionRef.current || !makersRef.current) return;
 
-  // Outro lockup
-  const outroOpacity = useTransform(p, [0.88, 0.95], [0, 1]);
-  const outroY = useTransform(p, [0.88, 0.97], [36, 0]);
-  const outroPE = useTransform(scrollYProgress, (v) => (v > 0.9 ? 'auto' : 'none'));
+      const sRect = sectionRef.current.getBoundingClientRect();
+      const bRect = buttonWrapRef.current.getBoundingClientRect();
+      const mRect = makersRef.current.getBoundingClientRect();
 
-  const progressPct = useTransform(p, (v) => `${String(Math.min(99, Math.max(0, Math.round(v * 100)))).padStart(2, '0')}`);
-  const railFill = useTransform(p, (v) => `${Math.min(100, Math.max(0, v * 100))}%`);
+      const W = sRect.width;
+      const H = sRect.height;
+
+      // Start from the left edge of the button
+      const bx = bRect.left - sRect.left;
+      // Button vertical center
+      const by = bRect.top - sRect.top + bRect.height / 2;
+
+      const pLineX = bx - 30; // x-coord of powerline at MAKERS text level
+
+      // Path: go LEFT slightly to clear button, go UP past the headline, then go LEFT and bend UP to the top edge
+      // Also draw a branch that goes DOWN to the bottom of the section to meet Section 2
+      const path = `M ${bx} ${by} H ${pLineX} V 80 H 160 V 0`;
+
+      const middleX = W / 2;
+
+      setViewW(W);
+      setViewH(H);
+      setFlowPath(path);
+      setPowerLineX(pLineX);
+      setGlobalCircuitX(middleX); // Broadcast center X to Section 2
+      setBarTop(mRect.top - sRect.top + mRect.height / 2);
+
+      // Calculate the gap between the right side of the 'S' and the powerline
+      const makersRight = mRect.right - sRect.left;
+      const gap = pLineX - makersRight - 15; // 15px buffer
+      setBarWidth(gap > 0 ? gap : 0);
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    const t = setTimeout(measure, 500);
+    return () => { window.removeEventListener('resize', measure); clearTimeout(t); };
+  }, [isPowered]);
 
   return (
-    <section ref={trackRef} className="relative h-[1000vh] bg-[var(--color-light)] font-sans" aria-label="The maker journey">
-      <div className="sticky top-0 h-screen overflow-hidden">
-        {/* ── The isometric maker world ── */}
-        <div className="absolute inset-0 z-0">
-          <Suspense fallback={null}>
-            <HeroWorld3D progress={p} />
-          </Suspense>
-        </div>
-        {/* readability washes */}
-        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[var(--color-light)] to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--color-light)]/80 to-transparent z-[1] pointer-events-none" />
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen pt-32 pb-20 overflow-hidden bg-[var(--color-light)] flex items-center justify-center"
+      style={{ clipPath: 'inset(0)' }}
+    >
+      <BlueprintGrid />
 
-        {/* System status — top left, under the navbar */}
-        <div className="absolute top-20 left-6 md:top-24 md:left-12 z-30 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-black/40">
-          <LEDIndicator />
-          <span>
-            {activeStep < 0 ? 'SYS // STANDBY' : `SYS // STAGE_${JOURNEY[activeStep].num}: ${JOURNEY[activeStep].tag.toUpperCase()}`}
-          </span>
-        </div>
+      {/* Blob layer — overflow-hidden so blobs don't spill outside hero */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div style={{ y: y1, opacity }} className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full border border-black/5 bg-gradient-to-tr from-gray-100 to-white blur-3xl" />
+        <motion.div style={{ y: y2, opacity }} className="absolute bottom-[10%] left-[5%] w-[30vw] h-[30vw] rounded-full border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5 blur-2xl" />
+      </div>
 
-        {/* Scroll progress rail — right edge */}
-        <motion.div style={{ opacity: useTransform(p, [0, 0.04, 0.94, 1], [0.4, 1, 1, 0]) }} className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 z-30 hidden sm:flex flex-col items-center gap-3">
-          <motion.span className="font-mono text-[10px] font-bold text-black/40 tabular-nums">{progressPct}</motion.span>
-          <div className="relative w-px h-36 bg-black/10 overflow-hidden">
-            <motion.div className="absolute top-0 left-0 w-full bg-[var(--color-accent)]" style={{ height: railFill }} />
-          </div>
-          <span className="font-mono text-[10px] font-bold text-black/40">100</span>
-        </motion.div>
+      {/* PCB Trace — hidden on mobile, only visible on desktop */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden lg:block">
+        <ScrollCircuitLine
+          sectionRef={sectionRef}
+          className="top-0 left-0 w-full h-full"
+          pathD="M 20 0 V 250 H 80 V 600 H 20 V 1000 H 500"
+          viewBox="0 0 1000 1000"
+          scrollOffset={["start center", "end center"]}
+          onReachCenter={setIsHeroBridgeComplete}
+          components={[
+            { type: 'led', cx: 20, cy: 125, threshold: 0.10 },
+            { type: 'car', cx: 80, cy: 425, threshold: 0.48 },
+            { type: 'drone', cx: 20, cy: 780, threshold: 0.80 },
+          ]}
+        />
+      </div>
 
-        {/* ── Intro lockup ── */}
-        <motion.div
-          style={{ opacity: introOpacity, y: introY, pointerEvents: introPE }}
-          className="absolute inset-0 flex flex-col items-center justify-start pt-[16vh] md:pt-[14vh] text-center px-6 z-20"
-        >
-          <div className="font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-accent)] mb-6 flex items-center gap-4">
-            <span className="w-9 h-px bg-[var(--color-accent)]" />
-            A MAKERSPACE FOR K–12 · BODAKDEV, AHMEDABAD
-            <span className="w-9 h-px bg-[var(--color-accent)]" />
-          </div>
-          <h1 className="font-display font-bold uppercase tracking-tighter leading-[0.88] text-black text-[12vw] md:text-[6vw] mb-6">
-            The future belongs<br />
-            to the kids <span className="text-[var(--color-accent)]">who build it.</span>
-          </h1>
-          <p className="text-base md:text-lg text-gray-600 max-w-xl leading-relaxed mb-7">
-            Watch a child become a maker — real tools, real problems,
-            and a portfolio that speaks for itself.
-          </p>
-          <CTAs className="justify-center mb-8" />
-          <div className="flex items-center gap-6">
-            <PowerSwitch />
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-              className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-black/40 flex items-center gap-2"
+      {/* Power flow line — desktop */}
+      <div className="hidden lg:block">
+        {flowPath && (
+          <PowerFlowLine
+            className="absolute top-0 left-0 w-full h-screen z-0"
+            pathD={flowPath}
+            viewBox={`0 0 ${viewW} ${viewH}`}
+            onPowerReachTop={() => setIsPowerFlowComplete(true)}
+          />
+        )}
+      </div>
+
+      {/* Power flow line — mobile: straight vertical trace */}
+      <div className="block lg:hidden">
+        <PowerFlowLine
+          className="absolute top-0 left-0 w-full h-screen z-0"
+          pathD="M 380 0 V 1000"
+          viewBox="0 0 400 1000"
+          onPowerReachTop={() => setIsPowerFlowComplete(true)}
+        />
+      </div>
+
+      {/* Conduit bar — hidden on mobile, desktop only */}
+      <div className="hidden lg:block">
+        {isPowered && barTop > 0 && powerLineX > 0 && (
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: barWidth, opacity: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              right: `${viewW - powerLineX}px`,
+              top: barTop,
+              transform: 'translateY(-50%)',
+              zIndex: 5
+            }}
+            className="h-9 pointer-events-none"
+          >
+            {/* Inner background and clipping container */}
+            <div
+              className="absolute inset-0 bg-black overflow-hidden rounded-l-full"
+              style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
             >
-              Scroll to follow the trail <span className="text-[var(--color-accent)]">↓</span>
+              {/* Glowing white light packet — MAKERS binary with matrix letter glitches */}
+              {isFutureLineActive && (
+                <motion.div
+                  initial={{ left: '100%', x: '0%' }}
+                  animate={{ left: '0%', x: '-100%' }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+                  className="absolute top-0 bottom-0 bg-white rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] flex items-center justify-center overflow-hidden"
+                  style={{ width: 440 }}
+                >
+                  <MatrixPacket />
+                </motion.div>
+              )}
+            </div>
+
+            {/* Orange junction dot at RIGHT edge (powerline connection) - Now unclipped! */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-[var(--color-accent)] rounded-full shadow-[0_0_12px_#FF5A00,0_0_24px_#FF5A00] z-10" />
+
+            <LEDIndicator className="absolute left-[-10px] top-1/2 -translate-y-1/2 z-10" />
+          </motion.div>
+        )}
+      </div>
+
+      <div className="max-w-[90rem] w-full mx-auto px-6 md:px-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+          {/* Left: Headline — fixed layout, only color/opacity animates */}
+          <div className="lg:col-span-8">
+            <motion.div
+              animate={{ backgroundColor: isPowered ? 'var(--color-accent)' : '#e5e7eb' }}
+              transition={{ duration: 0.8 }}
+              className="w-16 h-16 md:w-24 md:h-24 rounded-full mb-8 flex items-center justify-center"
+            >
+              <div className="w-1/2 h-1/2 bg-[var(--color-light)] rounded-full" />
             </motion.div>
-          </div>
-        </motion.div>
 
-        {/* ── Journey caption: the scene shows, this line whispers ── */}
-        <motion.div
-          style={{ opacity: journeyOpacity }}
-          className="absolute inset-x-0 bottom-8 md:bottom-12 z-20 pointer-events-none px-6"
-        >
-          <SceneCaption activeStep={activeStep} />
-        </motion.div>
-
-        {/* ── Outro lockup ── */}
-        <motion.div
-          style={{ opacity: outroOpacity, y: outroY, pointerEvents: outroPE }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20"
-        >
-          <div className="font-mono text-[9px] md:text-xs font-bold tracking-[0.2em] text-black/35 mb-6">
-            {MAKERS_BYTES.join(' ')} <span className="text-[var(--color-accent)]">→ MAKERS ✓</span>
+            {/* Dynamic Headline — swapped based on user feedback */}
+            <motion.h1
+              animate={{
+                color: isPowered ? '#000000' : '#9ca3af',
+                opacity: isPowered ? 1 : 0.8
+              }}
+              transition={{ duration: 0.8 }}
+              className="text-[8vw] sm:text-[7vw] lg:text-[5.5vw] font-display font-bold leading-[0.9] tracking-tighter uppercase max-w-4xl"
+            >
+              {isPowered ? (
+                <>
+                  Future belongs to<br />
+                  <span ref={makersRef} className="text-[var(--color-accent)]">MAKERS</span>
+                </>
+              ) : (
+                <>
+                  Build the<br />
+                  <span className="text-gray-300">Future.</span>
+                </>
+              )}
+            </motion.h1>
           </div>
-          <h2 className="font-display font-bold uppercase tracking-tighter leading-[0.9] text-black text-[11vw] md:text-[5.5vw] mb-6">
-            That transformation<br />
-            <span className="text-[var(--color-accent)]">is the program.</span>
-          </h2>
-          <p className="text-base md:text-lg text-gray-600 max-w-lg leading-relaxed mb-9">
-            A year-long journey across four studios. Keep scrolling to see how it works —
-            or come watch it happen in person.
-          </p>
-          <CTAs className="justify-center" />
-        </motion.div>
+
+          {/* Right: Completely fixed layout — only opacity transitions */}
+          <div className="lg:col-span-4 flex flex-col justify-start pt-4 gap-6">
+
+            {/* Cohort CTA — pops when online, fades when offline */}
+            <motion.div
+              animate={{ opacity: isPowered ? 1 : 0.4 }}
+              transition={{ duration: 0.6 }}
+              className={`border-l-2 pl-4 transition-colors duration-500 ${isPowered ? 'border-[var(--color-accent)]' : 'border-black'}`}
+            >
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-2">Make now:</p>
+              <p className={`text-base md:text-lg font-medium leading-relaxed mb-4 transition-colors duration-500 ${isPowered ? 'text-black' : 'text-gray-600'}`}>
+                At Bits & Studios, your child joins a makerspace community for K–12 makers who build, solve, compete, fail, fix and grow.
+              </p>
+              <p className={`text-lg md:text-xl font-bold leading-relaxed transition-colors duration-500 ${isPowered ? 'text-[var(--color-accent)]' : 'text-gray-500'}`}>
+                Join the Founding Cohort.
+              </p>
+              <motion.a
+                href="#admissions"
+                animate={{
+                  backgroundColor: isPowered ? '#FF5A00' : '#000000',
+                  boxShadow: isPowered ? '0 0 20px rgba(255,90,0,0.4)' : '0 0 0px rgba(0,0,0,0)'
+                }}
+                transition={{ duration: 0.5 }}
+                className="inline-block mt-4 px-6 py-2.5 text-white font-mono text-sm uppercase tracking-widest font-bold rounded-full transition-transform duration-300 hover:scale-105"
+              >
+                ENQUIRE NOW →
+              </motion.a>
+            </motion.div>
+
+            {/* Code terminal — original widget unchanged */}
+            <FloatingCodeWidget className="w-full" />
+
+            {/* Power button — ref measured for exact circuit connection */}
+            <div ref={buttonWrapRef} className="flex items-center gap-6">
+              <PowerSwitch />
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );

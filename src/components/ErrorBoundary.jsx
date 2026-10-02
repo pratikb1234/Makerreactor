@@ -3,7 +3,7 @@ import React from 'react';
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(error) {
@@ -11,8 +11,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    this.setState({ error, errorInfo });
-    console.error("Caught by ErrorBoundary:", error, errorInfo);
+    console.error("React ErrorBoundary caught an error:", error, errorInfo);
     // Ensure the raw HTML fallback is removed if React caught it,
     // to avoid duplicating the UI.
     const rawFallback = document.getElementById('fallback-error-ui');
@@ -23,9 +22,6 @@ export class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      // Callers may pass a graceful fallback (can be null to render nothing).
-      if ('fallback' in this.props) return this.props.fallback;
-      // Default: full-page error UI (used by the root boundary in main.jsx).
       return (
         <div style={{position:'fixed',top:0,left:0,width:'100%',height:'100%',background:'#F5F0E8',zIndex:999999,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',textAlign:'center',padding:'20px',boxSizing:'border-box'}}>
           <div style={{background:'white',padding:'40px',borderRadius:'24px',boxShadow:'0 10px 40px rgba(0,0,0,0.08)',maxWidth:'400px',border:'1px solid rgba(0,0,0,0.05)',width:'100%'}}>

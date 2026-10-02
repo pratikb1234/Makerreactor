@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { waLink, VISIT_MESSAGE, WhatsAppIcon } from './StickyCTA';
 
 export default function AdmissionsTimeline() {
 
@@ -48,7 +47,7 @@ export default function AdmissionsTimeline() {
               <span className="text-black/25">Join.</span>
             </h2>
             <p className="text-lg md:text-xl text-black/50 font-medium max-w-sm md:text-right">
-              Start with a visit. Most families decide within an hour of seeing the studio.
+              The families that join us deeply understand the power and value of the MakerSpace program.
             </p>
           </div>
         </div>
@@ -123,29 +122,17 @@ export default function AdmissionsTimeline() {
         {/* CTA Form Fallback */}
         <div className="mt-16 md:mt-24 pt-12 border-t border-black/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative z-10">
           <div>
-            <h4 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-tighter text-black mb-2">Start the Conversation</h4>
-            <p className="text-black/60 font-medium">Take the first step to join the founding cohort — a real person replies on WhatsApp.</p>
+            <h4 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-tighter text-black mb-2">Request an Invitation</h4>
+            <p className="text-black/60 font-medium">Take the first step to join the founding cohort.</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <a
-              href={waLink(VISIT_MESSAGE)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-3 px-10 py-5 bg-[var(--color-accent)] text-white rounded-full font-bold text-sm md:text-lg uppercase tracking-wider hover:bg-black transition-colors cursor-hover shadow-xl whitespace-nowrap"
-            >
-              <WhatsAppIcon className="w-5 h-5" />
-              Book a Visit
-            </a>
-            {/* REPLACE WITH GOOGLE FORM URL */}
-            <a
-              href="https://forms.gle/kcEJ65VXory9uRYk9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center px-10 py-5 border-2 border-black text-black rounded-full font-bold text-sm md:text-lg uppercase tracking-wider hover:bg-black hover:text-white transition-colors cursor-hover whitespace-nowrap"
-            >
-              Request an Invitation →
-            </a>
-          </div>
+          <a
+            href="https://forms.gle/kcEJ65VXory9uRYk9"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-10 py-5 bg-[var(--color-accent)] text-black rounded-full font-bold text-sm md:text-lg uppercase tracking-wider hover:bg-black hover:text-[var(--color-accent)] transition-colors cursor-hover shadow-xl whitespace-nowrap"
+          >
+            Start the Conversation →
+          </a>
         </div>
 
       </div>

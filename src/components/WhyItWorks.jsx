@@ -3,13 +3,14 @@ import { motion, useScroll, useTransform, useMotionTemplate, useMotionValueEvent
 import { BlueprintGrid, ScrollCircuitLine, ArcReactorNode, Symbol } from './MakerElements';
 import { useCircuit } from '../context/CircuitContext';
 
-import MakerArt from './ArtisticVisuals';
-import Tilt3D from './Tilt3D';
+import img1 from '../assets/card1.jpeg';
+import img2 from '../assets/card2.png';
+import img3 from '../assets/card3.png';
 
 const STEPS = [
-  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", art: 'environment', threshold: 0.15 },
-  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', art: 'culture', threshold: 0.50 },
-  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', art: 'outcomes', threshold: 0.85 },
+  { num: '01', title: 'THE ENVIRONMENT', icon: 'brain', desc: "A space built for real work. Real tools. Real problems. Where the answer is never handed to them — it's built by them.", image: img1, threshold: 0.15 },
+  { num: '02', title: 'THE CULTURE', icon: 'dna', desc: 'Where serious work is celebrated, struggle is respected, and the best idea in the room might belong to an eleven-year-old.', image: img2, threshold: 0.50 },
+  { num: '03', title: 'THE OUTCOMES', icon: 'quantum', desc: 'Projects presented publicly. Portfolios that speak louder than grades. Competitions won on national and international stages.', image: img3, threshold: 0.85 },
 ];
 
 export default function WhyItWorks() {
@@ -79,7 +80,7 @@ export default function WhyItWorks() {
             className="top-0 left-0 w-full h-full"
             pathD="M 40 0 V 1000"
             viewBox="0 0 80 1000"
-            scrollOffset={['start center', 'end 0.88']}
+            scrollOffset={['start center', 'end center']}
             isActivated={isHeroBridgeComplete}
             components={[]}
           />
@@ -196,8 +197,8 @@ export default function WhyItWorks() {
           {/* Box draws purely with scroll, starting the moment the spine above touches
               this section's top edge (both keyed to the boundary crossing 88% of the
               viewport) — visible handoff, and it never races ahead of the reader. */}
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start 0.88", "end center"]} />
-          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start 0.88", "end center"]} />
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 100 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start center", "end center"]} shouldBoost={true} />
+          <ScrollCircuitLine sectionRef={enderRef} className="top-0 left-0 w-full h-full" pathD="M 500 0 V 150 H 900 V 850 H 500 V 1000" viewBox="0 0 1000 1000" isActivated={true} scrollOffset={["start center", "end center"]} shouldBoost={true} />
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative z-10 font-mono text-xs uppercase tracking-[0.3em] text-gray-500 font-bold mb-12 flex items-center gap-3">
@@ -310,18 +311,18 @@ function StepCard({ step, isCircuitActive }) {
       </motion.div>
 
       <motion.div className="bg-transparent max-w-[460px] relative font-sans group">
-        <Tilt3D max={5} radiusClass="rounded-3xl">
         <div className="relative h-[320px] overflow-hidden mb-8 shadow-xl rounded-3xl border border-black/5">
-          <motion.div style={{ filter: imgFilter }} className="w-full h-full transition-transform duration-1000 scale-[1.08] group-hover:scale-[1.15]">
-            <MakerArt variant={step.art} />
-          </motion.div>
+          <motion.img src={step.image} alt={step.title} style={{ filter: imgFilter }} className="w-full h-full object-cover transition-transform duration-1000 scale-[1.08] group-hover:scale-[1.15]" />
+
+          <div className="absolute bottom-4 right-4 text-[9px] font-mono tracking-widest text-white/60 uppercase z-10 pointer-events-none drop-shadow-md text-right leading-relaxed">
+            # AI GENERATED<br /><span className="opacity-75">Envisioning the maker's journey</span>
+          </div>
 
           <div className="absolute top-6 left-6 bg-white/90 backdrop-blur px-4 py-2 rounded-none font-mono text-[10px] tracking-widest font-bold shadow-lg flex items-center gap-2 border border-black/10">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
             <motion.span style={{ color: numColor }}>SYS // {step.title.split(' ')[1] || step.title}</motion.span>
           </div>
         </div>
-        </Tilt3D>
         <motion.h3 style={{ color: titleColor }} className="text-4xl font-display font-bold uppercase tracking-tight mb-4">{step.title}</motion.h3>
         <p className="text-gray-600 text-lg leading-relaxed">{step.desc}</p>
       </motion.div>

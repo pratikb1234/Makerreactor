@@ -1,4 +1,3 @@
-import { lazy, Suspense } from 'react';
 import { useCircuit, CircuitProvider } from './context/CircuitContext';
 import CustomCursor from './components/CustomCursor';
 import Navbar from './components/Navbar';
@@ -9,19 +8,14 @@ import ProgramPathway, { NotAClass } from './components/ProgramPathway';
 import FourStudios from './components/FourStudiosDNA';
 
 import Comparison from './components/Comparison';
+import Credibility from './components/Credibility';
 import Community from './components/Community';
-import MakerVoice from './components/MakerVoice';
 import ParentPromise from './components/ParentPromise';
 import AdmissionsTimeline from './components/AdmissionsTimeline';
-import FAQ from './components/FAQ';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
-import StickyCTA from './components/StickyCTA';
 import { motion } from 'framer-motion';
 
-// Credibility carries the whole Three.js stack — split it out of the main
-// bundle so first paint doesn't pay for a section 15,000px below the fold.
-const Credibility = lazy(() => import('./components/Credibility'));
 
 function AppContent() {
   const { isPowered, setIsHeroBridgeComplete } = useCircuit();
@@ -46,18 +40,13 @@ function AppContent() {
         <FourStudios />
         <ProgramPathway />
         <Comparison />
-        <Suspense fallback={<div className="min-h-[60vh] bg-[var(--color-light)]" />}>
-          <Credibility />
-        </Suspense>
+        <Credibility />
         <Community />
-        <MakerVoice />
         <ParentPromise />
         <AdmissionsTimeline />
-        <FAQ />
         <FinalCTA />
       </main>
       <Footer />
-      <StickyCTA />
     </motion.div>
     </>
   );

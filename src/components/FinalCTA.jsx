@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import TextReveal from './TextReveal';
 import { DragToBuildCTA } from './MakerElements';
-import { MakerCube } from './Tilt3D';
 
 export default function FinalCTA() {
   return (
@@ -10,19 +9,13 @@ export default function FinalCTA() {
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-      {/* Floating maker blocks — CSS-3D, zero GPU contexts */}
-      <MakerCube dark size={70} duration={18} className="absolute top-[16%] left-[10%] opacity-70 hidden md:block" />
-      <MakerCube dark size={44} duration={13} className="absolute top-[24%] right-[14%] opacity-60 hidden md:block" />
-      <MakerCube dark size={56} duration={22} className="absolute bottom-[18%] left-[20%] opacity-50 hidden md:block" />
-      <MakerCube dark size={34} duration={11} className="absolute bottom-[26%] right-[9%] opacity-70 hidden md:block" />
-
       {/* Immersive background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] bg-[var(--color-secondary)]/20 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-[90rem] w-full mx-auto px-6 md:px-12 relative z-10 flex flex-col items-center gap-16">
 
         {/* Headline */}
-        <h2 className="text-[12vw] sm:text-[10vw] lg:text-[12vw] font-display font-bold text-white leading-[0.85] tracking-tighter uppercase text-center text-extrude-dark">
+        <h2 className="text-[12vw] sm:text-[10vw] lg:text-[12vw] font-display font-bold text-white leading-[0.85] tracking-tighter uppercase text-center mix-blend-difference">
           <TextReveal text="Prepare Them" delay={0.1} />
           <br />
           <TextReveal text="For The" delay={0.3} className="text-[var(--color-accent)]" />
