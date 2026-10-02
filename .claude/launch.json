@@ -5,13 +5,33 @@
       "name": "vite-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
     },
     {
       "name": "bits-ops",
       "runtimeExecutable": "node",
       "runtimeArgs": ["/Users/pratik/AI Agents Decision tree /Bits and studios ops/server.js"],
       "port": 3000
+    },
+    {
+      "name": "studio-os",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/pratik/studio-os", "run", "dev"],
+      "port": 5180,
+      "autoPort": true
+    },
+    {
+      "name": "toddle",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "toddle", "run", "dev"],
+      "port": 5190
+    },
+    {
+      "name": "facebook-clone",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "facebook-clone/client", "run", "dev"],
+      "port": 5174
     }
   ]
 }

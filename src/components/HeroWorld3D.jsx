@@ -42,16 +42,10 @@ const M = {
   trunk: new THREE.MeshPhysicalMaterial({ color: '#6E4F33', roughness: 0.8 }),
   leaf: new THREE.MeshPhysicalMaterial({ color: '#6B8456', roughness: 0.7 }),
   tire: new THREE.MeshPhysicalMaterial({ color: '#26211C', roughness: 0.92 }), // soft rubber
-  eye: new THREE.MeshBasicMaterial({ color: '#2A241E' }),
   pcb: new THREE.MeshPhysicalMaterial({ color: '#2E6B4E', roughness: 0.42, clearcoat: 0.3, clearcoatRoughness: 0.4 }), // solder-mask green
   // brand secondary — orange stays the hero, violet is a restrained cool counterpoint
   violet: new THREE.MeshPhysicalMaterial({ color: '#7B2CBF', roughness: 0.28, clearcoat: 0.8, clearcoatRoughness: 0.25 }),
   violetGlow: new THREE.MeshBasicMaterial({ color: '#9B4DDA' }),
-  // the kid's wardrobe — one outfit he grows through the years
-  hair: new THREE.MeshPhysicalMaterial({ color: '#4A3826', roughness: 0.68 }),
-  shirt: new THREE.MeshPhysicalMaterial({ color: '#F7F1E3', roughness: 0.58 }), // white tee
-  shirtAlt: new THREE.MeshPhysicalMaterial({ color: '#8B49C7', roughness: 0.55 }), // teammate's violet tee
-  pants: new THREE.MeshPhysicalMaterial({ color: '#3F3A33', roughness: 0.72 }), // dark joggers
 };
 
 const WIRE = new THREE.MeshBasicMaterial({ color: ACCENT, wireframe: true, transparent: true, opacity: 0.22 });
@@ -136,27 +130,30 @@ function Materialize({ progress, idx, children }) {
 }
 
 // ── The figure, posed and aging ──────────────────────────────────────────────
-// A refined architectural-model figurine — the premium read: one smooth ceramic
-// form in warm ivory over matte charcoal legs, elongated silhouette, no cartoon
-// face. `age` still drives the proportions (a 5-year-old is small with a fuller
-// head; the adult is tall and lean), and the ceramic ignites to glossy orange
-// when the spark arrives. Arms pivot at the shoulder in every pose.
+// An abstract architectural-model figurine: ONE material head to toe, no face,
+// no wardrobe — a smooth ceramic silhouette that reads human purely through
+// proportion and pose. `age` drives the proportions (a 5-year-old is small with
+// a fuller head; the adult is tall and lean), and the whole figure ignites to
+// warm orange when the spark arrives. Arms pivot at the shoulder in every pose.
 function Kid({ p, scale = 1, rotY = 0, pose = 'stand', kidMat, age = 10, holding = null }) {
   const t = THREE.MathUtils.clamp((age - 5) / 17, 0, 1); // 5yo → adult
   // Figure canon: total height H, measured in heads — a 5-year-old stands
   // ~4.6 heads tall, the adult ~6.9. Legs carry half the height, arms reach
   // to mid-thigh. Get these ratios right and the figure reads human at a
   // glance, at any distance — that's the whole game.
-  const H = THREE.MathUtils.lerp(0.8, 1.34, t);
-  const headsTall = THREE.MathUtils.lerp(4.6, 6.9, t);
-  const headR = (H / headsTall) * 0.56;
-  const hipY0 = H * THREE.MathUtils.lerp(0.44, 0.5, t); // hip height standing
-  const shoulderH = H * THREE.MathUtils.lerp(0.72, 0.79, t);
-  const torsoR = H * THREE.MathUtils.lerp(0.115, 0.092, t);
-  const legR = H * 0.042;
-  const armR = H * 0.032;
+  const H = THREE.MathUtils.lerp(0.8, 1.32, t);
+  // Stylized-character canon, not fashion-mannequin: ~4 heads tall at five,
+  // ~5.4 grown. Fuller volumes — a big friendly head, a soft rounded torso,
+  // limbs with real thickness — read warm and crafted, never spindly.
+  const headsTall = THREE.MathUtils.lerp(4.0, 5.4, t);
+  const headR = (H / headsTall) * 0.6;
+  const hipY0 = H * THREE.MathUtils.lerp(0.42, 0.47, t); // hip height standing
+  const shoulderH = H * THREE.MathUtils.lerp(0.7, 0.76, t);
+  const torsoR = H * THREE.MathUtils.lerp(0.14, 0.118, t);
+  const legR = H * 0.052;
+  const armR = H * 0.042;
   const legLen = hipY0 - legR - 0.05;
-  const armLen = H * 0.27;
+  const armLen = H * 0.25;
   const arms = {
     stand: { l: [0, 0, -0.14], r: [0, 0, 0.14] },
     reach: { l: [-2.2, 0, -0.18], r: [-2.5, 0, 0.08] },
@@ -172,38 +169,32 @@ function Kid({ p, scale = 1, rotY = 0, pose = 'stand', kidMat, age = 10, holding
   const shoulderY = kneeling ? shoulderH - (hipY0 - hipY) : shoulderH;
   const torsoLen = shoulderY - hipY - torsoR * 0.4;
   const bodyY = (hipY + shoulderY) / 2;
-  const headY = shoulderY + headR * 1.18;
+  const headY = shoulderY + headR * 1.05;
   const armReach = armLen + 0.1; // shoulder → hand centre
   return (
     <group position={p} rotation={[0, rotY, 0]} scale={scale}>
-      {/* charcoal legs — long, slim; kneeling = upright on the knees,
-          shins folded back along the ground */}
+      {/* legs — same ceramic as the body; kneeling = upright on the knees,
+          shins folded back along the ground. No feet — the capsule just lands. */}
       {kneeling ? (
         [-torsoR * 0.55, torsoR * 0.55].map((x) => (
           <group key={x}>
-            <mesh material={M.pants} position={[x, hipY * 0.55, -0.02]}>
+            <mesh material={kidMat} position={[x, hipY * 0.55, -0.02]}>
               <capsuleGeometry args={[legR, legLen * 0.42, 4, 10]} />
             </mesh>
-            <mesh material={M.pants} position={[x, legR + 0.015, -legLen * 0.3 - 0.04]} rotation={[-1.5, 0, 0]}>
+            <mesh material={kidMat} position={[x, legR + 0.015, -legLen * 0.3 - 0.04]} rotation={[-1.5, 0, 0]}>
               <capsuleGeometry args={[legR * 0.92, legLen * 0.48, 4, 10]} />
             </mesh>
           </group>
         ))
       ) : (
         [-torsoR * 0.55, torsoR * 0.55].map((x) => (
-          <group key={x}>
-            <mesh material={M.pants} position={[x, hipY / 2 + 0.01, 0]}>
-              <capsuleGeometry args={[legR, legLen, 4, 10]} />
-            </mesh>
-            {/* low-profile foot, barely suggested */}
-            <mesh material={M.pants} position={[x, legR * 0.55, legR * 0.7]} scale={[1, 0.5, 1.5]}>
-              <sphereGeometry args={[legR, 10, 8]} />
-            </mesh>
-          </group>
+          <mesh key={x} material={kidMat} position={[x, hipY / 2 + 0.01, 0]}>
+            <capsuleGeometry args={[legR, legLen, 4, 10]} />
+          </mesh>
         ))
       )}
-      {/* hip — a smooth charcoal transition into the torso */}
-      <mesh material={M.pants} position={[0, hipY + 0.01, 0]}>
+      {/* hip — a smooth transition into the torso */}
+      <mesh material={kidMat} position={[0, hipY + 0.01, 0]}>
         <sphereGeometry args={[torsoR * 0.92, 14, 12]} />
       </mesh>
       {/* ivory ceramic torso — one clean tapered form */}
@@ -214,7 +205,7 @@ function Kid({ p, scale = 1, rotY = 0, pose = 'stand', kidMat, age = 10, holding
       <mesh material={kidMat} position={[0, shoulderY + headR * 0.3, 0]}>
         <cylinderGeometry args={[headR * 0.3, headR * 0.38, headR * 0.7, 12]} />
       </mesh>
-      {/* head — a clean sphere; the silhouette does the talking */}
+      {/* head — a clean featureless sphere; the pose does the talking */}
       <mesh material={kidMat} position={[0, headY, 0]}>
         <sphereGeometry args={[headR, 20, 18]} />
       </mesh>
@@ -293,15 +284,18 @@ function TowerScene({ kidMat, progress, idx }) {
   const mats = [M.accent, M.violet, M.cream, M.accent];
   return (
     <group>
-      {refs.map((r, i) => (
-        <group key={i} ref={r}>
-          <LegoBrick m={mats[i]} />
-        </group>
-      ))}
-      {/* spare bricks left on the floor, mid-play */}
-      <group position={[0.15, 0.09, -0.75]} rotation={[0, 1.1, 0]}><LegoBrick m={M.violet} /></group>
-      <group position={[1.15, 0.09, 0.95]} rotation={[0, 0.4, 0]}><LegoBrick m={M.cream} /></group>
-      <Kid p={[-0.25, 0, 0]} scale={0.5} age={5} rotY={Math.PI / 2.2} pose="reach" kidMat={kidMat} />
+      {/* bricks at hand scale — chunky Duplo next to a five-year-old, not furniture */}
+      <group scale={0.55} position={[0.25, 0, 0.1]}>
+        {refs.map((r, i) => (
+          <group key={i} ref={r}>
+            <LegoBrick m={mats[i]} />
+          </group>
+        ))}
+        {/* spare bricks left on the floor, mid-play */}
+        <group position={[0.15, 0.09, -0.75]} rotation={[0, 1.1, 0]}><LegoBrick m={M.violet} /></group>
+        <group position={[1.15, 0.09, 0.95]} rotation={[0, 0.4, 0]}><LegoBrick m={M.cream} /></group>
+      </group>
+      <Kid p={[-0.25, 0, 0]} scale={0.62} age={5} rotY={Math.PI / 2.2} pose="reach" kidMat={kidMat} />
     </group>
   );
 }
@@ -602,51 +596,72 @@ function PrintScene({ kidMat, progress, idx }) {
 }
 
 // ── 07 · Age 15 — the match task: pick the block, place it on the goal ───────
-// The bot drives to the game piece, the arm drops and grabs it, carries it to
-// the goal pad, sets it down, and returns — while a teammate drives it with
-// the RC controller in his hands.
-const PICK = [0.85, 0.55];
-const GOAL = [-0.55, -0.6];
+// A full match cycle, driven like a real state machine: the claw closes on the
+// piece, the arm lifts it, the bot carries it across the field, lowers, opens
+// the claw on the goal pad, and drives home — wheels spinning with the ground,
+// while a teammate drives it with the RC controller in his hands.
+// Field geometry, derived so the claw lands exactly on the piece and the pad:
+// the bot keeps one heading the whole match — forward with the piece, reverse
+// home — the way real drive teams run a repeated cycle.
+const ARM_LEN = 0.36; // arm pivot is at bot-local [0.16, 0.09]
+const ARM_DOWN = -0.28, ARM_UP = 0.62;
+const PICK_PT = new THREE.Vector3(0.7, 0, 0.45); // where the piece starts
+const DROP_PT = new THREE.Vector3(-0.55, 0, -0.55); // centre of the goal pad
+const DIR = DROP_PT.clone().sub(PICK_PT).normalize();
+const YAW = Math.atan2(-DIR.z, DIR.x);
+const REACH = 0.16 + ARM_LEN * Math.cos(ARM_DOWN); // claw offset, arm down
+const BOT_START = PICK_PT.clone().addScaledVector(DIR, -REACH);
+const BOT_END = DROP_PT.clone().addScaledVector(DIR, -REACH);
+const phase = (c, a, b) => ease(THREE.MathUtils.clamp((c - a) / (b - a), 0, 1));
 
 function CompeteScene({ kidMat, progress, idx }) {
   const act = useActivation(progress, idx);
   const bot = useRef(), arm = useRef(), block = useRef();
-  const yaw = useRef(Math.PI);
-  const armK = useRef(0.65);
-  useFrame((state, delta) => {
+  const fingerL = useRef(), fingerR = useRef();
+  const wheels = [useRef(), useRef(), useRef(), useRef()];
+  const spin = useRef(0);
+  const prev = useRef(BOT_START.clone());
+  const pos = useMemo(() => new THREE.Vector3(), []);
+  useFrame((state) => {
     if (!bot.current || act.current < 0.3) return;
-    const cyc = (state.clock.elapsedTime * 0.11) % 1;
-    // 0–.1 grab · .1–.45 carry to goal · .45–.58 place · .58–.95 drive back
-    const go = ease(THREE.MathUtils.clamp((cyc - 0.1) / 0.35, 0, 1));
-    const back = ease(THREE.MathUtils.clamp((cyc - 0.58) / 0.37, 0, 1));
-    const returning = cyc >= 0.58;
-    const x = returning ? THREE.MathUtils.lerp(GOAL[0], PICK[0], back) : THREE.MathUtils.lerp(PICK[0], GOAL[0], go);
-    const z = returning ? THREE.MathUtils.lerp(GOAL[1], PICK[1], back) : THREE.MathUtils.lerp(PICK[1], GOAL[1], go);
-    bot.current.position.set(x, 0.16, z);
-    // face where it's headed (+x is the front), turning smoothly in place
-    const [tx, tz] = returning ? PICK : GOAL;
-    const dirX = returning ? PICK[0] - GOAL[0] : GOAL[0] - PICK[0];
-    const dirZ = returning ? PICK[1] - GOAL[1] : GOAL[1] - PICK[1];
-    const target = Math.atan2(-dirZ, dirX);
-    let d = target - yaw.current;
-    d = Math.atan2(Math.sin(d), Math.cos(d));
-    yaw.current += d * Math.min(1, delta * 4);
-    bot.current.rotation.y = yaw.current;
-    // the arm drops to grab at the piece and to place at the goal
-    const armDown = cyc < 0.1 || (cyc > 0.45 && cyc < 0.58);
-    armK.current = THREE.MathUtils.lerp(armK.current, armDown ? 0.12 : 0.55, Math.min(1, delta * 6));
-    if (arm.current) arm.current.rotation.z = armK.current;
-    // the game piece: on the floor → in the claw → set down on the goal pad
+    const cyc = (state.clock.elapsedTime * 0.085) % 1;
+    // the match cycle:
+    // 0–.09 claw closes · .09–.17 arm lifts · .15–.44 carry to goal ·
+    // .44–.52 arm lowers · .52–.60 claw opens · .60–.66 arm back up ·
+    // .64–.93 reverse home · .93–1 arm drops for the next grab
+    const go = phase(cyc, 0.15, 0.44);
+    const back = phase(cyc, 0.64, 0.93);
+    if (cyc >= 0.6) pos.lerpVectors(BOT_END, BOT_START, back);
+    else pos.lerpVectors(BOT_START, BOT_END, go);
+    bot.current.position.set(pos.x, 0.16, pos.z);
+    // arm: down at both ends of the field, up while carrying and driving home
+    const armK = phase(cyc, 0.09, 0.17) - phase(cyc, 0.44, 0.52) + phase(cyc, 0.6, 0.66) - phase(cyc, 0.93, 1);
+    const armA = THREE.MathUtils.lerp(ARM_DOWN, ARM_UP, armK);
+    if (arm.current) arm.current.rotation.z = armA;
+    // claw: fingers slide apart to open, close snug around the 0.16 block
+    const clawK = 1 - phase(cyc, 0, 0.09) + phase(cyc, 0.52, 0.6);
+    const fz = THREE.MathUtils.lerp(0.095, 0.16, clawK);
+    if (fingerL.current) fingerL.current.position.z = fz;
+    if (fingerR.current) fingerR.current.position.z = -fz;
+    // wheels roll with the ground covered (r = 0.09), backwards on the reverse
+    const signed = (pos.x - prev.current.x) * DIR.x + (pos.z - prev.current.z) * DIR.z;
+    prev.current.copy(pos);
+    spin.current += signed / 0.09;
+    wheels.forEach((w) => { if (w.current) w.current.rotation.y = -spin.current; });
+    // the game piece rides in the claw between grab and release
     if (block.current) {
-      const carrying = cyc > 0.08 && cyc < 0.52;
-      if (carrying) {
-        const fx = Math.cos(yaw.current), fz = -Math.sin(yaw.current);
-        block.current.position.set(x + fx * 0.42, 0.22 + armK.current * 0.25, z + fz * 0.42);
-        block.current.rotation.y = yaw.current;
-      } else if (cyc >= 0.52 && cyc < 0.97) {
-        block.current.position.set(GOAL[0] - 0.05, 0.115, GOAL[1] - 0.05);
+      const held = cyc > 0.08 && cyc < 0.56;
+      if (held) {
+        const reach = 0.16 + ARM_LEN * Math.cos(armA);
+        const lift = 0.25 + ARM_LEN * Math.sin(armA) - 0.05;
+        block.current.position.set(pos.x + DIR.x * reach, Math.max(lift, 0.09), pos.z + DIR.z * reach);
+        block.current.rotation.y = YAW;
+      } else if (cyc >= 0.56 && cyc < 0.99) {
+        block.current.position.set(DROP_PT.x, 0.125, DROP_PT.z);
+        block.current.rotation.y = YAW;
       } else {
-        block.current.position.set(PICK[0] + 0.42, 0.09, PICK[1]);
+        block.current.position.set(PICK_PT.x, 0.09, PICK_PT.z);
+        block.current.rotation.y = YAW;
       }
     }
   });
@@ -658,36 +673,67 @@ function CompeteScene({ kidMat, progress, idx }) {
       <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} material={M.glow}>
         <ringGeometry args={[1.6, 1.66, 32]} />
       </mesh>
-      {/* the goal pad the block must land on */}
-      <Box p={[GOAL[0] - 0.05, 0.03, GOAL[1] - 0.05]} s={[0.42, 0.025, 0.42]} m={M.violet} />
-      {/* competition bot — drive wheels, lift arm with claw, RC antenna */}
-      <group ref={bot} position={[PICK[0], 0.16, PICK[1]]} rotation={[0, Math.PI, 0]}>
+      {/* low perimeter rail — the field reads as an arena */}
+      <mesh position={[0, 0.09, 0]} material={M.ink}>
+        <torusGeometry args={[1.72, 0.035, 8, 48]} />
+      </mesh>
+      {/* the goal pad the block must land on, with one piece already scored */}
+      <Box p={[DROP_PT.x, 0.03, DROP_PT.z]} s={[0.42, 0.025, 0.42]} m={M.violet} />
+      <Box p={[DROP_PT.x - 0.16, 0.11, DROP_PT.z + 0.16]} s={[0.14, 0.14, 0.14]} m={M.accent} r={0.4} />
+      {/* competition bot — C-channel chassis, drive wheels, lift arm, claw */}
+      <group ref={bot} position={[BOT_START.x, 0.16, BOT_START.z]} rotation={[0, YAW, 0]}>
         <Box p={[0, 0, 0]} s={[0.44, 0.18, 0.36]} m={M.accent} />
-        {[[-0.15, 0.2], [0.15, 0.2], [-0.15, -0.2], [0.15, -0.2]].map(([x, z], i) => (
-          <mesh key={i} position={[x, -0.06, z]} rotation={[Math.PI / 2, 0, 0]} material={M.tire}>
-            <cylinderGeometry args={[0.09, 0.09, 0.06, 12]} />
-          </mesh>
-        ))}
-        <group ref={arm} position={[0.16, 0.09, 0]} rotation={[0, 0, 0.55]}>
-          <Box p={[0.15, 0, 0]} s={[0.32, 0.05, 0.08]} m={M.ink} />
-          {/* claw — two fingers */}
-          <Box p={[0.32, -0.02, 0.05]} s={[0.1, 0.1, 0.03]} m={M.cream} />
-          <Box p={[0.32, -0.02, -0.05]} s={[0.1, 0.1, 0.03]} m={M.cream} />
+        {/* side plates + front bumper */}
+        <Box p={[0, -0.04, 0.19]} s={[0.46, 0.08, 0.02]} m={M.ink} />
+        <Box p={[0, -0.04, -0.19]} s={[0.46, 0.08, 0.02]} m={M.ink} />
+        <Box p={[0.23, -0.03, 0]} s={[0.03, 0.07, 0.3]} m={M.violet} />
+        {/* team number plate */}
+        <Box p={[0, 0.1, 0.19]} s={[0.18, 0.12, 0.015]} m={M.screen} />
+        {wheels.map((w, i) => {
+          const [wx, wz] = [[-0.15, 0.2], [0.15, 0.2], [-0.15, -0.2], [0.15, -0.2]][i];
+          return (
+            <group key={i} position={[wx, -0.06, wz]} rotation={[Math.PI / 2, 0, 0]}>
+              <group ref={w}>
+                <mesh material={M.tire}><cylinderGeometry args={[0.09, 0.09, 0.06, 12]} /></mesh>
+                {/* hub cap — makes the spin readable */}
+                <mesh material={M.cream} position={[0, wz > 0 ? 0.033 : -0.033, 0]}>
+                  <cylinderGeometry args={[0.045, 0.045, 0.012, 10]} />
+                </mesh>
+                <mesh material={M.glow} position={[0.045, wz > 0 ? 0.041 : -0.041, 0]}>
+                  <sphereGeometry args={[0.014, 6, 6]} />
+                </mesh>
+              </group>
+            </group>
+          );
+        })}
+        {/* lift arm — parallel two-bar linkage with a claw that really closes */}
+        <group ref={arm} position={[0.16, 0.09, 0]} rotation={[0, 0, ARM_DOWN]}>
+          <Box p={[0.16, 0, 0.05]} s={[0.34, 0.045, 0.025]} m={M.ink} />
+          <Box p={[0.16, 0, -0.05]} s={[0.34, 0.045, 0.025]} m={M.ink} />
+          {/* wrist cross-bar */}
+          <Box p={[0.33, 0, 0]} s={[0.05, 0.05, 0.14]} m={M.ink} />
+          {/* claw — two fingers that slide open and shut */}
+          <group ref={fingerL} position={[0.36, -0.03, 0.095]}>
+            <Box p={[0, 0, 0]} s={[0.12, 0.11, 0.025]} m={M.cream} />
+          </group>
+          <group ref={fingerR} position={[0.36, -0.03, -0.095]}>
+            <Box p={[0, 0, 0]} s={[0.12, 0.11, 0.025]} m={M.cream} />
+          </group>
         </group>
+        {/* tower + RC antenna — it answers the controller in the kid's hands */}
         <Box p={[-0.12, 0.13, 0]} s={[0.13, 0.12, 0.13]} m={M.ink} />
-        {/* RC antenna — it answers the controller in the kid's hands */}
         <mesh position={[-0.12, 0.26, 0]} material={M.ink}><cylinderGeometry args={[0.008, 0.008, 0.16, 6]} /></mesh>
         <mesh position={[-0.12, 0.35, 0]} material={M.glow}><sphereGeometry args={[0.024, 8, 8]} /></mesh>
       </group>
       {/* the game piece being moved, plus a spare on the field */}
-      <mesh ref={block} position={[PICK[0] + 0.42, 0.09, PICK[1]]}>
+      <mesh ref={block} position={[PICK_PT.x, 0.09, PICK_PT.z]} rotation={[0, YAW, 0]}>
         <boxGeometry args={[0.16, 0.16, 0.16]} />
         <meshPhysicalMaterial color="#7B2CBF" roughness={0.3} clearcoat={0.8} clearcoatRoughness={0.25} />
       </mesh>
       <Box p={[0.35, 0.09, -0.8]} s={[0.14, 0.14, 0.14]} m={M.cream3} r={0.5} />
-      {/* the driver, controller in hand, eyes on the bot — and a teammate */}
-      <Kid p={[-1.25, 0, 0.85]} scale={0.92} age={15} rotY={2.4} pose="control" holding="controller" kidMat={kidMat} />
-      <Kid p={[-1.6, 0, -0.35]} scale={0.9} age={15} rotY={Math.PI / 2.4} pose="stand" kidMat={M.cream3} />
+      {/* the drive team stands outside the rail — driver on the sticks, spotter */}
+      <Kid p={[-1.45, 0, 1.15]} scale={0.92} age={15} rotY={2.4} pose="control" holding="controller" kidMat={kidMat} />
+      <Kid p={[-1.95, 0, -0.4]} scale={0.9} age={15} rotY={Math.PI / 2.4} pose="stand" kidMat={M.cream3} />
       {/* scoreboard on its post, screen lit */}
       <Box p={[2, 0.8, -0.9]} s={[0.06, 1.6, 0.06]} m={M.ink} />
       <Box p={[2.3, 1.4, -0.9]} s={[0.55, 0.34, 0.05]} m={M.accent} />

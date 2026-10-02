@@ -14,6 +14,7 @@ import MakerVoice from './components/MakerVoice';
 import ParentPromise from './components/ParentPromise';
 import AdmissionsTimeline from './components/AdmissionsTimeline';
 import FAQ from './components/FAQ';
+import KineticCloser from './components/KineticCloser';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import StickyCTA from './components/StickyCTA';
@@ -55,6 +56,7 @@ function AppContent() {
         <AdmissionsTimeline />
         <FAQ />
         <FinalCTA />
+        <KineticCloser />
       </main>
       <Footer />
       <StickyCTA />

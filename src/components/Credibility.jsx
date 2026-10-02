@@ -7,11 +7,9 @@ import { ErrorBoundary } from './ErrorBoundary';
 const team = [
   { id: "01", name: "Pratik Bhatt", role: "Maker-in-Chief", bio: "Hand him anything complicated and he will light up taking it apart. For Pratik, the fun starts when things stop working.", image: "/pratik.jpg" },
   { id: "02", name: "Anjalee Bhatt", role: "Designer-in-Chief", bio: "A designer at heart and a teacher by calling. Trained at CEPT, Anjalee has spent a decade preparing learners for university and for life. She is endlessly curious, deeply empathetic, and happiest helping a young maker find their voice.", image: "/anjalee.jpg" },
-  { id: "03", name: "Mohit Ahuja", role: "Senior Educator", bio: "A maker who genuinely wears many hats, science one day, design the next. With a track record spanning Riverside, NID, VASCSC and CEPT, he brings range, rigour, and real warmth to the studio-proving daily that engineering is just magic with a datasheet.", image: "/mohit.jpg" },
-  { id: "04", name: "Mantasha Sheikh", role: "Educator", bio: "She makes code click for makers who thought it wasn't for them. A B.Tech in Computer Science, she loves teaching coding and digital design.", image: "/mantasha.jpg" },
-  { id: "05", name: "Aryan Parmar", role: "Robotics Educator & Coach", bio: "The one you want in your corner on competition day. With a Master's in Computer Science, Aryan coaches our teams and helps makers turn rough ideas into machines that win.", image: "/aryan.jpg" },
-  { id: "06", name: "Sohil Sheikh", role: "Educator", bio: "The steady hand in the room, Sohil keeps every build moving and every maker unstuck. B.Tech, Computer Science.", image: "/sohil.jpg" },
-  { id: "07", name: "Foram Mendha", role: "Educator", bio: "Patient, precise, and endlessly encouraging, Foram has a gift for meeting makers exactly where they are. B.Tech, Computer Science.", image: "/foram.jpg" }
+  { id: "03", name: "Aryan Parmar", role: "Robotics Educator & Coach", bio: "The one you want in your corner on competition day. With a Master's in Computer Science, Aryan coaches our teams and helps makers turn rough ideas into machines that win.", image: "/aryan.jpg" },
+  { id: "04", name: "Sohil Sheikh", role: "Educator", bio: "The steady hand in the room, Sohil keeps every build moving and every maker unstuck. B.Tech, Computer Science.", image: "/sohil.jpg" },
+  { id: "05", name: "Foram Mendha", role: "Educator", bio: "Patient, precise, and endlessly encouraging, Foram has a gift for meeting makers exactly where they are. B.Tech, Computer Science.", image: "/foram.jpg" }
 ];
 
 const VIDEO_URLS = [
@@ -142,14 +140,12 @@ function TeamMember3D({ member, index, position, rotation }) {
 
   // Render a different abstract 3D shape for each member as a temporary avatar
   const renderAvatarShape = () => {
-    switch(index % 7) {
+    switch(index % 5) {
       case 0: return <icosahedronGeometry args={[1.5, 0]} />; // Pratik
       case 1: return <torusKnotGeometry args={[1, 0.3, 100, 16]} />; // Anjalee
-      case 2: return <cylinderGeometry args={[1.2, 1.2, 3, 32]} />; // Mohit
-      case 3: return <dodecahedronGeometry args={[1.5, 0]} />; // Aryan
-      case 4: return <coneGeometry args={[1.5, 3, 32]} />; // Mantasha
-      case 5: return <octahedronGeometry args={[1.5, 0]} />; // Foram
-      case 6: return <torusGeometry args={[1.2, 0.4, 16, 100]} />; // Sohil
+      case 2: return <dodecahedronGeometry args={[1.5, 0]} />; // Aryan
+      case 3: return <torusGeometry args={[1.2, 0.4, 16, 100]} />; // Sohil
+      case 4: return <octahedronGeometry args={[1.5, 0]} />; // Foram
       default: return <boxGeometry args={[2, 2, 2]} />;
     }
   };

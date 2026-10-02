@@ -14,4 +14,7 @@ export default defineConfig({
       additionalLegacyPolyfills: ['regenerator-runtime/runtime']
     })
   ],
+  server: {
+    port: Number(process.env.PORT) || 5173,
+  },
 })
