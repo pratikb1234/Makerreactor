@@ -126,6 +126,7 @@ circuit.sync(150);
           viewBox="0 0 1000 1000"
           scrollOffset={["start center", "end center"]}
           onReachCenter={setIsHeroBridgeComplete}
+          alwaysFull
           components={[
             { type: 'led', cx: 20, cy: 125, threshold: 0.10 },
             { type: 'car', cx: 80, cy: 425, threshold: 0.48 },
@@ -181,7 +182,7 @@ circuit.sync(150);
       <div className="hidden lg:block">
         {flowPath && (
           <PowerFlowLine
-            className="absolute top-0 left-0 w-full h-screen z-0"
+            className="absolute top-0 left-0 w-full h-full z-0"
             pathD={flowPath}
             viewBox={`0 0 ${viewW} ${viewH}`}
             onPowerReachTop={() => setIsPowerFlowComplete(true)}
@@ -209,7 +210,7 @@ circuit.sync(150);
                 opacity: isPowered ? 1 : 0.8
               }}
               transition={{ duration: 0.8 }}
-              className="text-[8vw] sm:text-[7vw] lg:text-[5.5vw] font-display font-bold leading-[0.9] tracking-tighter uppercase max-w-4xl"
+              className="text-[8vw] sm:text-[7vw] lg:text-[min(5vw,4rem)] font-display font-bold leading-[0.9] tracking-tighter uppercase max-w-5xl"
             >
               {isPowered ? (
                 <>
@@ -234,24 +235,27 @@ circuit.sync(150);
               transition={{ duration: 0.6 }}
               className={`border-l-2 pl-4 transition-colors duration-500 ${isPowered ? 'border-[var(--color-accent)]' : 'border-black'}`}
             >
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-2">Make now:</p>
-              <p className={`text-base md:text-lg font-medium leading-relaxed mb-4 transition-colors duration-500 ${isPowered ? 'text-black' : 'text-gray-600'}`}>
-                At Bits & Studios, your child joins a makerspace community for K–12 makers who build, solve, compete, fail, fix and grow.
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-bold mb-2">Makerspace · Grades K–12 · Ahmedabad</p>
+              <p className="text-base md:text-lg font-medium leading-relaxed mb-4 text-black">
+                Robotics, coding, design and engineering — a year-long program where your child builds real projects with real tools, guided by one mentor for every five makers.
               </p>
-              <p className={`text-lg md:text-xl font-bold leading-relaxed transition-colors duration-500 ${isPowered ? 'text-[var(--color-accent)]' : 'text-gray-500'}`}>
-                Join the Founding Cohort.
+              <p className="text-lg md:text-xl font-bold leading-relaxed text-[var(--color-accent)]">
+                Founding Cohort 2026 is now enrolling.
               </p>
-              <motion.a
-                href="#admissions"
-                animate={{
-                  backgroundColor: isPowered ? '#FF5A00' : '#000000',
-                  boxShadow: isPowered ? '0 0 20px rgba(255,90,0,0.4)' : '0 0 0px rgba(0,0,0,0)'
-                }}
-                transition={{ duration: 0.5 }}
-                className="inline-block mt-4 px-6 py-2.5 text-white font-mono text-sm uppercase tracking-widest font-bold rounded-full transition-transform duration-300 hover:scale-105"
-              >
-                APPLY NOW →
-              </motion.a>
+              <div className="flex flex-wrap items-center gap-3 mt-5">
+                <a
+                  href="#apply"
+                  className="inline-block px-6 py-3 bg-[var(--color-accent)] text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(255,90,0,0.35)] hover:bg-black transition-colors"
+                >
+                  Book a free visit →
+                </a>
+                <a
+                  href="#programs"
+                  className="inline-block px-6 py-3 border-2 border-black/80 text-black font-bold text-sm uppercase tracking-wider rounded-full hover:bg-black hover:text-white transition-colors"
+                >
+                  See programs
+                </a>
+              </div>
             </motion.div>
 
             {/* Code terminal — original widget unchanged */}

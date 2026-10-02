@@ -36,7 +36,7 @@ export default function Comparison() {
           >
             The Distinction
           </motion.div>
-          <h2 className="text-5xl md:text-7xl font-display font-bold uppercase tracking-tighter text-black leading-[0.9]">
+          <h2 className="text-[9vw] sm:text-5xl md:text-7xl font-display font-bold uppercase tracking-tighter text-black leading-[0.9]">
             Fundamentally <br/>
             Different.
           </h2>

@@ -747,7 +747,7 @@ export const PowerFlowLine = ({ className = "", pathD, viewBox = "0 0 200 200", 
   );
 };
 
-export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 1000", components = [], sectionRef, scrollOffset = ["start end", "end start"], isActivated: propIsActivated, shouldBoost = false, maxBackgroundLength = 1, onReachCenter }) => {
+export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 1000", components = [], sectionRef, scrollOffset = ["start end", "end start"], isActivated: propIsActivated, shouldBoost = false, maxBackgroundLength = 1, onReachCenter, alwaysFull = false }) => {
   const { isPowerFlowComplete } = useCircuit();
   const innerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef || innerRef, offset: scrollOffset });
@@ -759,7 +759,9 @@ export const ScrollCircuitLine = ({ className = "", pathD, viewBox = "0 0 100 10
   useEffect(() => {
     boostTarget.set(shouldBoost ? 0.46 : 0);
   }, [shouldBoost, boostTarget]);
-  const displayPathLength = useTransform([pathLength, boostProgress], ([p, b]) => Math.max(p, b));
+  // alwaysFull: draw the whole trace immediately instead of revealing it with scroll
+  // (scroll still drives onReachCenter). Keeps the line complete at every screen size.
+  const displayPathLength = useTransform([pathLength, boostProgress], ([p, b]) => alwaysFull ? 1 : Math.max(p, b));
 
   // Fire onReachCenter when scroll crosses 0.995 (line has bent fully right to center)
   const hasFiredRef = useRef(false);
@@ -1056,7 +1058,7 @@ export const FloatingCodeWidget = ({ className = "" }) => {
           <div key={`${isPowered}-${i}`} className="flex gap-3">
             <span className="text-gray-600 w-3 text-right select-none">{i + 1}</span>
             <span className="flex flex-wrap items-center">
-              {line.map((tok, j) => <span key={j} style={{ color: tok.c }}>{tok.t}</span>)}
+              {line.map((tok, j) => <span key={j} className="whitespace-pre" style={{ color: tok.c }}>{tok.t}</span>)}
               {i === shown - 1 && shown < lines.length && (
                 <motion.span animate={{ opacity: [1, 0] }} transition={{ duration: 0.5, repeat: Infinity }}
                   className="inline-block w-[6px] h-3 bg-[var(--color-accent)] ml-0.5" />

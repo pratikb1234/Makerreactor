@@ -84,7 +84,7 @@ export default function FourStudiosDNA() {
   const studioYPositions = [0.1, 0.33, 0.56, 0.79];
 
   return (
-    <section ref={sectionRef} className="relative pb-32 md:pb-48 pt-12 md:pt-24 bg-[var(--color-light)] overflow-hidden">
+    <section id="studios" ref={sectionRef} className="scroll-mt-20 relative pb-32 md:pb-48 pt-12 md:pt-24 bg-[var(--color-light)] overflow-hidden">
       <div className="max-w-[90rem] mx-auto px-6 md:px-12 relative z-10">
 
         {/* Header */}

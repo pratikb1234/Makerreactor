@@ -8,7 +8,7 @@ export default function AdmissionsTimeline() {
   const steps = [
     {
       title: "01 // Reach Out",
-      desc: "Places in the founding cohort are by recommendation. Reach out and introduce your young maker.",
+      desc: "Book a free studio visit using the form below, or message us on WhatsApp, and introduce your young maker.",
     },
     {
       title: "02 // A Conversation",
@@ -25,7 +25,7 @@ export default function AdmissionsTimeline() {
   ];
 
   return (
-    <section id="admissions" ref={sectionRef} className="py-32 bg-[var(--color-dark)] relative text-[var(--color-light)] overflow-hidden">
+    <section id="admissions" ref={sectionRef} className="scroll-mt-20 py-32 bg-[var(--color-dark)] relative text-[var(--color-light)] overflow-hidden">
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       
       {/* Central PCB Trace */}
@@ -65,6 +65,9 @@ export default function AdmissionsTimeline() {
               <p className="text-xl text-gray-400 font-medium max-w-sm">
                 We are looking for families who believe in building over consuming.
               </p>
+              <a href="#apply" className="inline-block mt-10 px-8 py-4 bg-[var(--color-accent)] text-white rounded-full font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors">
+                Start with a free visit →
+              </a>
             </div>
           </div>
 
@@ -73,8 +76,8 @@ export default function AdmissionsTimeline() {
             {steps.map((step, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6 }}
                 className="border-b border-white/20 pb-12 cursor-hover"

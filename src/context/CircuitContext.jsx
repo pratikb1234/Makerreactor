@@ -1,9 +1,11 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useRef } from 'react';
 
 const CircuitContext = createContext();
 
 export function CircuitProvider({ children }) {
-  const [isPowered, setIsPowered] = useState(false);
+  // Start powered: visitors see the full-colour site and the real headline immediately.
+  // The power switch in the hero still lets them toggle it off/on for fun.
+  const [isPowered, setIsPowered] = useState(true);
   const timerRef = useRef(null);
 
   const [isPowerFlowComplete, setIsPowerFlowComplete] = useState(false);
@@ -25,25 +27,6 @@ export function CircuitProvider({ children }) {
       return !prev;
     });
   };
-
-  useEffect(() => {
-    // On mobile, power on immediately since circuit interactions are hidden
-    const isMobile = window.innerWidth < 1024;
-    if (isMobile) {
-      setIsPowered(true);
-      return;
-    }
-
-    // Auto-power after 8 seconds of inactivity on desktop
-    timerRef.current = setTimeout(() => {
-      setIsPowered(true);
-      timerRef.current = null;
-    }, 8000);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
 
   return (
     <CircuitContext.Provider value={{

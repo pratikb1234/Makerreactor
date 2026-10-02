@@ -132,7 +132,7 @@ export default function ProgramPathway() {
 
   return (
     <>
-    <section ref={sectionRef} className="bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10">
+    <section id="programs" ref={sectionRef} className="scroll-mt-20 bg-[var(--color-light)] relative font-sans border-t border-black/5 pb-48 z-10">
       <BlueprintGrid opacity={0.4} />
       {/* ── Mechanical Contraption Timeline ── */}
       <div className="absolute left-1/2 -translate-x-1/2 top-0 -bottom-4 w-[120px] pointer-events-none z-0 hidden lg:block">
